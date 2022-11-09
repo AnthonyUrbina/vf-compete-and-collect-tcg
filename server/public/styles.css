@@ -1,0 +1,44 @@
+p {
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+}
+
+h1 {
+  text-align: center;
+  color: #00a000;
+  font-family: Slackey, sans-serif;
+  font-size: 64px;
+  margin-bottom: 0;
+  padding-top: 3rem;
+  text-shadow: 1px 4px 2px rgb(0 0 0 / 25%);
+}
+
+#form-button {
+  width: 223px;
+  height: 38px;
+  font-size: 16px;
+  font-family: Inter, sans-serif;
+  color: white;
+  background-color: #00a000;
+  border-radius: 0.25rem;
+  box-shadow: 0 8px 14px -4px rgb(0 0 0 / 25%);
+  border: none;
+  margin-bottom: 0.5rem;
+}
+
+input {
+  border: 1px solid #abb5be;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  padding-left: 0.55rem;
+  letter-spacing: 0.5px;
+}
+
+input::placeholder {
+  font-size: 16px;
+  color: #abb5be;
+}
+
+a {
+  color: #00a000;
+}

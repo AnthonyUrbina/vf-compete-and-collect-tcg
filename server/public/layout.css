@@ -1,0 +1,55 @@
+.container {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+input {
+  width: 223px;
+  height: 38px;
+  margin-bottom: 0.75rem;
+  border-radius: 0.25rem;
+}
+
+form {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+img {
+  height: 217px;
+  width: 223px;
+}
+
+.form-spacing {
+  text-align: center;
+}
+
+.center-horizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (min-width: 768px) {
+  .center-horizontal {
+    flex-direction: row;
+  }
+
+  .form-spacing {
+    padding-top: 2.25rem;
+  }
+
+  .header-spacing {
+    padding-top: 2rem;
+  }
+}

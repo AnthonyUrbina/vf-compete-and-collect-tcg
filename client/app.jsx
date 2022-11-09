@@ -1,8 +1,13 @@
 import React from 'react';
-import Home from './pages/home';
+import AuthPage from './pages/auth';
+// import Home from './pages/home';
 
 export default class App extends React.Component {
   render() {
-    return <Home />;
+    return (
+      <div className='container'>
+        <AuthPage />
+      </div>
+    );
   }
 }
