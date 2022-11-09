@@ -7,6 +7,7 @@ const ClientError = require('./client-error');
 const app = express();
 const path = require('node:path');
 const publicPath = path.join(__dirname, 'public');
+const jwt = require('jsonwebtoken');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -46,7 +47,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.post('/api/auth/sign-up', (req, res) => {
+app.post('/api/auth/sign-in', (req, res, next) => {
   const { username, password } = req.body;
   if (!username || !password) {
     throw new ClientError(400, 'username and password are required fields');
@@ -62,12 +63,23 @@ app.post('/api/auth/sign-up', (req, res) => {
 
   db.query(sql, params)
     .then(result => {
-      if (!result.rows) {
-        throw new ClientError(401, 'invalid login');
+      const { userId, hashedPassword } = result.rows[0];
+      if (!userId) {
+        throw new ClientError(401, 'invalid login bro');
       }
 
-      // const payload = { username, password };
-    });
+      argon2.verify(hashedPassword, password)
+        .then(isMatching => {
+          if (!isMatching) {
+            throw new ClientError(401, 'invalid login');
+          }
+          const payload = { username, userId };
+          const token = jwt.sign(payload, process.env.TOKEN_SECRET);
+          res.status(200).json({ token, payload });
+        })
+        .catch(err => next(err));
+    })
+    .catch(err => next(err));
 
 });
 
