@@ -14,7 +14,6 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    // console.log('handle submit props test', this.props);
     const { action } = this.props;
     const headers = {
       'Content-Type': 'application/json'

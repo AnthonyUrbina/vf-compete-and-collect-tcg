@@ -5,7 +5,6 @@ import Redirect from '../components/redirect';
 
 export default class AuthPage extends React.Component {
   render() {
-    // console.log('contexxxx', this.context);
     if (this.context.user) return <Redirect to="" />;
 
     const { route } = this.context;

@@ -24,7 +24,6 @@ export default class App extends React.Component {
     });
     const token = window.localStorage.getItem('react-context-jwt');
     const user = token ? jwtDecode(token) : null;
-    // console.log('jwt', user);
     this.setState({ user });
   }
 
