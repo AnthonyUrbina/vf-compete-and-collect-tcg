@@ -1,0 +1,47 @@
+p {
+  font-family: Inter, sans-serif;
+  font-size: 12px;
+}
+
+form {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1 {
+  text-align: center;
+  color: #00a000;
+  font-family: Slackey, sans-serif;
+  font-size: 64px;
+  text-shadow: 1px 4px 2px rgb(0 0 0 / 25%);
+}
+
+input {
+  border: 1px solid #abb5be;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input::placeholder {
+  color: #abb5be;
+}
+
+a {
+  color: #00a000;
+}
+
+#form-button {
+  width: 223px;
+  height: 38px;
+  font-size: inherit;
+  font-family: inherit;
+  color: white;
+  background-color: #00a000;
+  border-radius: 0.25rem;
+  box-shadow: 0 8px 14px -4px rgb(0 0 0 / 25%);
+  border: none;
+}

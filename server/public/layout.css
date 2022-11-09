@@ -1,0 +1,60 @@
+h1 {
+  margin-bottom: 0;
+  padding-top: 3rem;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+input {
+  height: 38px;
+  margin-bottom: 0.75rem;
+  border-radius: 0.25rem;
+  padding-left: 0.55rem;
+  letter-spacing: 0.5px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+img {
+  height: 217px;
+  width: 223px;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.form-spacing {
+  text-align: center;
+}
+
+.center-horizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#form-button {
+  margin-bottom: 0.5rem;
+}
+
+@media screen and (min-width: 768px) {
+  .center-horizontal {
+    flex-direction: row;
+  }
+
+  .form-spacing {
+    padding-top: 2.25rem;
+  }
+
+  .header-spacing {
+    padding-top: 2rem;
+  }
+}
