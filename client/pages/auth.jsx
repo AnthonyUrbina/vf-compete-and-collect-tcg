@@ -4,8 +4,8 @@ export default class AuthPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: null,
-      password: null
+      username: '',
+      password: ''
     };
 
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
