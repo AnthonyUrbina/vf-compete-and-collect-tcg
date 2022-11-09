@@ -1,6 +1,5 @@
 require('dotenv/config');
 const express = require('express');
-// const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
 const pg = require('pg');
 const argon2 = require('argon2');
@@ -22,7 +21,6 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.static(publicPath));
 app.use(express.json());
-// app.use(staticMiddleware);
 
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { username, password } = req.body;
