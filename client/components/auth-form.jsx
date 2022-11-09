@@ -1,5 +1,4 @@
 import React from 'react';
-
 export default class AuthForm extends React.Component {
   constructor(props) {
     super(props);
@@ -15,12 +14,13 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-
+    // console.log('handle submit props test', this.props);
+    const { action } = this.props;
     const headers = {
       'Content-Type': 'application/json'
     };
 
-    fetch('/api/auth/sign-up', {
+    fetch(`/api/auth/${action}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(this.state)
@@ -28,7 +28,12 @@ export default class AuthForm extends React.Component {
 
       .then(response => response.json())
       .then(result => {
-        window.location.hash = 'sign-in';
+
+        if (action === 'sign-up') {
+          window.location.hash = 'sign-in';
+        } else if (result.user && result.token) {
+          this.props.handleSignIn(result);
+        }
       });
 
     this.setState({ username: '', password: '' });
@@ -44,11 +49,13 @@ export default class AuthForm extends React.Component {
   }
 
   render() {
+
+    const altButtonText = this.props.action === 'sign-in' ? 'Sign In' : 'Sign Up';
     return (
       <form onSubmit={this.handleSubmit}>
         <input type="text" placeholder='Username' value={this.state.username} onChange={this.handleUsernameChange} />
         <input type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange} />
-        <button id='form-button'>Sign Up</button>
+        <button id='form-button'>{altButtonText}</button>
       </form>
     );
   }
