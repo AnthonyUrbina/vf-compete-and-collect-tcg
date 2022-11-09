@@ -61,7 +61,7 @@ export default class AuthPage extends React.Component {
               <input type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange}/>
               <button id='form-button'>Sign Up</button>
             </form>
-            <p>Already have an account? <a href="sign-in">Sign in</a></p>
+            <p>Already have an account? <a href="#sign-in">Sign in</a></p>
           </div>
         </div>
       </>
