@@ -1,4 +1,5 @@
 import React from 'react';
+
 export default class AuthForm extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +28,6 @@ export default class AuthForm extends React.Component {
 
       .then(response => response.json())
       .then(result => {
-
         if (action === 'sign-up') {
           window.location.hash = 'sign-in';
         } else if (result.user && result.token) {

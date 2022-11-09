@@ -7,10 +7,11 @@ export default class AuthPage extends React.Component {
   render() {
     if (this.context.user) return <Redirect to="" />;
 
-    const { route } = this.context;
-    const altHref = route.path === 'sign-in' ? '#sign-up' : '#sign-in';
-    const altAnchor = route.path === 'sign-in' ? 'Sign Up' : 'Sign in';
-    const altQuestion = route.path === 'sign-in' ? "Don't have an account?" : 'Already have an account?';
+    const { path } = this.context.route;
+    const altHref = path === 'sign-in' ? '#sign-up' : '#sign-in';
+    const altAnchor = path === 'sign-in' ? 'Sign Up' : 'Sign in';
+    const altQuestion = path === 'sign-in' ? "Don't have an account?" : 'Already have an account?';
+
     return (
       <>
         <div className='row'>
@@ -23,7 +24,7 @@ export default class AuthPage extends React.Component {
             <img src="images/ace.png" alt="ace" />
           </div>
           <div className="column-full form-spacing">
-            <AuthForm action={route.path} handleSignIn={this.context.handleSignIn} />
+            <AuthForm action={path} handleSignIn={this.context.handleSignIn} />
             <p>{altQuestion} <a href={altHref}>{altAnchor}</a></p>
           </div>
         </div>

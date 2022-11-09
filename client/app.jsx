@@ -33,10 +33,11 @@ export default class App extends React.Component {
     this.setState({ user });
   }
 
-  chooseRender() {
-    if (this.state.route.path === '') {
+  choosePage() {
+    const { path } = this.state.route;
+    if (path === '') {
       return <Home />;
-    } else if (this.state.route.path === 'sign-in' || this.state.route.path === 'sign-up') {
+    } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
     }
   }
@@ -48,7 +49,7 @@ export default class App extends React.Component {
     return (
       <AppContext.Provider value={context}>
         <div className='container'>
-          {this.chooseRender()}
+          {this.choosePage()}
         </div>
       </AppContext.Provider>
     );
