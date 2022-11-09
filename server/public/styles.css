@@ -3,6 +3,11 @@ p {
   font-size: 12px;
 }
 
+form {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+}
+
 button {
   cursor: pointer;
 }
@@ -17,12 +22,11 @@ h1 {
 
 input {
   border: 1px solid #abb5be;
-  font-family: Inter, sans-serif;
-  font-size: 16px;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 input::placeholder {
-  font-size: 16px;
   color: #abb5be;
 }
 
@@ -33,8 +37,8 @@ a {
 #form-button {
   width: 223px;
   height: 38px;
-  font-size: 16px;
-  font-family: Inter, sans-serif;
+  font-size: inherit;
+  font-family: inherit;
   color: white;
   background-color: #00a000;
   border-radius: 0.25rem;

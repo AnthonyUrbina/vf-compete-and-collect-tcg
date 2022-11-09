@@ -3,18 +3,12 @@ h1 {
   padding-top: 3rem;
 }
 
-.container {
-  margin: 0 auto;
-  max-width: 100%;
-}
-
 .row {
   display: flex;
   justify-content: center;
 }
 
 input {
-  width: 223px;
   height: 38px;
   margin-bottom: 0.75rem;
   border-radius: 0.25rem;
@@ -23,7 +17,6 @@ input {
 }
 
 form {
-  text-align: center;
   display: flex;
   flex-direction: column;
 }
@@ -31,6 +24,11 @@ form {
 img {
   height: 217px;
   width: 223px;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 .form-spacing {
