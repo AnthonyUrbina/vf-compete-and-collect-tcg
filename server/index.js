@@ -46,6 +46,31 @@ app.post('/api/auth/sign-up', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.post('/api/auth/sign-up', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    throw new ClientError(400, 'username and password are required fields');
+  }
+  const sql = `
+    select "userId",
+           "hashedPassword"
+      from "users"
+     where "username" = $1
+  `;
+
+  const params = [username];
+
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows) {
+        throw new ClientError(401, 'invalid login');
+      }
+
+      // const payload = { username, password };
+    });
+
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
