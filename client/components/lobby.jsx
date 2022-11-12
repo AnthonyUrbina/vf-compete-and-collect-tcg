@@ -1,7 +1,7 @@
 import React from 'react';
 import { io } from 'socket.io-client';
 
-export default class HelloWorld extends React.Component {
+export default class Lobby extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,10 +17,9 @@ export default class HelloWorld extends React.Component {
         auth: { token: this.props.token }
       });
     }
+
     this.socket.on('onlinePlayers', onlinePlayers => {
-
       delete onlinePlayers[this.socket.id];
-
       this.setState({ onlinePlayers });
     });
 
