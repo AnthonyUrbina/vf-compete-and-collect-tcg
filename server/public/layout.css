@@ -60,7 +60,6 @@ img {
 .player-names-size {
   font-size: 26px;
   color: white;
-  font-family: Inter, sans-serif;
   margin-left: 1rem;
 }
 
@@ -102,8 +101,6 @@ img {
 .player-2-stretch {
   position: absolute;
   bottom: 2%;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 .overlay {
@@ -149,7 +146,7 @@ li {
 }
 
 .modal-img-spacing {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   margin-right: 0;
 }
 
@@ -159,6 +156,12 @@ li {
   top: 3%;
   font-size: 16px;
   color: #d9cccc;
+  padding: 0;
+}
+
+.container.lobby {
+  min-height: 100vh;
+  background-color: #00a000;
 }
 
 @media screen and (min-width: 768px) {

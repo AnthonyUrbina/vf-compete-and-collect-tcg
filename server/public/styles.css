@@ -51,7 +51,7 @@ a {
 }
 
 body {
-  background-color: #00a000;
+  background-color: white;
 }
 
 .home-header-color {
@@ -82,9 +82,8 @@ body {
 
 h3 {
   font-size: 20px;
-  font-weight: 600;
   font-family: Inter, sans-serif;
-  color: #f00;
+  color: #e41414;
   margin-bottom: 0;
 }
 
@@ -92,7 +91,11 @@ h3 {
   padding-bottom: 0.75rem;
   border-bottom: solid 1px #d9cccc;
   font-weight: 300;
-  font-size: 12px;
+}
+
+.modal-player-text {
+  font-weight: 300;
+  margin: 0.25rem;
 }
 
 .overlay {

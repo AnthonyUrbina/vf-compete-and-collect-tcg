@@ -29,7 +29,6 @@ export default class HelloWorld extends React.Component {
       delete onlinePlayersCopy[socketId];
       this.setState({ onlinePlayers: onlinePlayersCopy });
     });
-
   }
 
   componentWillUnmount() {
@@ -45,7 +44,8 @@ export default class HelloWorld extends React.Component {
     }
     const playerAppearance = usernames.map(username =>
       <li key={username}>
-        <img className='player-avatar-img-size modal-img-spacing' src="images/player2.png" alt="" />{username}
+        <img className='player-avatar-img-size modal-img-spacing' src="images/player2.png" alt="" />
+        <p className='modal-player-text'>{username}</p>
       </li>);
     return playerAppearance;
   }
