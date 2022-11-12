@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -96,7 +95,6 @@ io.on('connection', socket => {
 
   const { username } = socket.handshake.auth.token;
   onlinePlayers[socket.id] = username;
-  console.log(onlinePlayers);
   io.emit('onlinePlayers', onlinePlayers);
 
   socket.on('disconnect', () => {

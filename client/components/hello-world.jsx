@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 
@@ -19,8 +18,6 @@ export default class HelloWorld extends React.Component {
       });
     }
     this.socket.on('onlinePlayers', onlinePlayers => {
-      console.log(this.socket.id);
-      console.log(onlinePlayers);
 
       delete onlinePlayers[this.socket.id];
 
