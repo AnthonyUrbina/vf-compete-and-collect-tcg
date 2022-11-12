@@ -108,7 +108,7 @@ export default class HelloWorld extends React.Component {
           </div>
         </div>
         <div className={this.chooseModalClass()}>
-          <i onClick={this.handleClick} className="fa-solid fa-x" />
+          <button onClick={this.handleClick} className="fa-solid fa-x" />
           <h3>War Multiplayer</h3>
           <p className='modal-text'>
             These are the players currently online. Click<br />
