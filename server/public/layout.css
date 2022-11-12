@@ -176,4 +176,14 @@ li {
   .header-spacing {
     padding-top: 2rem;
   }
+
+  .player-2-stretch {
+    bottom: 7%;
+  }
+}
+
+@media screen and (min-width: 500px) and (max-width: 768px) {
+  .player-2-stretch {
+    bottom: 7%;
+  }
 }
