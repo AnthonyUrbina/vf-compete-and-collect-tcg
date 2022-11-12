@@ -3,6 +3,11 @@ h1 {
   padding-top: 3rem;
 }
 
+.container {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
 .row {
   display: flex;
   justify-content: center;
@@ -26,11 +31,6 @@ img {
   width: 223px;
 }
 
-.container {
-  margin: 0 auto;
-  max-width: 100%;
-}
-
 .form-spacing {
   text-align: center;
 }
@@ -41,8 +41,124 @@ img {
   align-items: center;
 }
 
+.name-avatar-spacing {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #form-button {
   margin-bottom: 0.5rem;
+}
+
+.player-avatar-img-size {
+  height: 55px;
+  width: 64px;
+  margin-right: 1rem;
+}
+
+.player-names-size {
+  font-size: 26px;
+  color: white;
+  font-family: Inter, sans-serif;
+  margin-left: 1rem;
+}
+
+.player-deck {
+  position: relative;
+  margin-right: 5rem;
+  margin-top: 5rem;
+}
+
+.deck-cards {
+  width: 78px;
+  height: 107px;
+}
+
+.deck-2 {
+  position: absolute;
+  right: 0.2rem;
+  bottom: 0.35rem;
+}
+
+.deck-3 {
+  position: absolute;
+  right: 0.4rem;
+  bottom: 0.45rem;
+}
+
+.deck-4 {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.55rem;
+}
+
+.deck-5 {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.65rem;
+}
+
+.player-2-stretch {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.modal-box {
+  text-align: center;
+  width: 356px;
+  height: 468px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+}
+
+.modal-box.hidden {
+  display: none;
+}
+
+ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.modal-img-spacing {
+  margin-bottom: 0.5rem;
+  margin-right: 0;
+}
+
+.fa-x {
+  position: absolute;
+  left: 3%;
+  top: 3%;
+  font-size: 16px;
+  color: #d9cccc;
 }
 
 @media screen and (min-width: 768px) {

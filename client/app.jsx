@@ -10,7 +10,6 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       user: null,
-      token: null,
       route: parseRoute(window.location.hash)
     };
     this.handleSignIn = this.handleSignIn.bind(this);

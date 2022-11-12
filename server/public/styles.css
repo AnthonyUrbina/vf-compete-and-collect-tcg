@@ -3,6 +3,10 @@ p {
   font-size: 12px;
 }
 
+i {
+  cursor: pointer;
+}
+
 form {
   font-family: Inter, sans-serif;
   font-size: 16px;
@@ -44,4 +48,57 @@ a {
   border-radius: 0.25rem;
   box-shadow: 0 8px 14px -4px rgb(0 0 0 / 25%);
   border: none;
+}
+
+body {
+  background-color: #00a000;
+}
+
+.home-header-color {
+  color: white;
+  font-size: 32px;
+  padding-top: 0;
+}
+
+#online-players-button {
+  background-color: #fff;
+  color: #f00;
+  font-size: 12px;
+  font-weight: 600;
+  border: solid 1px #f00;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+#online-players-button:hover {
+  background-color: #f00;
+  color: #fff;
+}
+
+.modal-box {
+  background-color: #fffaf0;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+  color: #f00;
+  margin-bottom: 0;
+}
+
+.modal-text {
+  padding-bottom: 0.75rem;
+  border-bottom: solid 1px #d9cccc;
+  font-weight: 300;
+  font-size: 12px;
+}
+
+.overlay {
+  background-color: rgb(29 29 29 / 75%);
+}
+
+.overlay.hidden {
+  display: none;
 }
