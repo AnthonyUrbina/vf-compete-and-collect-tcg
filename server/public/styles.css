@@ -1,3 +1,7 @@
+body {
+  background-color: white;
+}
+
 p {
   font-family: Inter, sans-serif;
   font-size: 12px;
@@ -24,6 +28,10 @@ h1 {
   text-shadow: 1px 4px 2px rgb(0 0 0 / 25%);
 }
 
+a {
+  color: #00a000;
+}
+
 input {
   border: 1px solid #abb5be;
   font-family: inherit;
@@ -34,30 +42,28 @@ input::placeholder {
   color: #abb5be;
 }
 
-a {
-  color: #00a000;
+.container.lobby {
+  background-color: #00a000;
 }
 
 #form-button {
-  width: 223px;
-  height: 38px;
+  border-radius: 0.25rem;
   font-size: inherit;
   font-family: inherit;
   color: white;
   background-color: #00a000;
-  border-radius: 0.25rem;
   box-shadow: 0 8px 14px -4px rgb(0 0 0 / 25%);
   border: none;
 }
 
-body {
-  background-color: white;
+.player-names-size {
+  font-size: 26px;
+  color: white;
 }
 
 .home-header-color {
   color: white;
   font-size: 32px;
-  padding-top: 0;
 }
 
 #online-players-button {
@@ -67,8 +73,6 @@ body {
   font-weight: 600;
   border: solid 1px #f00;
   border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
 }
 
 #online-players-button:hover {
@@ -84,18 +88,15 @@ h3 {
   font-size: 20px;
   font-family: Inter, sans-serif;
   color: #e41414;
-  margin-bottom: 0;
 }
 
 .modal-text {
-  padding-bottom: 0.75rem;
   border-bottom: solid 1px #d9cccc;
   font-weight: 300;
 }
 
 .modal-player-text {
   font-weight: 300;
-  margin: 0.25rem;
 }
 
 .overlay {
@@ -109,4 +110,5 @@ h3 {
 .fa-x {
   background-color: transparent;
   border: none;
+  color: #d9cccc;
 }
