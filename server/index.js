@@ -9,6 +9,11 @@ const path = require('node:path');
 const publicPath = path.join(__dirname, 'public');
 const jwt = require('jsonwebtoken');
 
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server);
+
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -82,9 +87,22 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 
 });
+const onlinePlayers = {};
 
 app.use(errorMiddleware);
 
-app.listen(process.env.PORT, () => {
+io.on('connection', socket => {
+
+  const { username } = socket.handshake.auth.token;
+  onlinePlayers[socket.id] = username;
+  io.emit('onlinePlayers', onlinePlayers);
+
+  socket.on('disconnect', () => {
+    delete onlinePlayers[socket.id];
+    io.emit('user disconnected', socket.id);
+  });
+});
+
+server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });

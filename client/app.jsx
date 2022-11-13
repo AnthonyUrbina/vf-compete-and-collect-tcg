@@ -10,7 +10,6 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       user: null,
-      token: null,
       route: parseRoute(window.location.hash)
     };
     this.handleSignIn = this.handleSignIn.bind(this);
@@ -42,13 +41,21 @@ export default class App extends React.Component {
     }
   }
 
+  chooseContainerColor() {
+    if (this.state.user) {
+      return 'container lobby';
+    } else {
+      return 'container';
+    }
+  }
+
   render() {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
     const context = { handleSignIn, user, route };
     return (
       <AppContext.Provider value={context}>
-        <div className='container'>
+        <div className={this.chooseContainerColor()}>
           {this.choosePage()}
         </div>
       </AppContext.Provider>
