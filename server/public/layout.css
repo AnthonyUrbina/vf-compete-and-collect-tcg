@@ -183,6 +183,34 @@ li {
   padding: 0;
 }
 
+.challenger-modal-box {
+  height: 215px;
+  width: 356px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+}
+
+.challenger-modal-button {
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.challenger-modal-img {
+  margin-right: 0;
+}
+
+.vertical-alignment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 @media screen and (min-width: 768px) {
   .center-horizontal {
     flex-direction: row;
