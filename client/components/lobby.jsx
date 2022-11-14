@@ -6,7 +6,9 @@ export default class Lobby extends React.Component {
     super(props);
     this.state = {
       onlinePlayers: null,
-      modalIsActive: false
+      onlinePlayersModalisActive: false,
+      isSendingChallengeTo: null,
+      isReceivingChallenge: false
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -41,34 +43,89 @@ export default class Lobby extends React.Component {
     for (const key in this.state.onlinePlayers) {
       usernames.push(this.state.onlinePlayers[key]);
     }
+
     const playerAppearance = usernames.map(username =>
       <li key={username}>
-        <img className='player-avatar-img-size modal-img-spacing' src="images/player2.png" alt="" />
-        <p className='modal-player-text'>{username}</p>
+        <button onClick={this.handleClick} className='war-multiplayer-modal-li-button'>
+          <img data-username={username} className='player-avatar-img-size modal-img-spacing' src="images/player1.png" alt="" />
+          <p data-username={username} className='modal-player-text'>{username}</p>
+        </button>
       </li>);
+
     return playerAppearance;
   }
 
   handleClick(event) {
-    if (this.state.modalIsActive === false) {
-      this.setState({ modalIsActive: true });
-    } else {
-      this.setState({ modalIsActive: false });
+    if (event.target.matches('#online-players-button') || event.target.matches('.fa-x')) {
+      if (this.state.onlinePlayersModalisActive === false) {
+        this.setState({ onlinePlayersModalisActive: true });
+      } else {
+        this.setState({ onlinePlayersModalisActive: false });
+      }
+    }
+    if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
+      const opponentUsername = event.target.dataset.username;
+      const opponentSocketId = this.getOpponentSocketId(opponentUsername);
+      this.socket.emit('invite-sent', opponentSocketId);
+      this.setState({ onlinePlayersModalisActive: false, isSendingChallengeTo: opponentUsername });
+    }
+
+    if (event.target.matches('.challenger-modal-button')) {
+      const opponentSocketId = this.getOpponentSocketId(this.state.isSendingChallengeTo);
+      this.socket.emit('invite-canceled', opponentSocketId);
+      this.setState({ isSendingChallengeTo: null });
     }
   }
 
   chooseModalClass() {
-    const className = this.state.modalIsActive
+    const className = this.state.onlinePlayersModalisActive
       ? 'modal-box'
       : 'hidden';
     return className;
   }
 
   chooseOverlayClass() {
-    const className = this.state.modalIsActive
+    const className = this.state.onlinePlayersModalisActive
       ? 'overlay'
       : 'hidden';
     return className;
+  }
+
+  getOpponentSocketId(opponentUsername) {
+    let socketId = null;
+    for (const key in this.state.onlinePlayers) {
+      if (this.state.onlinePlayers[key] === opponentUsername) {
+        socketId = key;
+      }
+    }
+    return socketId;
+  }
+
+  chooseChallengerModalClass() {
+    const className = this.state.isSendingChallengeTo
+      ? 'challenger-modal-box'
+      : 'hidden';
+    return className;
+  }
+
+  chooseChallengeModalTitle() {
+    const modalTitle = this.state.isSendingChallengeTo &&
+      'Challenge Sent';
+    return modalTitle;
+  }
+
+  chooseChallengeModalText() {
+    const modalText = this.state.isSendingChallengeTo &&
+      <p className='challenger-modal-text'>You have challenged {this.state.isSendingChallengeTo} to a game.<br />
+        Waiting for their response...
+      </p >;
+    return modalText;
+  }
+
+  chooseChallengeModalButtons() {
+    const modalButtons = this.state.isSendingChallengeTo &&
+      <button onClick={this.handleClick} className='challenger-modal-button'>Cancel</button>;
+    return modalButtons;
   }
 
   render() {
@@ -113,6 +170,14 @@ export default class Lobby extends React.Component {
           <ul>
             {this.showOnlinePlayers()}
           </ul>
+        </div>
+        <div className={this.chooseChallengerModalClass()}>
+          <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
+          {this.chooseChallengeModalText()}
+          <div className='vertical-alignment'>
+            <img className='player-avatar-img-size challenger-modal-img' src="images/player1.png" alt="" />
+            {this.chooseChallengeModalButtons()}
+          </div>
         </div>
         <div className={this.chooseOverlayClass()} />
       </>

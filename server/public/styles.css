@@ -112,3 +112,28 @@ h3 {
   border: none;
   color: #d9cccc;
 }
+
+.challenger-modal-box {
+  background-color: #fffaf0;
+}
+
+.challenger-modal-button {
+  background-color: #fff;
+  color: #f00;
+  font-size: 12px;
+  font-weight: 600;
+  border: solid 1px #f00;
+  border-radius: 0.25rem;
+}
+
+.challenger-modal-button:hover {
+  color: #fff;
+  background-color: #f00;
+}
+
+.war-multiplayer-modal-li-button {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+}

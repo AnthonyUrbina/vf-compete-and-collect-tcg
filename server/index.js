@@ -101,6 +101,20 @@ io.on('connection', socket => {
     delete onlinePlayers[socket.id];
     io.emit('user disconnected', socket.id);
   });
+
+  socket.on('invite-sent', opponentSocketId => {
+    const challengerSocketId = socket.id;
+    const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    socket.join(roomId);
+    socket.to(opponentSocketId).emit('invite-received', roomId);
+  });
+
+  socket.on('invite-canceled', opponentSocketId => {
+    const challengerSocketId = socket.id;
+    const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    socket.leave(roomId);
+    socket.to(opponentSocketId).emit('invite-canceled', `invite from ${challengerSocketId} has been canceled`);
+  });
 });
 
 server.listen(process.env.PORT, () => {
