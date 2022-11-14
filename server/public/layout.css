@@ -208,7 +208,6 @@ li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
 }
 
 @media screen and (min-width: 768px) {

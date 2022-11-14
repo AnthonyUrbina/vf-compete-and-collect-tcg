@@ -126,6 +126,11 @@ h3 {
   border-radius: 0.25rem;
 }
 
+.challenger-modal-button:hover {
+  color: #fff;
+  background-color: #f00;
+}
+
 .war-multiplayer-modal-li-button {
   background-color: transparent;
   border: none;

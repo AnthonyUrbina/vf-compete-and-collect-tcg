@@ -61,7 +61,7 @@ export default class Lobby extends React.Component {
         this.setState({ onlinePlayersModalisActive: false });
       }
     }
-    if (event.target.matches('.war-multiplayer-modal-li-button')) {
+    if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
       this.setState({ onlinePlayersModalisActive: false });
       const opponentUsername = event.target.dataset.username;
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
@@ -93,10 +93,13 @@ export default class Lobby extends React.Component {
   getOpponentSocketId(opponentUsername) {
     let socketId = null;
     for (const key in this.state.onlinePlayers) {
+
       if (this.state.onlinePlayers[key] === opponentUsername) {
         socketId = key;
+
       }
     }
+
     return socketId;
   }
 
