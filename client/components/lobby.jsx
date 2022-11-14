@@ -8,7 +8,7 @@ export default class Lobby extends React.Component {
       onlinePlayers: null,
       onlinePlayersModalisActive: false,
       isSendingChallengeTo: null,
-      isReceivingChallenge: false
+      isReceivingChallengeFrom: false
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -29,6 +29,16 @@ export default class Lobby extends React.Component {
       const onlinePlayersCopy = { ...this.state.onlinePlayers };
       delete onlinePlayersCopy[socketId];
       this.setState({ onlinePlayers: onlinePlayersCopy });
+    });
+
+    this.socket.on('invite-received', inviteInfo => {
+      let challengerUsername = null;
+      for (const key in this.state.onlinePlayers) {
+        if (this.state.onlinePlayers[key] === inviteInfo.challengerSocketId) {
+          challengerUsername = this.state.onlinePlayers[key];
+        }
+      }
+      this.setState({ isReceivingChallengeFrom: challengerUsername });
     });
   }
 

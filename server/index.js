@@ -105,8 +105,9 @@ io.on('connection', socket => {
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
     const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    const inviteInfo = { roomId, challengerSocketId };
     socket.join(roomId);
-    socket.to(opponentSocketId).emit('invite-received', roomId);
+    socket.to(opponentSocketId).emit('invite-received', inviteInfo);
   });
 
   socket.on('invite-canceled', opponentSocketId => {
