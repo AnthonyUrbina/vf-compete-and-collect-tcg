@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 
@@ -31,10 +30,6 @@ export default class Lobby extends React.Component {
       delete onlinePlayersCopy[socketId];
       this.setState({ onlinePlayers: onlinePlayersCopy });
     });
-    this.socket.on('invite-received', players => {
-      console.log(players);
-    });
-    this.socket.on('invite-canceled', msg => console.log(msg));
   }
 
   componentWillUnmount() {
@@ -66,8 +61,7 @@ export default class Lobby extends React.Component {
         this.setState({ onlinePlayersModalisActive: false });
       }
     }
-    console.log(event.currentTarget);
-    if (event.target.matches('P') || event.target.matches('IMG')) {
+    if (event.target.matches('.war-multiplayer-modal-li-button')) {
       this.setState({ onlinePlayersModalisActive: false });
       const opponentUsername = event.target.dataset.username;
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
@@ -78,7 +72,6 @@ export default class Lobby extends React.Component {
     if (event.target.matches('.challenger-modal-button')) {
       const opponentSocketId = this.getOpponentSocketId(this.state.isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
-      console.log('hi');
       this.setState({ isSendingChallengeTo: null });
     }
   }
@@ -100,14 +93,10 @@ export default class Lobby extends React.Component {
   getOpponentSocketId(opponentUsername) {
     let socketId = null;
     for (const key in this.state.onlinePlayers) {
-      console.log(this.state.onlinePlayers);
-      console.log(this.state.onlinePlayers[key]);
       if (this.state.onlinePlayers[key] === opponentUsername) {
         socketId = key;
-        console.log('key', key);
       }
     }
-    console.log('sock id', socketId);
     return socketId;
   }
 
