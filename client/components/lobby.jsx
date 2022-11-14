@@ -43,6 +43,7 @@ export default class Lobby extends React.Component {
     for (const key in this.state.onlinePlayers) {
       usernames.push(this.state.onlinePlayers[key]);
     }
+
     const playerAppearance = usernames.map(username =>
       <li key={username}>
         <button onClick={this.handleClick} className='war-multiplayer-modal-li-button'>
@@ -50,6 +51,7 @@ export default class Lobby extends React.Component {
           <p data-username={username} className='modal-player-text'>{username}</p>
         </button>
       </li>);
+
     return playerAppearance;
   }
 
@@ -62,11 +64,10 @@ export default class Lobby extends React.Component {
       }
     }
     if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
-      this.setState({ onlinePlayersModalisActive: false });
       const opponentUsername = event.target.dataset.username;
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
       this.socket.emit('invite-sent', opponentSocketId);
-      this.setState({ isSendingChallengeTo: opponentUsername });
+      this.setState({ onlinePlayersModalisActive: false, isSendingChallengeTo: opponentUsername });
     }
 
     if (event.target.matches('.challenger-modal-button')) {
@@ -93,13 +94,10 @@ export default class Lobby extends React.Component {
   getOpponentSocketId(opponentUsername) {
     let socketId = null;
     for (const key in this.state.onlinePlayers) {
-
       if (this.state.onlinePlayers[key] === opponentUsername) {
         socketId = key;
-
       }
     }
-
     return socketId;
   }
 
