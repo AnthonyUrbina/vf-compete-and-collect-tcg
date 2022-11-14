@@ -8,7 +8,8 @@ export default class Lobby extends React.Component {
       onlinePlayers: null,
       onlinePlayersModalisActive: false,
       isSendingChallengeTo: null,
-      isReceivingChallengeFrom: false
+      isReceivingChallengeFrom: false,
+      roomId: null
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -38,7 +39,7 @@ export default class Lobby extends React.Component {
           challengerUsername = this.state.onlinePlayers[key];
         }
       }
-      this.setState({ isReceivingChallengeFrom: challengerUsername });
+      this.setState({ isReceivingChallengeFrom: challengerUsername, roomId: inviteInfo.roomId });
     });
   }
 
@@ -84,6 +85,12 @@ export default class Lobby extends React.Component {
       const opponentSocketId = this.getOpponentSocketId(this.state.isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null });
+    }
+
+    if (event.target.matches('.accept-button')) {
+      this.socket.emit('invite-accepted', this.state.roomId);
+    } else if (event.target.matches('.decline-button')) {
+      this.socket.emit('invite-declined');
     }
   }
 
