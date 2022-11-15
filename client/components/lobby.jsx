@@ -35,14 +35,8 @@ export default class Lobby extends React.Component {
     });
 
     this.socket.on('invite-received', inviteInfo => {
-      let challengerUsername = null;
-      for (const key in this.state.onlinePlayers) {
-        if (key === inviteInfo.challengerSocketId) {
-          challengerUsername = this.state.onlinePlayers[key];
-        }
-      }
       this.setState({
-        isReceivingChallengeFrom: challengerUsername,
+        isReceivingChallengeFrom: inviteInfo.challengerUsername,
         roomId: inviteInfo.roomId,
         onlinePlayersModalisActive: false,
         opponentModalisActive: true
@@ -54,6 +48,8 @@ export default class Lobby extends React.Component {
     });
     this.socket.on('opponent-joined', () => {
       this.setState({ challengerModalisActive: false });
+      // hashchange here
+
     });
     this.socket.on('challenger-canceled', () => {
       this.setState({ opponentModalisActive: false, isReceivingChallengeFrom: null, roomId: null });
@@ -107,12 +103,17 @@ export default class Lobby extends React.Component {
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     }
+
     if (event.target.matches('.accept-button')) {
       this.socket.emit('invite-accepted', this.state.roomId);
       this.setState({ opponentModalisActive: false });
+      // post request here
+      // hashchange here
     } else if (event.target.matches('.decline-button')) {
       this.socket.emit('invite-declined', this.state.roomId);
       this.setState({ roomId: null, isReceivingChallengeFrom: null, opponentModalisActive: false });
+      // console.log(this.socket.username);
+
     }
   }
 
@@ -124,7 +125,7 @@ export default class Lobby extends React.Component {
   }
 
   chooseOverlayClass() {
-    const className = this.state.onlinePlayersModalisActive
+    const className = this.state.onlinePlayersModalisActive || this.state.challengerModalisActive || this.state.opponentModalisActive
       ? 'overlay'
       : 'hidden';
     return className;

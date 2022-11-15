@@ -95,6 +95,8 @@ io.on('connection', socket => {
 
   const { username } = socket.handshake.auth.token;
   onlinePlayers[socket.id] = username;
+  // socket.username = username;
+  // console.log(socket.username);
   io.emit('onlinePlayers', onlinePlayers);
 
   socket.on('disconnect', () => {
@@ -104,7 +106,19 @@ io.on('connection', socket => {
 
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
-    const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    let challengerUsername = null;
+    let opponentUsername = null;
+
+    for (const key in onlinePlayers) {
+      if (key === challengerSocketId) {
+        challengerUsername = onlinePlayers[key];
+      }
+      if (key === opponentSocketId) {
+        opponentUsername = onlinePlayers[key];
+      }
+    }
+
+    const roomId = [challengerUsername, opponentUsername].sort().join('-');
     const inviteInfo = { roomId, challengerSocketId };
     socket.join(roomId);
     socket.to(opponentSocketId).emit('invite-received', inviteInfo);
@@ -112,9 +126,21 @@ io.on('connection', socket => {
 
   socket.on('invite-canceled', opponentSocketId => {
     const challengerSocketId = socket.id;
-    const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    let challengerUsername = null;
+    let opponentUsername = null;
+
+    for (const key in onlinePlayers) {
+      if (key === challengerSocketId) {
+        challengerUsername = onlinePlayers[key];
+      }
+      if (key === opponentSocketId) {
+        opponentUsername = onlinePlayers[key];
+      }
+    }
+
+    const roomId = [challengerUsername, opponentUsername].sort().join('-');
     socket.leave(roomId);
-    socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerSocketId} has been canceled`);
+    socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerUsername} has been canceled`);
   });
 
   socket.on('invite-accepted', roomId => {
@@ -129,3 +155,19 @@ io.on('connection', socket => {
 server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
+
+// /*
+// ---client---
+// -lobby.jsx-
+// - component did mount
+// - on 'opponent-joined'
+//   - window.location.hash = 'this.state.roomId'
+
+// - handleClick
+// - on event.target = '.accept-button'
+//   - window.location.hash = 'this.state.roomId'
+
+// -app.jsx-
+// - chhosePage()
+//   - if path = a string of 21 characters
+//   return <CompetitionRoom />
