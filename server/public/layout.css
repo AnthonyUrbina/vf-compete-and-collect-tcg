@@ -210,6 +210,11 @@ li {
   align-items: center;
 }
 
+.war-multiplayer-modal-li-button {
+  margin: 0;
+  padding: 0;
+}
+
 .opponent-modal-box {
   height: 201px;
   width: 356px;
