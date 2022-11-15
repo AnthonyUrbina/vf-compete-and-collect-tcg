@@ -114,7 +114,7 @@ io.on('connection', socket => {
     const challengerSocketId = socket.id;
     const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
     socket.leave(roomId);
-    socket.to(opponentSocketId).emit('invite-canceled', `invite from ${challengerSocketId} has been canceled`);
+    socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerSocketId} has been canceled`);
   });
 
   socket.on('invite-accepted', roomId => {
