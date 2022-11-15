@@ -35,7 +35,7 @@ export default class Lobby extends React.Component {
     this.socket.on('invite-received', inviteInfo => {
       let challengerUsername = null;
       for (const key in this.state.onlinePlayers) {
-        if (this.state.onlinePlayers[key] === inviteInfo.challengerSocketId) {
+        if (key === inviteInfo.challengerSocketId) {
           challengerUsername = this.state.onlinePlayers[key];
         }
       }
@@ -90,7 +90,7 @@ export default class Lobby extends React.Component {
     if (event.target.matches('.accept-button')) {
       this.socket.emit('invite-accepted', this.state.roomId);
     } else if (event.target.matches('.decline-button')) {
-      this.socket.emit('invite-declined');
+      this.socket.emit('invite-declined', this.state.roomId);
     }
   }
 
@@ -121,27 +121,37 @@ export default class Lobby extends React.Component {
   chooseChallengerModalClass() {
     const className = this.state.isSendingChallengeTo
       ? 'challenger-modal-box'
-      : 'hidden';
+      : this.state.isReceivingChallengeFrom
+        ? 'opponent-modal-box'
+        : 'hidden';
     return className;
   }
 
   chooseChallengeModalTitle() {
-    const modalTitle = this.state.isSendingChallengeTo &&
-      'Challenge Sent';
+    const modalTitle = this.state.isSendingChallengeTo
+      ? 'Challenge Sent'
+      : this.state.isReceivingChallengeFrom
+        ? "You've been Challenged"
+        : 'hidden';
     return modalTitle;
   }
 
   chooseChallengeModalText() {
-    const modalText = this.state.isSendingChallengeTo &&
-      <p className='challenger-modal-text'>You have challenged {this.state.isSendingChallengeTo} to a game.<br />
+    const modalText = this.state.isSendingChallengeTo
+      ? <p className='challenger-modal-text'>You have challenged {this.state.isSendingChallengeTo} to a game.<br />
         Waiting for their response...
-      </p >;
+      </p >
+      : <p className='opponent-modal-text'>{this.state.isReceivingChallengeFrom} has challenged you to a game!</p >;
     return modalText;
   }
 
   chooseChallengeModalButtons() {
-    const modalButtons = this.state.isSendingChallengeTo &&
-      <button onClick={this.handleClick} className='challenger-modal-button'>Cancel</button>;
+    const modalButtons = this.state.isSendingChallengeTo
+      ? <button onClick={this.handleClick} className='challenger-modal-button'>Cancel</button>
+      : <div className='opponent-modal-button-box'>
+        <button onClick={this.handleClick} className='challenger-modal-button accept-button'>Accept</button>
+        <button onClick={this.handleClick} className='challenger-modal-button decline-button'>Decline</button>
+      </div>;
     return modalButtons;
   }
 

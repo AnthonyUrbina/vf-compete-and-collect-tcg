@@ -116,6 +116,14 @@ io.on('connection', socket => {
     socket.leave(roomId);
     socket.to(opponentSocketId).emit('invite-canceled', `invite from ${challengerSocketId} has been canceled`);
   });
+
+  socket.on('invite-accepted', roomId => {
+    socket.join(roomId);
+    socket.to(roomId).emit('opponent-joined');
+  });
+  socket.on('invite-declined', roomId => {
+    socket.to(roomId).emit('opponent-declined');
+  });
 });
 
 server.listen(process.env.PORT, () => {

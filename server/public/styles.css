@@ -117,6 +117,10 @@ h3 {
   background-color: #fffaf0;
 }
 
+.challenger-modal-text {
+  font-weight: 300;
+}
+
 .challenger-modal-button {
   background-color: #fff;
   color: #f00;

@@ -222,9 +222,17 @@ li {
   border-radius: 0.25rem;
 }
 
-/* .opponent-modal-text {
+.opponent-modal-text {
+  font-weight: 300;
+}
 
-} */
+.accept-button {
+  margin-right: 0.5rem;
+}
+
+.decline-button {
+  margin-left: 0.5rem;
+}
 
 @media screen and (min-width: 768px) {
   .center-horizontal {
