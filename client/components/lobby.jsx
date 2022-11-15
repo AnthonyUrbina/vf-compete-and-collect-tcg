@@ -107,12 +107,10 @@ export default class Lobby extends React.Component {
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     }
-    // console.log(event.target);
     if (event.target.matches('.accept-button')) {
       this.socket.emit('invite-accepted', this.state.roomId);
       this.setState({ opponentModalisActive: false });
     } else if (event.target.matches('.decline-button')) {
-      // console.log('eyyyy');
       this.socket.emit('invite-declined', this.state.roomId);
       this.setState({ roomId: null, isReceivingChallengeFrom: null, opponentModalisActive: false });
     }
