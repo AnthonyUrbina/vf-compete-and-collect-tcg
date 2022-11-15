@@ -210,6 +210,35 @@ li {
   align-items: center;
 }
 
+.war-multiplayer-modal-li-button {
+  margin: 0;
+  padding: 0;
+}
+
+.opponent-modal-box {
+  height: 201px;
+  width: 356px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+}
+
+.opponent-modal-text {
+  font-weight: 300;
+}
+
+.accept-button {
+  margin-right: 0.5rem;
+}
+
+.decline-button {
+  margin-left: 0.5rem;
+}
+
 @media screen and (min-width: 768px) {
   .center-horizontal {
     flex-direction: row;

@@ -117,6 +117,10 @@ h3 {
   background-color: #fffaf0;
 }
 
+.challenger-modal-text {
+  font-weight: 300;
+}
+
 .challenger-modal-button {
   background-color: #fff;
   color: #f00;
@@ -134,6 +138,8 @@ h3 {
 .war-multiplayer-modal-li-button {
   background-color: transparent;
   border: none;
-  margin: 0;
-  padding: 0;
+}
+
+.opponent-modal-box {
+  background-color: #fffaf0;
 }

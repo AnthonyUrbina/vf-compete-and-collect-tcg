@@ -105,15 +105,24 @@ io.on('connection', socket => {
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
     const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    const inviteInfo = { roomId, challengerSocketId };
     socket.join(roomId);
-    socket.to(opponentSocketId).emit('invite-received', roomId);
+    socket.to(opponentSocketId).emit('invite-received', inviteInfo);
   });
 
   socket.on('invite-canceled', opponentSocketId => {
     const challengerSocketId = socket.id;
     const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
     socket.leave(roomId);
-    socket.to(opponentSocketId).emit('invite-canceled', `invite from ${challengerSocketId} has been canceled`);
+    socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerSocketId} has been canceled`);
+  });
+
+  socket.on('invite-accepted', roomId => {
+    socket.join(roomId);
+    socket.to(roomId).emit('opponent-joined');
+  });
+  socket.on('invite-declined', roomId => {
+    socket.to(roomId).emit('opponent-declined');
   });
 });
 
