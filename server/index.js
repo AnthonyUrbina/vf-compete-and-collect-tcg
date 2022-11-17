@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -91,7 +90,6 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 });
 
 app.get('/api/games/retrieve/:userId', (req, res, next) => {
-  console.log(req.params.userId);
   const { userId } = req.params;
   const sql = `
     select "users"."username"
@@ -119,7 +117,6 @@ io.on('connection', socket => {
 
   if (socket.handshake.query) {
     socket.join(socket.handshake.query.roomId);
-    console.log(`you successfully joined room ${socket.handshake.query.roomId}`);
   }
 
   const { token } = socket.handshake.auth;
@@ -188,7 +185,6 @@ io.on('connection', socket => {
 
     db.query(sql, params)
       .then(result => {
-        console.log('row created bro', result.rows);
         socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
         // socket.join(inviteInfo.roomId);
       })

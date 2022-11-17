@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -20,26 +19,15 @@ export default class CompetitionRoom extends React.Component {
       { method: 'GET' })
       .then(res => res.json())
       .then(result => {
-        const players = result.map(player => {
-          return player.username;
-        });
-        let opponent = null;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i] !== this.props.token.username) {
-            opponent = players[i];
-          }
-        }
         const roomId = parseRoute(window.location.hash).path;
         if (this.props.token) {
           const token = window.localStorage.getItem('react-context-jwt');
-          console.log('roomId dogg', roomId);
-          console.log('type of', typeof roomId);
           this.socket = io('/', {
             auth: { token },
             query: { roomId }
           });
         }
-        this.setState({ roomId, opponent });
+        this.setState({ roomId });
       });
 
   }
@@ -51,19 +39,20 @@ export default class CompetitionRoom extends React.Component {
   }
 
   renderPlayer2() {
-    const hashroute = parseRoute(window.location.hash);
-    const splitUsernames = hashroute.path.split('-');
+    const { username } = this.props.token;
+    const hashroute = parseRoute(window.location.hash).path;
+    const splitUsernames = hashroute.split('-');
     let opponent = null;
     for (let i = 0; i < splitUsernames.length; i++) {
-      if (splitUsernames[i] !== this.props.token.username) {
+      if (splitUsernames[i] !== username) {
         opponent = splitUsernames[i];
       }
     }
+    this.setState({ opponent });
     return opponent;
   }
 
   render() {
-
     return (
       <>
         <div className="row">
