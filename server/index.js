@@ -70,7 +70,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .then(result => {
       const { userId, hashedPassword } = result.rows[0];
       if (!userId) {
-        throw new ClientError(401, 'invalid login bro');
+        throw new ClientError(401, 'invalid login');
       }
 
       argon2.verify(hashedPassword, password)
@@ -87,14 +87,55 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 
 });
-const onlinePlayers = {};
+
+app.get('/api/games/retrieve/:userId', (req, res, next) => {
+  const { userId } = req.params;
+  if (!userId) {
+    throw new ClientError(400, 'userId is required');
+  }
+
+  const sql = `
+    select "users"."username"
+      from "games"
+inner join "users"
+        on "challenger" = "userId"
+        or "opponent" = "userId"
+        where "challenger" = $1
+        or "opponent" = $1;
+  `;
+
+  const params = [userId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0].username || !result.rows[1].username) {
+        throw new ClientError(400, 'this user is not in any active games');
+      }
+      res.status(200).json(result.rows);
+    })
+    .catch(err => next(err));
+});
 
 app.use(errorMiddleware);
 
+const onlinePlayers = {};
+
 io.on('connection', socket => {
 
-  const { username } = socket.handshake.auth.token;
-  onlinePlayers[socket.id] = username;
+  if (socket.handshake.query) {
+    socket.join(socket.handshake.query.roomId);
+  }
+
+  const { token } = socket.handshake.auth;
+  if (token) {
+    const payload = jwt.verify(token, process.env.TOKEN_SECRET);
+    const { username, userId } = payload;
+    onlinePlayers[socket.id] = username;
+    socket.userId = userId;
+    socket.nickname = username;
+  } else {
+    throw new ClientError(401, 'authentication required');
+  }
+
   io.emit('onlinePlayers', onlinePlayers);
 
   socket.on('disconnect', () => {
@@ -104,22 +145,58 @@ io.on('connection', socket => {
 
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
-    const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
-    const inviteInfo = { roomId, challengerSocketId };
+    const challengerId = socket.userId;
+    let challengerUsername = null;
+    let opponentUsername = null;
+
+    for (const key in onlinePlayers) {
+      if (key === challengerSocketId) {
+        challengerUsername = onlinePlayers[key];
+      }
+      if (key === opponentSocketId) {
+        opponentUsername = onlinePlayers[key];
+      }
+    }
+
+    const roomId = [challengerUsername, opponentUsername].sort().join('-');
+    const inviteInfo = { roomId, challengerSocketId, challengerId, challengerUsername };
     socket.join(roomId);
     socket.to(opponentSocketId).emit('invite-received', inviteInfo);
   });
 
   socket.on('invite-canceled', opponentSocketId => {
     const challengerSocketId = socket.id;
-    const roomId = [challengerSocketId, opponentSocketId].sort().join('-');
+    let challengerUsername = null;
+    let opponentUsername = null;
+
+    for (const key in onlinePlayers) {
+      if (key === challengerSocketId) {
+        challengerUsername = onlinePlayers[key];
+      }
+      if (key === opponentSocketId) {
+        opponentUsername = onlinePlayers[key];
+      }
+    }
+
+    const roomId = [challengerUsername, opponentUsername].sort().join('-');
     socket.leave(roomId);
-    socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerSocketId} has been canceled`);
+    socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerUsername} has been canceled`);
   });
 
-  socket.on('invite-accepted', roomId => {
-    socket.join(roomId);
-    socket.to(roomId).emit('opponent-joined');
+  socket.on('invite-accepted', inviteInfo => {
+
+    const sql = `
+      insert into "games" ("challenger", "opponent")
+      values ($1, $2)
+      returning *;
+    `;
+    const params = [inviteInfo.challengerId, socket.userId];
+
+    db.query(sql, params)
+      .then(result => {
+        socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
+      })
+      .catch(err => console.error(err));
   });
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');

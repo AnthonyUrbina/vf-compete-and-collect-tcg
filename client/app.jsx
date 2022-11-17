@@ -4,6 +4,7 @@ import parseRoute from './lib/parse-route';
 import AppContext from './lib/app-context';
 import Home from './pages/home';
 import jwtDecode from 'jwt-decode';
+import Game from './pages/game';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -34,10 +35,13 @@ export default class App extends React.Component {
 
   choosePage() {
     const { path } = this.state.route;
+    const { user } = this.state;
     if (path === '') {
       return <Home />;
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
+    } else if (user) {
+      return <Game />;
     }
   }
 
