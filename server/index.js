@@ -8,7 +8,6 @@ const app = express();
 const path = require('node:path');
 const publicPath = path.join(__dirname, 'public');
 const jwt = require('jsonwebtoken');
-const jwtDecode = require('jwt-decode');
 
 const http = require('http');
 const server = http.createServer(app);
@@ -128,12 +127,15 @@ io.on('connection', socket => {
 
   const { token } = socket.handshake.auth;
   if (token) {
-    const user = jwtDecode(token);
-    const { username } = user;
+    const payload = jwt.verify(token, process.env.TOKEN_SECRET);
+    const { username, userId } = payload;
     onlinePlayers[socket.id] = username;
-    socket.userId = user.userId;
-    socket.nickname = user.username;
+    socket.userId = userId;
+    socket.nickname = username;
+  } else {
+    throw new ClientError(401, 'authentication required');
   }
+
   io.emit('onlinePlayers', onlinePlayers);
 
   socket.on('disconnect', () => {
