@@ -11,15 +11,17 @@ export default class Lobby extends React.Component {
       opponentModalisActive: false,
       isSendingChallengeTo: null,
       isReceivingChallengeFrom: null,
-      roomId: null
+      roomId: null,
+      inviteInfo: null
     };
     this.handleClick = this.handleClick.bind(this);
   }
 
   componentDidMount() {
     if (this.props.token) {
+      const token = window.localStorage.getItem('react-context-jwt');
       this.socket = io('/', {
-        auth: { token: this.props.token }
+        auth: { token }
       });
     }
 
@@ -39,17 +41,18 @@ export default class Lobby extends React.Component {
         isReceivingChallengeFrom: inviteInfo.challengerUsername,
         roomId: inviteInfo.roomId,
         onlinePlayersModalisActive: false,
-        opponentModalisActive: true
+        opponentModalisActive: true,
+        inviteInfo
       });
     });
 
     this.socket.on('opponent-declined', () => {
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     });
-    this.socket.on('opponent-joined', () => {
+    this.socket.on('opponent-joined', inviteInfo => {
       this.setState({ challengerModalisActive: false });
       // hashchange here
-
+      window.location.hash = inviteInfo.roomId;
     });
     this.socket.on('challenger-canceled', () => {
       this.setState({ opponentModalisActive: false, isReceivingChallengeFrom: null, roomId: null });
@@ -105,10 +108,11 @@ export default class Lobby extends React.Component {
     }
 
     if (event.target.matches('.accept-button')) {
-      this.socket.emit('invite-accepted', this.state.roomId);
+      // this.socket.emit('invite-accepted', this.state.roomId);
+      this.socket.emit('invite-accepted', this.state.inviteInfo);
       this.setState({ opponentModalisActive: false });
-      // post request here
       // hashchange here
+      window.location.hash = this.state.inviteInfo.roomId;
     } else if (event.target.matches('.decline-button')) {
       this.socket.emit('invite-declined', this.state.roomId);
       this.setState({ roomId: null, isReceivingChallengeFrom: null, opponentModalisActive: false });

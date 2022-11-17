@@ -239,6 +239,17 @@ li {
   margin-left: 0.5rem;
 }
 
+.match-deck {
+  position: relative;
+  margin-right: 0;
+  margin-top: 1rem;
+}
+
+.player-2-deck {
+  position: absolute;
+  bottom: 18%;
+}
+
 @media screen and (min-width: 768px) {
   .center-horizontal {
     flex-direction: row;

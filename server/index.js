@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -8,6 +9,7 @@ const app = express();
 const path = require('node:path');
 const publicPath = path.join(__dirname, 'public');
 const jwt = require('jsonwebtoken');
+const jwtDecode = require('jwt-decode');
 
 const http = require('http');
 const server = http.createServer(app);
@@ -87,16 +89,47 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 
 });
-const onlinePlayers = {};
+
+app.get('/api/games/retrieve/:userId', (req, res, next) => {
+  console.log(req.params.userId);
+  const { userId } = req.params;
+  const sql = `
+    select "users"."username"
+      from "games"
+inner join "users"
+        on "challenger" = "userId"
+        or "opponent" = "userId"
+        where "challenger" = $1
+        or "opponent" = $1;
+  `;
+
+  const params = [userId];
+  db.query(sql, params)
+    .then(result => {
+      res.json(result.rows);
+    })
+    .catch(err => next(err));
+});
 
 app.use(errorMiddleware);
 
+const onlinePlayers = {};
+
 io.on('connection', socket => {
 
-  const { username } = socket.handshake.auth.token;
-  onlinePlayers[socket.id] = username;
-  // socket.username = username;
-  // console.log(socket.username);
+  if (socket.handshake.query) {
+    socket.join(socket.handshake.query.roomId);
+    console.log(`you successfully joined room ${socket.handshake.query.roomId}`);
+  }
+
+  const { token } = socket.handshake.auth;
+  if (token) {
+    const user = jwtDecode(token);
+    const { username } = user;
+    onlinePlayers[socket.id] = username;
+    socket.userId = user.userId;
+    socket.nickname = user.username;
+  }
   io.emit('onlinePlayers', onlinePlayers);
 
   socket.on('disconnect', () => {
@@ -106,6 +139,7 @@ io.on('connection', socket => {
 
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
+    const challengerId = socket.userId;
     let challengerUsername = null;
     let opponentUsername = null;
 
@@ -119,7 +153,7 @@ io.on('connection', socket => {
     }
 
     const roomId = [challengerUsername, opponentUsername].sort().join('-');
-    const inviteInfo = { roomId, challengerSocketId };
+    const inviteInfo = { roomId, challengerSocketId, challengerId, challengerUsername };
     socket.join(roomId);
     socket.to(opponentSocketId).emit('invite-received', inviteInfo);
   });
@@ -143,9 +177,22 @@ io.on('connection', socket => {
     socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerUsername} has been canceled`);
   });
 
-  socket.on('invite-accepted', roomId => {
-    socket.join(roomId);
-    socket.to(roomId).emit('opponent-joined');
+  socket.on('invite-accepted', inviteInfo => {
+
+    const sql = `
+      insert into "games" ("challenger", "opponent")
+      values ($1, $2)
+      returning *;
+    `;
+    const params = [inviteInfo.challengerId, socket.userId];
+
+    db.query(sql, params)
+      .then(result => {
+        console.log('row created bro', result.rows);
+        socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
+        // socket.join(inviteInfo.roomId);
+      })
+      .catch(err => console.error(err));
   });
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');
@@ -155,19 +202,3 @@ io.on('connection', socket => {
 server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
-
-// /*
-// ---client---
-// -lobby.jsx-
-// - component did mount
-// - on 'opponent-joined'
-//   - window.location.hash = 'this.state.roomId'
-
-// - handleClick
-// - on event.target = '.accept-button'
-//   - window.location.hash = 'this.state.roomId'
-
-// -app.jsx-
-// - chhosePage()
-//   - if path = a string of 21 characters
-//   return <CompetitionRoom />
