@@ -108,7 +108,7 @@ inner join "users"
   const params = [userId];
   db.query(sql, params)
     .then(result => {
-      if (!result.rows.username) {
+      if (!result.rows[0].username || !result.rows[1].username) {
         throw new ClientError(400, 'this user is not in any active games');
       }
       res.status(200).json(result.rows);

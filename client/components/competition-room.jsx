@@ -18,6 +18,15 @@ export default class CompetitionRoom extends React.Component {
       .then(res => res.json())
       .then(result => {
         const roomId = parseRoute(window.location.hash).path;
+        const players = result.map(player => {
+          return player.username;
+        });
+        let opponent = null;
+        for (let i = 0; i < players.length; i++) {
+          if (players[i] !== this.props.token.username) {
+            opponent = players[i];
+          }
+        }
         if (this.props.token) {
           const token = window.localStorage.getItem('react-context-jwt');
           this.socket = io('/', {
@@ -25,7 +34,7 @@ export default class CompetitionRoom extends React.Component {
             query: { roomId }
           });
         }
-        this.setState({ roomId });
+        this.setState({ roomId, opponent });
       });
 
   }
@@ -46,7 +55,6 @@ export default class CompetitionRoom extends React.Component {
         opponent = splitUsernames[i];
       }
     }
-    this.setState({ opponent });
     return opponent;
   }
 
