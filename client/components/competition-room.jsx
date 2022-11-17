@@ -2,8 +2,6 @@ import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
 
-// import Redirect from './redirect';
-
 export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);

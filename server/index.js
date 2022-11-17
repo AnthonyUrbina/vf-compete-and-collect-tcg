@@ -71,7 +71,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .then(result => {
       const { userId, hashedPassword } = result.rows[0];
       if (!userId) {
-        throw new ClientError(401, 'invalid login bro');
+        throw new ClientError(401, 'invalid login');
       }
 
       argon2.verify(hashedPassword, password)
@@ -91,6 +91,10 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 
 app.get('/api/games/retrieve/:userId', (req, res, next) => {
   const { userId } = req.params;
+  if (!userId) {
+    throw new ClientError(400, 'userId is required');
+  }
+
   const sql = `
     select "users"."username"
       from "games"
@@ -104,7 +108,10 @@ inner join "users"
   const params = [userId];
   db.query(sql, params)
     .then(result => {
-      res.json(result.rows);
+      if (!result.rows.username) {
+        throw new ClientError(400, 'this user is not in any active games');
+      }
+      res.status(200).json(result.rows);
     })
     .catch(err => next(err));
 });
@@ -186,7 +193,6 @@ io.on('connection', socket => {
     db.query(sql, params)
       .then(result => {
         socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
-        // socket.join(inviteInfo.roomId);
       })
       .catch(err => console.error(err));
   });
