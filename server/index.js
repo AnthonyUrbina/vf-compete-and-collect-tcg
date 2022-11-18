@@ -118,6 +118,25 @@ inner join "users"
     .catch(err => next(err));
 });
 
+app.patch('/api/games/:gameId', (req, res, next) => {
+  const { gameId } = req.params;
+  const { state } = req.body;
+  const sql = `
+    update "games"
+       set "state" = $2
+       where "gameId" = $1
+  `;
+  const params = [gameId, state];
+
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      res.status(204).json();
+    });
+});
+
 app.use(errorMiddleware);
 
 const onlinePlayers = {};
