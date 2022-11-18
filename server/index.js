@@ -95,19 +95,21 @@ app.get('/api/games/retrieve/:userId', (req, res, next) => {
   }
 
   const sql = `
-    select "users"."username"
+    select "users"."username",
+           "games"."state"
       from "games"
 inner join "users"
         on "challenger" = "userId"
         or "opponent" = "userId"
         where "challenger" = $1
-        or "opponent" = $1;
+        or "opponent" = $1
+        limit 1;
   `;
 
   const params = [userId];
   db.query(sql, params)
     .then(result => {
-      if (!result.rows[0].username || !result.rows[1].username) {
+      if (!result.rows[0].username) {
         throw new ClientError(400, 'this user is not in any active games');
       }
       res.status(200).json(result.rows);
@@ -122,7 +124,8 @@ const onlinePlayers = {};
 io.on('connection', socket => {
 
   if (socket.handshake.query) {
-    socket.join(socket.handshake.query.roomId);
+    const { roomId } = socket.handshake.query;
+    socket.join(roomId);
   }
 
   const { token } = socket.handshake.auth;
@@ -184,34 +187,40 @@ io.on('connection', socket => {
   });
 
   socket.on('invite-accepted', inviteInfo => {
-
-    const sql = `
-      insert into "games" ("challenger", "opponent")
-      values ($1, $2)
-      returning *;
-    `;
-    const params = [inviteInfo.challengerId, socket.userId];
-
-    db.query(sql, params)
-      .then(result => {
-        socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
-      })
-      .catch(err => console.error(err));
     const players = [
-      { name: socket.nickname, type: 'challenger', hand: [] },
-      { name: inviteInfo.challengerUsername, type: 'opponent', hand: [] }
+      { name: socket.nickname, type: 'challenger', deck: [] },
+      { name: inviteInfo.challengerUsername, type: 'opponent', deck: [] }
     ];
 
     function dealer(shuffled) {
-      players[0].hand = shuffled.slice(0, 25);
-      players[1].hand = shuffled.slice(26, 52);
+      players[0].deck = shuffled.slice(0, 26);
+      players[1].deck = shuffled.slice(26, 52);
     }
 
     const deck = getDeck(rank, suit);
     const shuffled = shuffle(deck);
 
     dealer(shuffled);
-    socket.to(inviteInfo.roomId).emit('decks-created', players);
+
+    const state = { players };
+
+    const JSONstate = JSON.stringify(state);
+
+    const sql = `
+      insert into "games" ("challenger", "opponent", "state")
+      values ($1, $2, $3)
+      returning *;
+    `;
+    const params = [inviteInfo.challengerId, socket.userId, JSONstate];
+
+    db.query(sql, params)
+      .then(result => {
+        socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
+        socket.to(inviteInfo.roomId).emit('decks-created', players);
+      })
+      .catch(err => console.error(err));
+
+    // console.log(inviteInfo);
   });
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');

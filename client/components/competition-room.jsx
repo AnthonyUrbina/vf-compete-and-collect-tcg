@@ -10,7 +10,8 @@ export default class CompetitionRoom extends React.Component {
       opponent: null,
       client: this.props.token.username,
       [this.props.token.username + 'Deck']: null,
-      gameId: null
+      gameId: null,
+      players: null
     };
   }
 
@@ -19,26 +20,38 @@ export default class CompetitionRoom extends React.Component {
       { method: 'GET' })
       .then(res => res.json())
       .then(result => {
-        const roomId = parseRoute(window.location.hash).path;
-        const players = result.map(player => {
-          return player.username;
-        });
+        const { state } = result[0];
         let opponent = null;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i] !== this.props.token.username) {
-            opponent = players[i];
+        let deck1 = null;
+        let deck2 = null;
+        const roomId = parseRoute(window.location.hash).path;
+        // console.log('result', result);
+
+        for (let i = 0; i < state.players.length; i++) {
+          if (state.players[i].type === 'challenger') {
+            deck1 = state.players[i].deck;
+            opponent = state.players[i].username;
+          } else {
+            deck2 = state.players[i].deck;
           }
         }
-        if (this.props.token) {
-          const token = window.localStorage.getItem('react-context-jwt');
-          this.socket = io('/', {
-            auth: { token },
-            query: { roomId }
-          });
-        }
-        this.setState({ roomId, [opponent + 'Deck']: null });
+        this.setState({
+          roomId,
+          [opponent + 'Deck']: deck1,
+          [this.props.token.username + 'Deck']: deck2,
+          players: state.players
+        });
       });
-
+    if (this.props.token) {
+      const token = window.localStorage.getItem('react-context-jwt');
+      this.socket = io('/', {
+        auth: { token },
+        query: { roomId: this.state.roomId }
+      });
+    }
+    this.socket.on('decks-created', players => {
+      // console.log(players);
+    });
   }
 
   componentWillUnmount() {
