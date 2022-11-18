@@ -96,7 +96,8 @@ app.get('/api/games/retrieve/:userId', (req, res, next) => {
 
   const sql = `
     select "users"."username",
-           "games"."state"
+           "games"."state",
+           "games"."gameId"
       from "games"
 inner join "users"
         on "challenger" = "userId"
@@ -231,7 +232,7 @@ server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
 
-const rank = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King'];
+const rank = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
 const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function getDeck(rank, suit) {
@@ -247,3 +248,10 @@ function getDeck(rank, suit) {
   }
   return container;
 }
+
+// thoughts before going hone
+/*
+genrating 50 cards at once and absolute positioning all of them on top of eachother might be a little too much
+i feel like waiting for a card to flip, which then triggers set state, which calls for a rerender
+then generates the card that was flipped via createCard className client-flipped-card
+*/
