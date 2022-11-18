@@ -8,7 +8,7 @@ const app = express();
 const path = require('node:path');
 const publicPath = path.join(__dirname, 'public');
 const jwt = require('jsonwebtoken');
-
+const shuffle = require('lodash.shuffle');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
@@ -197,6 +197,21 @@ io.on('connection', socket => {
         socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
       })
       .catch(err => console.error(err));
+    const players = [
+      { name: socket.nickname, type: 'challenger', hand: [] },
+      { name: inviteInfo.challengerUsername, type: 'opponent', hand: [] }
+    ];
+
+    function dealer(shuffled) {
+      players[0].hand = shuffled.slice(0, 25);
+      players[1].hand = shuffled.slice(26, 52);
+    }
+
+    const deck = getDeck(rank, suit);
+    const shuffled = shuffle(deck);
+
+    dealer(shuffled);
+    console.log(players);
   });
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');
@@ -206,3 +221,20 @@ io.on('connection', socket => {
 server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
+
+const rank = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King'];
+const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
+
+function getDeck(rank, suit) {
+  const container = [];
+  let card = {};
+  for (let i = 0; i < suit.length; i++) {
+    for (let j = 0; j < rank.length; j++) {
+      card.suit = suit[i];
+      card.rank = rank[j];
+      container.push(card);
+      card = {};
+    }
+  }
+  return container;
+}

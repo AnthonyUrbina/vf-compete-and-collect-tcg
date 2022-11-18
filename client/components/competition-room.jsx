@@ -8,7 +8,9 @@ export default class CompetitionRoom extends React.Component {
     this.state = {
       roomId: '',
       opponent: null,
-      client: this.props.token.username
+      client: this.props.token.username,
+      [this.props.token.username + 'Deck']: null,
+      gameId: null
     };
   }
 
@@ -34,7 +36,7 @@ export default class CompetitionRoom extends React.Component {
             query: { roomId }
           });
         }
-        this.setState({ roomId, opponent });
+        this.setState({ roomId, [opponent + 'Deck']: null });
       });
 
   }
@@ -57,6 +59,8 @@ export default class CompetitionRoom extends React.Component {
     }
     return opponent;
   }
+
+  // createCard() {}
 
   render() {
     return (
