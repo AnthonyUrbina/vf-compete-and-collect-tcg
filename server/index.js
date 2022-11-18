@@ -211,7 +211,7 @@ io.on('connection', socket => {
     const shuffled = shuffle(deck);
 
     dealer(shuffled);
-    console.log(players);
+    socket.to(inviteInfo.roomId).emit('decks-created', players);
   });
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');
