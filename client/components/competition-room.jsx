@@ -48,35 +48,37 @@ export default class CompetitionRoom extends React.Component {
 
   createCard() {
     const cardShowing = this.state[this.props.token.username + 'cardShowing'];
-    if (!cardShowing) {
-      return;
-    }
-
     const suit = cardShowing[0].suit;
     const rank = cardShowing[0].rank;
     const src = `images/cards/${rank}_of_${suit}.png`;
 
+    if (!cardShowing) {
+      return;
+    }
     return (
       <img src={src} alt={src} className="flipped-card client-card" />
     );
   }
 
   flipCard() {
-    const clientDeck = this.state[this.props.token.username + 'Deck'];
+    const client = this.props.token.username;
+    const clientDeck = this.state[client + 'Deck'];
     const copyOfClientDeck = [...clientDeck];
     const cardFlipped = copyOfClientDeck.splice(0, 1);
-
     const copyOfState = { ...this.state };
-    copyOfState[this.props.token.username + 'Deck'] = copyOfClientDeck;
-    copyOfState[this.props.token.username + 'cardShowing'] = cardFlipped;
+    copyOfState[client + 'Deck'] = copyOfClientDeck;
+    copyOfState[client + 'cardShowing'] = cardFlipped;
+
     const headers = {
       'Content-Type': 'application/json'
     };
+
     const req = {
       method: 'PATCH',
       headers,
       body: JSON.stringify(copyOfState)
     };
+
     fetch(`/api/games/${this.state.gameId}`, req)
       .then(res => res.json())
       .then(data => this.setState(data));
