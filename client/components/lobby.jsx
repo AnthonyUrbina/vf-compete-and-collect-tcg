@@ -37,9 +37,11 @@ export default class Lobby extends React.Component {
     });
 
     this.socket.on('invite-received', inviteInfo => {
+      const { roomId } = inviteInfo;
+
       this.setState({
         isReceivingChallengeFrom: inviteInfo.challengerUsername,
-        roomId: inviteInfo.roomId,
+        roomId,
         onlinePlayersModalisActive: false,
         opponentModalisActive: true,
         inviteInfo
@@ -50,8 +52,10 @@ export default class Lobby extends React.Component {
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     });
     this.socket.on('opponent-joined', inviteInfo => {
+      const { roomId } = inviteInfo;
+
       this.setState({ challengerModalisActive: false });
-      window.location.hash = inviteInfo.roomId;
+      window.location.hash = roomId;
     });
     this.socket.on('challenger-canceled', () => {
       this.setState({ opponentModalisActive: false, isReceivingChallengeFrom: null, roomId: null });

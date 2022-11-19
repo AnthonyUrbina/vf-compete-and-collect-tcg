@@ -7,7 +7,7 @@ export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      roomId: '',
+      roomId: parseRoute(window.location.hash).path,
       opponent: null,
       client: this.props.token.username,
       [this.props.token.username + 'Deck']: null,
@@ -24,27 +24,8 @@ export default class CompetitionRoom extends React.Component {
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];
-        let opponent = null;
-        let deck1 = null;
-        let deck2 = null;
-        console.log(result[0]);
-        const roomId = parseRoute(window.location.hash).path;
-        for (let i = 0; i < state.players.length; i++) {
-          if (state.players[i].type === 'challenger') {
-            deck1 = state.players[i].hand;
-            opponent = state.players[i].username;
-          } else {
-            deck2 = state.players[i].hand;
-          }
-        }
-        this.setState({
-          roomId,
-          gameId,
-          [opponent + 'Deck']: deck1,
-          [this.props.token.username + 'Deck']: deck2,
-          [this.props.token.username + 'cardShowing']: null,
-          players: state.players
-        });
+        state.gameId = gameId;
+        this.setState(state);
       });
     if (this.props.token) {
       const token = window.localStorage.getItem('react-context-jwt');
@@ -53,9 +34,6 @@ export default class CompetitionRoom extends React.Component {
         query: { roomId: this.state.roomId }
       });
     }
-    this.socket.on('decks-created', players => {
-      // console.log(players);
-    });
   }
 
   componentWillUnmount() {
@@ -78,6 +56,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   createCard() {
+    console.log(this.state);
     const cardShowing = this.state[this.props.token.username + 'cardShowing'];
     if (!cardShowing) {
       return;
@@ -103,10 +82,21 @@ export default class CompetitionRoom extends React.Component {
     const cardFlipped = copyOfClientDeck.splice(0, 1);
     console.log(cardFlipped);
     console.log('hi');
-    this.setState({
-      [this.props.token.username + 'Deck']: copyOfClientDeck,
-      [this.props.token.username + 'cardShowing']: cardFlipped
-    });
+
+    const copyOfState = { ...this.state };
+    copyOfState[this.props.token.username + 'Deck'] = copyOfClientDeck;
+    copyOfState[this.props.token.username + 'cardShowing'] = cardFlipped;
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    const req = {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(copyOfState)
+    };
+    fetch(`/api/games/${this.state.gameId}`, req)
+      .then(res => res.json())
+      .then(data => this.setState(data));
   }
 
   render() {

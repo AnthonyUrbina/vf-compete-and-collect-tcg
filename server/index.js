@@ -120,11 +120,12 @@ inner join "users"
 
 app.patch('/api/games/:gameId', (req, res, next) => {
   const { gameId } = req.params;
-  const { state } = req.body;
+  const state = req.body;
   const sql = `
     update "games"
        set "state" = $2
        where "gameId" = $1
+       returning "state"
   `;
   const params = [gameId, state];
 
@@ -133,8 +134,10 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
-      res.status(204).json();
-    });
+      console.log('sultsss', result.rows[0]);
+      res.status(200).json(result.rows[0].state);
+    })
+    .catch(err => next(err));
 });
 
 app.use(errorMiddleware);
@@ -146,6 +149,7 @@ io.on('connection', socket => {
   if (socket.handshake.query) {
     const { roomId } = socket.handshake.query;
     socket.join(roomId);
+    console.log(`user joined room:${roomId}`);
   }
 
   const { token } = socket.handshake.auth;
@@ -207,9 +211,10 @@ io.on('connection', socket => {
   });
 
   socket.on('invite-accepted', inviteInfo => {
+    const { challengerUsername } = inviteInfo;
     const players = [
       { name: socket.nickname, type: 'challenger', deck: [] },
-      { name: inviteInfo.challengerUsername, type: 'opponent', deck: [] }
+      { name: challengerUsername, type: 'opponent', deck: [] }
     ];
 
     function dealer(shuffled) {
@@ -222,10 +227,14 @@ io.on('connection', socket => {
 
     dealer(shuffled);
 
-    const state = { players };
+    const state = {
+      [challengerUsername + 'Deck']: players[0].deck,
+      [socket.nickname + 'Deck']: players[1].deck,
+      [challengerUsername + 'CardShowing']: null,
+      [socket.nickname + 'CardShowing']: null
+    };
 
     const JSONstate = JSON.stringify(state);
-
     const sql = `
       insert into "games" ("challenger", "opponent", "state")
       values ($1, $2, $3)
@@ -236,11 +245,8 @@ io.on('connection', socket => {
     db.query(sql, params)
       .then(result => {
         socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
-        socket.to(inviteInfo.roomId).emit('decks-created', players);
       })
       .catch(err => console.error(err));
-
-    // console.log(inviteInfo);
   });
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');
@@ -270,7 +276,6 @@ function getDeck(rank, suit) {
 
 // thoughts before going hone
 /*
-genrating 50 cards at once and absolute positioning all of them on top of eachother might be a little too much
-i feel like waiting for a card to flip, which then triggers set state, which calls for a rerender
-then generates the card that was flipped via createCard className client-flipped-card
+make the get using this.props.userId
+
 */
