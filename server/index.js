@@ -131,10 +131,14 @@ app.patch('/api/games/:gameId', (req, res, next) => {
 
   db.query(sql, params)
     .then(result => {
+      const { state } = result.rows[0];
+      const { roomId } = state;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
-      res.status(200).json(result.rows[0].state);
+      io.to(roomId).emit('flip-card', state);
+      res.status(200).json(state);
+
     })
     .catch(err => next(err));
 });

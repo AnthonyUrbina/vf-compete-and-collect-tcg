@@ -19,12 +19,16 @@ export default class CompetitionRoom extends React.Component {
         this.setState(state);
       });
     if (this.props.token) {
+      const roomId = parseRoute(window.location.hash).path;
       const token = window.localStorage.getItem('react-context-jwt');
       this.socket = io('/', {
         auth: { token },
-        query: { roomId: this.state.roomId }
+        query: { roomId }
       });
     }
+    this.socket.on('flip-card', state => {
+      this.setState(state);
+    });
   }
 
   componentWillUnmount() {
@@ -35,8 +39,8 @@ export default class CompetitionRoom extends React.Component {
 
   renderPlayer2() {
     const { username } = this.props.token;
-    const hashroute = parseRoute(window.location.hash).path;
-    const splitUsernames = hashroute.split('-');
+    const roomId = parseRoute(window.location.hash).path;
+    const splitUsernames = roomId.split('-');
     let opponent = null;
     for (let i = 0; i < splitUsernames.length; i++) {
       if (splitUsernames[i] !== username) {
@@ -47,7 +51,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   createCard() {
-    const cardShowing = this.state[this.props.token.username + 'cardShowing'];
+    const cardShowing = this.state[this.props.token.username + 'CardShowing'];
     if (cardShowing) {
       const suit = cardShowing[0].suit;
       const rank = cardShowing[0].rank;
@@ -65,7 +69,8 @@ export default class CompetitionRoom extends React.Component {
     const cardFlipped = copyOfClientDeck.splice(0, 1);
     const copyOfState = { ...this.state };
     copyOfState[client + 'Deck'] = copyOfClientDeck;
-    copyOfState[client + 'cardShowing'] = cardFlipped;
+    copyOfState[client + 'CardShowing'] = cardFlipped;
+    copyOfState.roomId = parseRoute(window.location.hash).path;
 
     const headers = {
       'Content-Type': 'application/json'
