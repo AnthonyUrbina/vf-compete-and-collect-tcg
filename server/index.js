@@ -210,6 +210,8 @@ io.on('connection', socket => {
 
   socket.on('invite-accepted', inviteInfo => {
     const { challengerUsername } = inviteInfo;
+    const deck = getDeck(rank, suit);
+    const shuffled = shuffle(deck);
     const players = [
       { name: socket.nickname, type: 'challenger', deck: [] },
       { name: challengerUsername, type: 'opponent', deck: [] }
@@ -220,9 +222,6 @@ io.on('connection', socket => {
       players[1].deck = shuffled.slice(26, 52);
     }
 
-    const deck = getDeck(rank, suit);
-    const shuffled = shuffle(deck);
-
     dealer(shuffled);
 
     const state = {
@@ -231,8 +230,8 @@ io.on('connection', socket => {
       [challengerUsername + 'CardShowing']: null,
       [socket.nickname + 'CardShowing']: null
     };
-
     const JSONstate = JSON.stringify(state);
+
     const sql = `
       insert into "games" ("challenger", "opponent", "state")
       values ($1, $2, $3)
@@ -251,10 +250,6 @@ io.on('connection', socket => {
   });
 });
 
-server.listen(process.env.PORT, () => {
-  process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
-});
-
 const rank = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
 const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
@@ -271,3 +266,7 @@ function getDeck(rank, suit) {
   }
   return container;
 }
+
+server.listen(process.env.PORT, () => {
+  process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
+});
