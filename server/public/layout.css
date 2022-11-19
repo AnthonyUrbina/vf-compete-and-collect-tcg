@@ -255,10 +255,6 @@ li {
   height: 111px;
 }
 
-/* .client-card {
-  margin-top: 3rem;
-} */
-
 .client-card-column {
   display: flex;
   align-items: flex-end;
@@ -284,10 +280,6 @@ li {
   .player-2-stretch {
     bottom: 7%;
   }
-
-  /* .client-card {
-    margin-top: 5rem;
-  } */
 
   .player-2-deck {
     bottom: 17%;
