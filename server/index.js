@@ -134,7 +134,6 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
-      // console.log('sultsss', result.rows[0]);
       res.status(200).json(result.rows[0].state);
     })
     .catch(err => next(err));
@@ -149,7 +148,6 @@ io.on('connection', socket => {
   if (socket.handshake.query) {
     const { roomId } = socket.handshake.query;
     socket.join(roomId);
-    // console.log(`user joined room:${roomId}`);
   }
 
   const { token } = socket.handshake.auth;
@@ -257,7 +255,7 @@ server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
 
-const rank = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
+const rank = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
 const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function getDeck(rank, suit) {

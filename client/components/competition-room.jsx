@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -6,15 +5,7 @@ import parseRoute from '../lib/parse-route';
 export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      roomId: parseRoute(window.location.hash).path,
-      opponent: null,
-      client: this.props.token.username,
-      [this.props.token.username + 'Deck']: null,
-      gameId: null,
-      players: null,
-      [this.props.token.username + 'cardShowing']: null
-    };
+    this.state = {};
     this.flipCard = this.flipCard.bind(this);
   }
 
@@ -56,32 +47,24 @@ export default class CompetitionRoom extends React.Component {
   }
 
   createCard() {
-    console.log(this.state);
     const cardShowing = this.state[this.props.token.username + 'cardShowing'];
     if (!cardShowing) {
       return;
     }
-    console.log(this.state[this.props.token.username + 'cardShowing']);
-    console.log('cardshowing', cardShowing[0]);
+
     const suit = cardShowing[0].suit;
     const rank = cardShowing[0].rank;
-    let src = `images/cards/${rank}_of_${suit}.png`;
-    if (rank === 'King' || rank === 'Queen' || rank === 'Jack') {
-      src = `images/cards/${rank}_of_${suit}2.png`;
-    }
+    const src = `images/cards/${rank}_of_${suit}.png`;
+
     return (
       <img src={src} alt={src} className="flipped-card client-card" />
     );
   }
 
   flipCard() {
-    // whos card was flippped?
-    console.log(this.state);
     const clientDeck = this.state[this.props.token.username + 'Deck'];
     const copyOfClientDeck = [...clientDeck];
     const cardFlipped = copyOfClientDeck.splice(0, 1);
-    console.log(cardFlipped);
-    console.log('hi');
 
     const copyOfState = { ...this.state };
     copyOfState[this.props.token.username + 'Deck'] = copyOfClientDeck;
@@ -131,11 +114,13 @@ export default class CompetitionRoom extends React.Component {
         </div>
         <div className="row">
           <div className="player-deck match-deck player-2-deck">
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-            <img onClick={this.flipCard} src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+            <button className='player2-button'>
+              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
+              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
+              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
+              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
+              <img onClick={this.flipCard} src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+            </button>
           </div>
           <div className="column-full name-avatar-spacing player-2-stretch">
             <img className='player-avatar-img-size' src="images/player2.png" alt="player1" />
