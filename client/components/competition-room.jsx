@@ -48,16 +48,14 @@ export default class CompetitionRoom extends React.Component {
 
   createCard() {
     const cardShowing = this.state[this.props.token.username + 'cardShowing'];
-    const suit = cardShowing[0].suit;
-    const rank = cardShowing[0].rank;
-    const src = `images/cards/${rank}_of_${suit}.png`;
-
-    if (!cardShowing) {
-      return;
+    if (cardShowing) {
+      const suit = cardShowing[0].suit;
+      const rank = cardShowing[0].rank;
+      const src = `images/cards/${rank}_of_${suit}.png`;
+      return (
+        <img src={src} alt={src} className="flipped-card client-card" />
+      );
     }
-    return (
-      <img src={src} alt={src} className="flipped-card client-card" />
-    );
   }
 
   flipCard() {
