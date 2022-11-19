@@ -255,8 +255,17 @@ li {
   height: 111px;
 }
 
-.client-card {
+/* .client-card {
   margin-top: 3rem;
+} */
+
+.client-card-column {
+  display: flex;
+  align-items: flex-end;
+}
+
+.client-card-row {
+  height: 24vh;
 }
 
 @media screen and (min-width: 768px) {
@@ -275,10 +284,34 @@ li {
   .player-2-stretch {
     bottom: 7%;
   }
+
+  /* .client-card {
+    margin-top: 5rem;
+  } */
+
+  .player-2-deck {
+    bottom: 17%;
+  }
+
+  .client-card-row {
+    height: 28vh;
+  }
 }
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
   .player-2-stretch {
     bottom: 7%;
+  }
+
+  .client-card {
+    margin-top: 5rem;
+  }
+
+  .player-2-deck {
+    bottom: 17%;
+  }
+
+  .client-card-row {
+    height: 28vh;
   }
 }

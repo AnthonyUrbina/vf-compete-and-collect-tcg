@@ -107,19 +107,19 @@ export default class CompetitionRoom extends React.Component {
             </div>
           </div>
         </div>
-        <div className="row">
-          <div className="column-full">
+        <div className="row client-card-row">
+          <div className="column-full client-card-column">
             {this.createCard()}
           </div>
         </div>
         <div className="row">
           <div className="player-deck match-deck player-2-deck">
-            <button className='player2-button'>
+            <button onClick={this.flipCard} className='player2-button'>
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-              <img onClick={this.flipCard} src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
             </button>
           </div>
           <div className="column-full name-avatar-spacing player-2-stretch">
