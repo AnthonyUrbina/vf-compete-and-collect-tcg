@@ -271,9 +271,3 @@ function getDeck(rank, suit) {
   }
   return container;
 }
-
-// thoughts before going hone
-/*
-make the get using this.props.userId
-
-*/
