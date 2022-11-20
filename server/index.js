@@ -110,7 +110,7 @@ inner join "users"
   const params = [userId];
   db.query(sql, params)
     .then(result => {
-      if (!result.rows[0].username) {
+      if (!result.rows[0]) {
         throw new ClientError(400, 'this user is not in any active games');
       }
       res.status(200).json(result.rows);
@@ -148,13 +148,12 @@ app.use(errorMiddleware);
 const onlinePlayers = {};
 
 io.on('connection', socket => {
-
-  if (socket.handshake.query) {
-    const { roomId } = socket.handshake.query;
+  const { roomId } = socket.handshake.query;
+  const { token } = socket.handshake.auth;
+  if (roomId) {
     socket.join(roomId);
   }
 
-  const { token } = socket.handshake.auth;
   if (token) {
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
     const { username, userId } = payload;
@@ -165,7 +164,7 @@ io.on('connection', socket => {
     throw new ClientError(401, 'authentication required');
   }
 
-  io.emit('onlinePlayers', onlinePlayers);
+  io.emit('online-players', onlinePlayers);
 
   socket.on('disconnect', () => {
     delete onlinePlayers[socket.id];
@@ -175,8 +174,8 @@ io.on('connection', socket => {
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
     const challengerId = socket.userId;
-    let challengerUsername = null;
-    let opponentUsername = null;
+    let challengerUsername;
+    let opponentUsername;
 
     for (const key in onlinePlayers) {
       if (key === challengerSocketId) {
@@ -195,8 +194,8 @@ io.on('connection', socket => {
 
   socket.on('invite-canceled', opponentSocketId => {
     const challengerSocketId = socket.id;
-    let challengerUsername = null;
-    let opponentUsername = null;
+    let challengerUsername;
+    let opponentUsername;
 
     for (const key in onlinePlayers) {
       if (key === challengerSocketId) {
@@ -213,20 +212,15 @@ io.on('connection', socket => {
   });
 
   socket.on('invite-accepted', inviteInfo => {
-    const { challengerUsername } = inviteInfo;
+    const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
     const deck = getDeck(rank, suit);
     const shuffled = shuffle(deck);
     const players = [
-      { name: socket.nickname, type: 'challenger', deck: [] },
-      { name: challengerUsername, type: 'opponent', deck: [] }
+      { name: socket.nickname, deck: [] },
+      { name: challengerUsername, deck: [] }
     ];
 
-    function dealer(shuffled) {
-      players[0].deck = shuffled.slice(0, 26);
-      players[1].deck = shuffled.slice(26, 52);
-    }
-
-    dealer(shuffled);
+    dealer(shuffled, players);
 
     const state = {
       [challengerUsername + 'Deck']: players[0].deck,
@@ -241,11 +235,11 @@ io.on('connection', socket => {
       values ($1, $2, $3)
       returning *;
     `;
-    const params = [inviteInfo.challengerId, socket.userId, JSONstate];
+    const params = [challengerId, socket.userId, JSONstate];
 
     db.query(sql, params)
       .then(result => {
-        socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
+        socket.to(challengerSocketId).emit('opponent-joined', inviteInfo);
       })
       .catch(err => console.error(err));
   });
@@ -269,6 +263,11 @@ function getDeck(rank, suit) {
     }
   }
   return container;
+}
+
+function dealer(shuffled, players) {
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 52);
 }
 
 server.listen(process.env.PORT, () => {

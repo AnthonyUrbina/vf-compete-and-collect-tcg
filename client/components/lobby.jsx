@@ -18,6 +18,7 @@ export default class Lobby extends React.Component {
   }
 
   componentDidMount() {
+    const { onlinePlayers } = this.state;
     if (this.props.token) {
       const token = window.localStorage.getItem('react-context-jwt');
       this.socket = io('/', {
@@ -25,22 +26,21 @@ export default class Lobby extends React.Component {
       });
     }
 
-    this.socket.on('onlinePlayers', onlinePlayers => {
+    this.socket.on('online-players', onlinePlayers => {
       delete onlinePlayers[this.socket.id];
       this.setState({ onlinePlayers });
     });
 
     this.socket.on('user disconnected', socketId => {
-      const onlinePlayersCopy = { ...this.state.onlinePlayers };
+      const onlinePlayersCopy = { ...onlinePlayers };
       delete onlinePlayersCopy[socketId];
       this.setState({ onlinePlayers: onlinePlayersCopy });
     });
 
     this.socket.on('invite-received', inviteInfo => {
-      const { roomId } = inviteInfo;
-
+      const { roomId, challengerUsername } = inviteInfo;
       this.setState({
-        isReceivingChallengeFrom: inviteInfo.challengerUsername,
+        isReceivingChallengeFrom: challengerUsername,
         roomId,
         onlinePlayersModalisActive: false,
         opponentModalisActive: true,
@@ -69,9 +69,10 @@ export default class Lobby extends React.Component {
   }
 
   showOnlinePlayers() {
+    const { onlinePlayers } = this.state;
     const usernames = [];
-    for (const key in this.state.onlinePlayers) {
-      usernames.push(this.state.onlinePlayers[key]);
+    for (const key in onlinePlayers) {
+      usernames.push(onlinePlayers[key]);
     }
 
     const playerAppearance = usernames.map(username =>
@@ -86,8 +87,9 @@ export default class Lobby extends React.Component {
   }
 
   handleClick(event) {
+    const { inviteInfo, isSendingChallengeTo, onlinePlayersModalisActive, roomId } = this.state;
     if (event.target.matches('#online-players-button') || event.target.matches('.fa-x')) {
-      if (this.state.onlinePlayersModalisActive === false) {
+      if (onlinePlayersModalisActive === false) {
         this.setState({ onlinePlayersModalisActive: true });
       } else {
         this.setState({ onlinePlayersModalisActive: false });
@@ -105,30 +107,33 @@ export default class Lobby extends React.Component {
     }
 
     if (event.target.matches('.challenger-modal-button')) {
-      const opponentSocketId = this.getOpponentSocketId(this.state.isSendingChallengeTo);
+      const opponentSocketId = this.getOpponentSocketId(isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     }
 
     if (event.target.matches('.accept-button')) {
-      this.socket.emit('invite-accepted', this.state.inviteInfo);
+      this.socket.emit('invite-accepted', inviteInfo);
       this.setState({ opponentModalisActive: false });
-      window.location.hash = this.state.inviteInfo.roomId;
+      window.location.hash = roomId;
     } else if (event.target.matches('.decline-button')) {
-      this.socket.emit('invite-declined', this.state.roomId);
+      this.socket.emit('invite-declined', roomId);
       this.setState({ roomId: null, isReceivingChallengeFrom: null, opponentModalisActive: false });
     }
   }
 
   chooseModalClass() {
-    const className = this.state.onlinePlayersModalisActive
+    const { onlinePlayersModalisActive } = this.state;
+    const className = onlinePlayersModalisActive
       ? 'modal-box'
       : 'hidden';
     return className;
   }
 
   chooseOverlayClass() {
-    const className = this.state.onlinePlayersModalisActive || this.state.challengerModalisActive || this.state.opponentModalisActive
+    const { onlinePlayersModalisActive, challengerModalisActive, opponentModalisActive } = this.state;
+
+    const className = onlinePlayersModalisActive || challengerModalisActive || opponentModalisActive
       ? 'overlay'
       : 'hidden';
     return className;
@@ -136,8 +141,9 @@ export default class Lobby extends React.Component {
 
   getOpponentSocketId(opponentUsername) {
     let socketId = null;
-    for (const key in this.state.onlinePlayers) {
-      if (this.state.onlinePlayers[key] === opponentUsername) {
+    const { onlinePlayers } = this.state;
+    for (const key in onlinePlayers) {
+      if (onlinePlayers[key] === opponentUsername) {
         socketId = key;
       }
     }
@@ -145,34 +151,39 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengerModalClass() {
-    const className = this.state.challengerModalisActive
+    const { challengerModalisActive, opponentModalisActive } = this.state;
+    const className = challengerModalisActive
       ? 'challenger-modal-box'
-      : this.state.opponentModalisActive
+      : opponentModalisActive
         ? 'opponent-modal-box'
         : 'hidden';
     return className;
   }
 
   chooseChallengeModalTitle() {
-    const modalTitle = this.state.challengerModalisActive
+    const { challengerModalisActive, opponentModalisActive } = this.state;
+    const modalTitle = challengerModalisActive
       ? 'Challenge Sent'
-      : this.state.opponentModalisActive
+      : opponentModalisActive
         ? "You've been Challenged"
         : 'hidden';
     return modalTitle;
   }
 
   chooseChallengeModalText() {
-    const modalText = this.state.challengerModalisActive
-      ? <p className='challenger-modal-text'>You have challenged {this.state.isSendingChallengeTo} to a game.<br />
+    const { challengerModalisActive, isSendingChallengeTo, isReceivingChallengeFrom } = this.state;
+
+    const modalText = challengerModalisActive
+      ? <p className='challenger-modal-text'>You have challenged {isSendingChallengeTo} to a game.<br />
         Waiting for their response...
       </p >
-      : <p className='opponent-modal-text'>{this.state.isReceivingChallengeFrom} has challenged you to a game!</p >;
+      : <p className='opponent-modal-text'>{isReceivingChallengeFrom} has challenged you to a game!</p >;
     return modalText;
   }
 
   chooseChallengeModalButtons() {
-    const modalButtons = this.state.challengerModalisActive
+    const { challengerModalisActive } = this.state;
+    const modalButtons = challengerModalisActive
       ? <button onClick={this.handleClick} className='challenger-modal-button'>Cancel</button>
       : <div className='opponent-modal-button-box'>
         <button onClick={this.handleClick} className='challenger-modal-button accept-button'>Accept</button>

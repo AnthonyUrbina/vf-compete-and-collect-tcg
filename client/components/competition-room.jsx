@@ -10,7 +10,9 @@ export default class CompetitionRoom extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`/api/games/retrieve/${this.props.token.userId}`,
+    const { user } = this.props;
+    const { userId } = user;
+    fetch(`/api/games/retrieve/${userId}`,
       { method: 'GET' })
       .then(res => res.json())
       .then(result => {
@@ -18,7 +20,7 @@ export default class CompetitionRoom extends React.Component {
         state.gameId = gameId;
         this.setState(state);
       });
-    if (this.props.token) {
+    if (user) {
       const roomId = parseRoute(window.location.hash).path;
       const token = window.localStorage.getItem('react-context-jwt');
       this.socket = io('/', {
@@ -38,7 +40,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   renderPlayer2() {
-    const { username } = this.props.token;
+    const { username } = this.props.user;
     const roomId = parseRoute(window.location.hash).path;
     const splitUsernames = roomId.split('-');
     let opponent = null;
@@ -51,7 +53,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   createCard() {
-    const cardShowing = this.state[this.props.token.username + 'CardShowing'];
+    const cardShowing = this.state[this.props.user.username + 'CardShowing'];
     if (cardShowing) {
       const suit = cardShowing[0].suit;
       const rank = cardShowing[0].rank;
@@ -63,7 +65,8 @@ export default class CompetitionRoom extends React.Component {
   }
 
   flipCard() {
-    const client = this.props.token.username;
+    const { gameId } = this.state;
+    const client = this.props.user.username;
     const clientDeck = this.state[client + 'Deck'];
     const copyOfClientDeck = [...clientDeck];
     const cardFlipped = copyOfClientDeck.splice(0, 1);
@@ -81,8 +84,7 @@ export default class CompetitionRoom extends React.Component {
       headers,
       body: JSON.stringify(copyOfState)
     };
-
-    fetch(`/api/games/${this.state.gameId}`, req)
+    fetch(`/api/games/${gameId}`, req)
       .then(res => res.json())
       .then(data => this.setState(data));
   }
