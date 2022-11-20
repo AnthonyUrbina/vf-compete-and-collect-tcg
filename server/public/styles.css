@@ -143,3 +143,9 @@ h3 {
 .opponent-modal-box {
   background-color: #fffaf0;
 }
+
+.player2-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}

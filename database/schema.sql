@@ -20,7 +20,9 @@ CREATE TABLE "public"."users" (
 CREATE TABLE "public"."games" (
 	"challenger" int NOT NULL,
 	"opponent" int NOT NULL,
-	"state" json
+	"state" json,
+	"gameId" serial NOT NULL,
+	CONSTRAINT "games_pk" PRIMARY KEY ("gameId")
 ) WITH (
   OIDS=FALSE
 );

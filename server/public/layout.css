@@ -242,12 +242,26 @@ li {
 .match-deck {
   position: relative;
   margin-right: 0;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .player-2-deck {
   position: absolute;
-  bottom: 18%;
+  bottom: 14%;
+}
+
+.flipped-card {
+  width: 76px;
+  height: 111px;
+}
+
+.client-card-column {
+  display: flex;
+  align-items: flex-end;
+}
+
+.client-card-row {
+  height: 24vh;
 }
 
 @media screen and (min-width: 768px) {
@@ -266,10 +280,30 @@ li {
   .player-2-stretch {
     bottom: 7%;
   }
+
+  .player-2-deck {
+    bottom: 17%;
+  }
+
+  .client-card-row {
+    height: 28vh;
+  }
 }
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
   .player-2-stretch {
     bottom: 7%;
+  }
+
+  .client-card {
+    margin-top: 5rem;
+  }
+
+  .player-2-deck {
+    bottom: 17%;
+  }
+
+  .client-card-row {
+    height: 28vh;
   }
 }

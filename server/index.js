@@ -8,7 +8,7 @@ const app = express();
 const path = require('node:path');
 const publicPath = path.join(__dirname, 'public');
 const jwt = require('jsonwebtoken');
-
+const shuffle = require('lodash.shuffle');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
@@ -95,22 +95,50 @@ app.get('/api/games/retrieve/:userId', (req, res, next) => {
   }
 
   const sql = `
-    select "users"."username"
+    select "users"."username",
+           "games"."state",
+           "games"."gameId"
       from "games"
 inner join "users"
         on "challenger" = "userId"
         or "opponent" = "userId"
         where "challenger" = $1
-        or "opponent" = $1;
+        or "opponent" = $1
+        limit 1;
   `;
 
   const params = [userId];
   db.query(sql, params)
     .then(result => {
-      if (!result.rows[0].username || !result.rows[1].username) {
+      if (!result.rows[0]) {
         throw new ClientError(400, 'this user is not in any active games');
       }
       res.status(200).json(result.rows);
+    })
+    .catch(err => next(err));
+});
+
+app.patch('/api/games/:gameId', (req, res, next) => {
+  const { gameId } = req.params;
+  const state = req.body;
+  const sql = `
+    update "games"
+       set "state" = $2
+       where "gameId" = $1
+       returning "state"
+  `;
+  const params = [gameId, state];
+
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      const { roomId } = state;
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      io.to(roomId).emit('flip-card', state);
+      res.status(200).json(state);
+
     })
     .catch(err => next(err));
 });
@@ -120,12 +148,12 @@ app.use(errorMiddleware);
 const onlinePlayers = {};
 
 io.on('connection', socket => {
-
-  if (socket.handshake.query) {
-    socket.join(socket.handshake.query.roomId);
+  const { roomId } = socket.handshake.query;
+  const { token } = socket.handshake.auth;
+  if (roomId) {
+    socket.join(roomId);
   }
 
-  const { token } = socket.handshake.auth;
   if (token) {
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
     const { username, userId } = payload;
@@ -136,7 +164,7 @@ io.on('connection', socket => {
     throw new ClientError(401, 'authentication required');
   }
 
-  io.emit('onlinePlayers', onlinePlayers);
+  io.emit('online-players', onlinePlayers);
 
   socket.on('disconnect', () => {
     delete onlinePlayers[socket.id];
@@ -146,8 +174,8 @@ io.on('connection', socket => {
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
     const challengerId = socket.userId;
-    let challengerUsername = null;
-    let opponentUsername = null;
+    let challengerUsername;
+    let opponentUsername;
 
     for (const key in onlinePlayers) {
       if (key === challengerSocketId) {
@@ -166,8 +194,8 @@ io.on('connection', socket => {
 
   socket.on('invite-canceled', opponentSocketId => {
     const challengerSocketId = socket.id;
-    let challengerUsername = null;
-    let opponentUsername = null;
+    let challengerUsername;
+    let opponentUsername;
 
     for (const key in onlinePlayers) {
       if (key === challengerSocketId) {
@@ -184,17 +212,34 @@ io.on('connection', socket => {
   });
 
   socket.on('invite-accepted', inviteInfo => {
+    const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
+    const deck = getDeck(rank, suit);
+    const shuffled = shuffle(deck);
+    const players = [
+      { name: socket.nickname, deck: [] },
+      { name: challengerUsername, deck: [] }
+    ];
+
+    dealer(shuffled, players);
+
+    const state = {
+      [challengerUsername + 'Deck']: players[0].deck,
+      [socket.nickname + 'Deck']: players[1].deck,
+      [challengerUsername + 'CardShowing']: null,
+      [socket.nickname + 'CardShowing']: null
+    };
+    const JSONstate = JSON.stringify(state);
 
     const sql = `
-      insert into "games" ("challenger", "opponent")
-      values ($1, $2)
+      insert into "games" ("challenger", "opponent", "state")
+      values ($1, $2, $3)
       returning *;
     `;
-    const params = [inviteInfo.challengerId, socket.userId];
+    const params = [challengerId, socket.userId, JSONstate];
 
     db.query(sql, params)
       .then(result => {
-        socket.to(inviteInfo.challengerSocketId).emit('opponent-joined', inviteInfo);
+        socket.to(challengerSocketId).emit('opponent-joined', inviteInfo);
       })
       .catch(err => console.error(err));
   });
@@ -202,6 +247,28 @@ io.on('connection', socket => {
     socket.to(roomId).emit('opponent-declined');
   });
 });
+
+const rank = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
+const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
+
+function getDeck(rank, suit) {
+  const container = [];
+  let card = {};
+  for (let i = 0; i < suit.length; i++) {
+    for (let j = 0; j < rank.length; j++) {
+      card.suit = suit[i];
+      card.rank = rank[j];
+      container.push(card);
+      card = {};
+    }
+  }
+  return container;
+}
+
+function dealer(shuffled, players) {
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 52);
+}
 
 server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);

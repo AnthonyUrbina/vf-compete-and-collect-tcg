@@ -5,38 +5,32 @@ import parseRoute from '../lib/parse-route';
 export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      roomId: '',
-      opponent: null,
-      client: this.props.token.username
-    };
+    this.state = {};
+    this.flipCard = this.flipCard.bind(this);
   }
 
   componentDidMount() {
-    fetch(`/api/games/retrieve/${this.props.token.userId}`,
+    const { user } = this.props;
+    const { userId } = user;
+    fetch(`/api/games/retrieve/${userId}`,
       { method: 'GET' })
       .then(res => res.json())
       .then(result => {
-        const roomId = parseRoute(window.location.hash).path;
-        const players = result.map(player => {
-          return player.username;
-        });
-        let opponent = null;
-        for (let i = 0; i < players.length; i++) {
-          if (players[i] !== this.props.token.username) {
-            opponent = players[i];
-          }
-        }
-        if (this.props.token) {
-          const token = window.localStorage.getItem('react-context-jwt');
-          this.socket = io('/', {
-            auth: { token },
-            query: { roomId }
-          });
-        }
-        this.setState({ roomId, opponent });
+        const { state, gameId } = result[0];
+        state.gameId = gameId;
+        this.setState(state);
       });
-
+    if (user) {
+      const roomId = parseRoute(window.location.hash).path;
+      const token = window.localStorage.getItem('react-context-jwt');
+      this.socket = io('/', {
+        auth: { token },
+        query: { roomId }
+      });
+    }
+    this.socket.on('flip-card', state => {
+      this.setState(state);
+    });
   }
 
   componentWillUnmount() {
@@ -46,9 +40,9 @@ export default class CompetitionRoom extends React.Component {
   }
 
   renderPlayer2() {
-    const { username } = this.props.token;
-    const hashroute = parseRoute(window.location.hash).path;
-    const splitUsernames = hashroute.split('-');
+    const { username } = this.props.user;
+    const roomId = parseRoute(window.location.hash).path;
+    const splitUsernames = roomId.split('-');
     let opponent = null;
     for (let i = 0; i < splitUsernames.length; i++) {
       if (splitUsernames[i] !== username) {
@@ -56,6 +50,43 @@ export default class CompetitionRoom extends React.Component {
       }
     }
     return opponent;
+  }
+
+  createCard() {
+    const cardShowing = this.state[this.props.user.username + 'CardShowing'];
+    if (cardShowing) {
+      const suit = cardShowing[0].suit;
+      const rank = cardShowing[0].rank;
+      const src = `images/cards/${rank}_of_${suit}.png`;
+      return (
+        <img src={src} alt={src} className="flipped-card client-card" />
+      );
+    }
+  }
+
+  flipCard() {
+    const { gameId } = this.state;
+    const client = this.props.user.username;
+    const clientDeck = this.state[client + 'Deck'];
+    const copyOfClientDeck = [...clientDeck];
+    const cardFlipped = copyOfClientDeck.splice(0, 1);
+    const copyOfState = { ...this.state };
+    copyOfState[client + 'Deck'] = copyOfClientDeck;
+    copyOfState[client + 'CardShowing'] = cardFlipped;
+    copyOfState.roomId = parseRoute(window.location.hash).path;
+
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    const req = {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(copyOfState)
+    };
+    fetch(`/api/games/${gameId}`, req)
+      .then(res => res.json())
+      .then(data => this.setState(data));
   }
 
   render() {
@@ -73,21 +104,30 @@ export default class CompetitionRoom extends React.Component {
         <div className="row">
           <div className="column-full">
             <div className="player-deck match-deck">
+              <div>
+                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
+                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
+                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
+                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
+                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row client-card-row">
+          <div className="column-full client-card-column">
+            {this.createCard()}
+          </div>
+        </div>
+        <div className="row">
+          <div className="player-deck match-deck player-2-deck">
+            <button onClick={this.flipCard} className='player2-button'>
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="player-deck match-deck player-2-deck">
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-            <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+            </button>
           </div>
           <div className="column-full name-avatar-spacing player-2-stretch">
             <img className='player-avatar-img-size' src="images/player2.png" alt="player1" />
