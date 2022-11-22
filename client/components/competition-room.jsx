@@ -22,7 +22,7 @@ export default class CompetitionRoom extends React.Component {
       });
     if (user) {
       const roomId = parseRoute(window.location.hash).path;
-      const token = window.localStorage.getItem('react-context-jwt');
+      const token = window.localStorage.getItem('war-jwt');
       this.socket = io('/', {
         auth: { token },
         query: { roomId }
@@ -43,7 +43,7 @@ export default class CompetitionRoom extends React.Component {
     const { username } = this.props.user;
     const roomId = parseRoute(window.location.hash).path;
     const splitUsernames = roomId.split('-');
-    let opponent = null;
+    let opponent;
     for (let i = 0; i < splitUsernames.length; i++) {
       if (splitUsernames[i] !== username) {
         opponent = splitUsernames[i];
@@ -64,6 +64,33 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
+  showOpponentCard() {
+    let opponent;
+    const { username } = this.props.user;
+    const roomId = parseRoute(window.location.hash).path;
+    const splitUsernames = roomId.split('-');
+    for (let i = 0; i < splitUsernames.length; i++) {
+      if (splitUsernames[i] !== username) {
+        opponent = splitUsernames[i];
+      }
+    }
+    const clientCardShowing = this.state[this.props.user.username + 'CardShowing'];
+    const opponentCardShowing = this.state[opponent + 'CardShowing'];
+
+    if (opponentCardShowing) {
+      const suit = opponentCardShowing[0].suit;
+      const rank = opponentCardShowing[0].rank;
+      const src = `images/cards/${rank}_of_${suit}.png`;
+      let className = 'flipped-card opponent-card';
+      if (clientCardShowing) {
+        className = 'flipped-card opponent-first on-top';
+      }
+      return (
+        <img src={src} alt={src} className={className} />
+      );
+    }
+  }
+
   flipCard() {
     const { gameId } = this.state;
     const client = this.props.user.username;
@@ -74,6 +101,7 @@ export default class CompetitionRoom extends React.Component {
     copyOfState[client + 'Deck'] = copyOfClientDeck;
     copyOfState[client + 'CardShowing'] = cardFlipped;
     copyOfState.roomId = parseRoute(window.location.hash).path;
+    copyOfState.lastToFlip = client;
 
     const headers = {
       'Content-Type': 'application/json'
@@ -114,9 +142,12 @@ export default class CompetitionRoom extends React.Component {
             </div>
           </div>
         </div>
-        <div className="row client-card-row">
+        <div className="row battlefield-row">
           <div className="column-full client-card-column">
-            {this.createCard()}
+            <div className="battlefield">
+              {this.showOpponentCard()}
+              {this.createCard()}
+            </div>
           </div>
         </div>
         <div className="row">
