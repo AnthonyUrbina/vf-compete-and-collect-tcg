@@ -70,7 +70,7 @@ export default class CompetitionRoom extends React.Component {
       const src = `images/cards/${rank}_of_${suit}.png`;
       let className = 'flipped-card';
       if (opponentCardShowing) {
-        className = 'flipped-card';
+        className = 'flipped-card client-on-top';
       }
       return (
         <img src={src} alt={src} className={className} />
@@ -97,7 +97,7 @@ export default class CompetitionRoom extends React.Component {
       const src = `images/cards/${rank}_of_${suit}.png`;
       let className = 'flipped-card';
       if (clientCardShowing) {
-        className = 'flipped-card on-top';
+        className = 'flipped-card opponent-on-top';
       }
       return (
         <img src={src} alt={src} className={className} />

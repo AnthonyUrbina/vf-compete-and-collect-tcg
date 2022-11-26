@@ -261,14 +261,14 @@ li {
 }
 
 .battlefield-row {
-  height: 22.75vh;
+  height: 23.75vh;
 }
 
 .battlefield {
   position: relative;
 }
 
-.on-top {
+.opponent-on-top {
   position: absolute;
   right: 43%;
   z-index: 1;
@@ -277,6 +277,11 @@ li {
 .opponent-card-columm {
   display: flex;
   align-items: center;
+}
+
+.client-on-top {
+  position: relative;
+  z-index: 2;
 }
 
 @media screen and (min-width: 768px) {
@@ -301,10 +306,10 @@ li {
   }
 
   .battlefield-row {
-    height: 27vh;
+    height: 27.25vh;
   }
 
-  .on-top {
+  .opponent-on-top {
     right: 48.25%;
   }
 }
@@ -323,10 +328,10 @@ li {
   }
 
   .battlefield-row {
-    height: 28vh;
+    height: 27.25vh;
   }
 
-  .on-top {
+  .opponent-on-top {
     right: 45%;
   }
 }
