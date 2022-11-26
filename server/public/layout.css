@@ -258,14 +258,10 @@ li {
 .client-card-column {
   display: flex;
   align-items: flex-end;
-
-  /* align-items: center; */
-
-  /* justify-content: flex-end; */
 }
 
 .battlefield-row {
-  height: 25.75vh;
+  height: 22.75vh;
 }
 
 .battlefield {
@@ -274,12 +270,13 @@ li {
 
 .on-top {
   position: absolute;
-  bottom: 40%;
-  right: 18%;
+  right: 43%;
+  z-index: 1;
 }
 
-.opponent-card {
-  margin-bottom: 2rem;
+.opponent-card-columm {
+  display: flex;
+  align-items: center;
 }
 
 @media screen and (min-width: 768px) {
@@ -306,6 +303,10 @@ li {
   .battlefield-row {
     height: 27vh;
   }
+
+  .on-top {
+    right: 48.25%;
+  }
 }
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
@@ -323,5 +324,9 @@ li {
 
   .battlefield-row {
     height: 28vh;
+  }
+
+  .on-top {
+    right: 45%;
   }
 }

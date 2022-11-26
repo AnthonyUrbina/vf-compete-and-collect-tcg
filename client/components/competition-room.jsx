@@ -52,14 +52,28 @@ export default class CompetitionRoom extends React.Component {
     return opponent;
   }
 
-  createCard() {
-    const cardShowing = this.state[this.props.user.username + 'CardShowing'];
-    if (cardShowing) {
-      const suit = cardShowing[0].suit;
-      const rank = cardShowing[0].rank;
+  showClientCard() {
+    let opponent;
+    const { username } = this.props.user;
+    const roomId = parseRoute(window.location.hash).path;
+    const splitUsernames = roomId.split('-');
+    for (let i = 0; i < splitUsernames.length; i++) {
+      if (splitUsernames[i] !== username) {
+        opponent = splitUsernames[i];
+      }
+    }
+    const clientCardShowing = this.state[this.props.user.username + 'CardShowing'];
+    const opponentCardShowing = this.state[opponent + 'CardShowing'];
+    if (clientCardShowing) {
+      const suit = clientCardShowing[0].suit;
+      const rank = clientCardShowing[0].rank;
       const src = `images/cards/${rank}_of_${suit}.png`;
+      let className = 'flipped-card';
+      if (opponentCardShowing) {
+        className = 'flipped-card';
+      }
       return (
-        <img src={src} alt={src} className="flipped-card client-card" />
+        <img src={src} alt={src} className={className} />
       );
     }
   }
@@ -81,9 +95,9 @@ export default class CompetitionRoom extends React.Component {
       const suit = opponentCardShowing[0].suit;
       const rank = opponentCardShowing[0].rank;
       const src = `images/cards/${rank}_of_${suit}.png`;
-      let className = 'flipped-card opponent-card';
+      let className = 'flipped-card';
       if (clientCardShowing) {
-        className = 'flipped-card opponent-first on-top';
+        className = 'flipped-card on-top';
       }
       return (
         <img src={src} alt={src} className={className} />
@@ -143,11 +157,12 @@ export default class CompetitionRoom extends React.Component {
           </div>
         </div>
         <div className="row battlefield-row">
+          <div className="column-full opponent-card-columm">
+            {this.showOpponentCard()}
+
+          </div>
           <div className="column-full client-card-column">
-            <div className="battlefield">
-              {this.showOpponentCard()}
-              {this.createCard()}
-            </div>
+            {this.showClientCard()}
           </div>
         </div>
         <div className="row">
