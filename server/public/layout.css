@@ -268,7 +268,7 @@ li {
   position: relative;
 }
 
-.opponent-on-top {
+.opponent-flipped {
   position: absolute;
   right: 43%;
   z-index: 1;
@@ -309,7 +309,7 @@ li {
     height: 27.25vh;
   }
 
-  .opponent-on-top {
+  .opponent-flipped {
     right: 48.25%;
   }
 }
@@ -331,7 +331,7 @@ li {
     height: 27.25vh;
   }
 
-  .opponent-on-top {
+  .opponent-flipped {
     right: 45%;
   }
 }
