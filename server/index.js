@@ -150,9 +150,6 @@ const onlinePlayers = {};
 io.on('connection', socket => {
   const { roomId } = socket.handshake.query;
   const { token } = socket.handshake.auth;
-  if (roomId) {
-    socket.join(roomId);
-  }
 
   if (token) {
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
@@ -162,6 +159,10 @@ io.on('connection', socket => {
     socket.nickname = username;
   } else {
     throw new ClientError(401, 'authentication required');
+  }
+
+  if (roomId) {
+    socket.join(roomId);
   }
 
   io.emit('online-players', onlinePlayers);
@@ -228,6 +229,7 @@ io.on('connection', socket => {
       [challengerUsername + 'CardShowing']: null,
       [socket.nickname + 'CardShowing']: null
     };
+
     const JSONstate = JSON.stringify(state);
 
     const sql = `
@@ -252,17 +254,17 @@ const rank = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
 const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function getDeck(rank, suit) {
-  const container = [];
+  const deck = [];
   let card = {};
   for (let i = 0; i < suit.length; i++) {
     for (let j = 0; j < rank.length; j++) {
       card.suit = suit[i];
       card.rank = rank[j];
-      container.push(card);
+      deck.push(card);
       card = {};
     }
   }
-  return container;
+  return deck;
 }
 
 function dealer(shuffled, players) {

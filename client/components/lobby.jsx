@@ -20,7 +20,7 @@ export default class Lobby extends React.Component {
   componentDidMount() {
     const { onlinePlayers } = this.state;
     if (this.props.token) {
-      const token = window.localStorage.getItem('react-context-jwt');
+      const token = window.localStorage.getItem('war-jwt');
       this.socket = io('/', {
         auth: { token }
       });
@@ -53,7 +53,6 @@ export default class Lobby extends React.Component {
     });
     this.socket.on('opponent-joined', inviteInfo => {
       const { roomId } = inviteInfo;
-
       this.setState({ challengerModalisActive: false });
       window.location.hash = roomId;
     });
@@ -97,6 +96,7 @@ export default class Lobby extends React.Component {
     }
     if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
       const opponentUsername = event.target.dataset.username;
+      console.log(opponentUsername);
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
       this.socket.emit('invite-sent', opponentSocketId);
       this.setState({

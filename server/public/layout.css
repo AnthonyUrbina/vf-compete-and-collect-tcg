@@ -260,8 +260,28 @@ li {
   align-items: flex-end;
 }
 
-.client-card-row {
-  height: 24vh;
+.battlefield-row {
+  height: 23.75vh;
+}
+
+.battlefield {
+  position: relative;
+}
+
+.opponent-flipped {
+  position: absolute;
+  right: 43%;
+  z-index: 1;
+}
+
+.opponent-card-columm {
+  display: flex;
+  align-items: center;
+}
+
+.client-on-top {
+  position: relative;
+  z-index: 2;
 }
 
 @media screen and (min-width: 768px) {
@@ -285,8 +305,12 @@ li {
     bottom: 17%;
   }
 
-  .client-card-row {
-    height: 28vh;
+  .battlefield-row {
+    height: 27.25vh;
+  }
+
+  .opponent-flipped {
+    right: 48.25%;
   }
 }
 
@@ -303,7 +327,11 @@ li {
     bottom: 17%;
   }
 
-  .client-card-row {
-    height: 28vh;
+  .battlefield-row {
+    height: 27.25vh;
+  }
+
+  .opponent-flipped {
+    right: 45%;
   }
 }

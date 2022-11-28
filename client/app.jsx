@@ -22,14 +22,14 @@ export default class App extends React.Component {
         route: parseRoute(window.location.hash)
       });
     });
-    const token = window.localStorage.getItem('react-context-jwt');
+    const token = window.localStorage.getItem('war-jwt');
     const user = token ? jwtDecode(token) : null;
     this.setState({ user });
   }
 
   handleSignIn(results) {
     const { user, token } = results;
-    window.localStorage.setItem('react-context-jwt', token);
+    window.localStorage.setItem('war-jwt', token);
     this.setState({ user });
   }
 
