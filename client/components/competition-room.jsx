@@ -53,16 +53,14 @@ export default class CompetitionRoom extends React.Component {
   }
 
   showClientCard() {
-    const opponent = this.getOpponentUsername();
     const client = this.props.user.username;
     const clientCardShowing = this.state[client + 'CardShowing'];
-    const opponentCardShowing = this.state[opponent + 'CardShowing'];
     if (clientCardShowing) {
       const suit = clientCardShowing[0].suit;
       const rank = clientCardShowing[0].rank;
       const src = `images/cards/${rank}_of_${suit}.png`;
       let className = 'flipped-card';
-      if (opponentCardShowing) {
+      if (this.state.lastToFlip === client) {
         className = 'flipped-card client-on-top';
       }
       return (
@@ -87,18 +85,19 @@ export default class CompetitionRoom extends React.Component {
 
   flipCard() {
     const client = this.props.user.username;
-    const clientDeck = this.state[client + 'Deck'];
-    if (clientDeck) {
+    const clientCardShowing = this.state[client + 'CardShowing'];
+    if (clientCardShowing) {
       return;
     }
     const { gameId } = this.state;
+    const clientDeck = this.state[client + 'Deck'];
     const copyOfClientDeck = [...clientDeck];
     const cardFlipped = copyOfClientDeck.splice(0, 1);
     const copyOfState = { ...this.state };
     copyOfState[client + 'Deck'] = copyOfClientDeck;
     copyOfState[client + 'CardShowing'] = cardFlipped;
-    copyOfState.roomId = parseRoute(window.location.hash).path;
     copyOfState.lastToFlip = client;
+    copyOfState.roomId = parseRoute(window.location.hash).path;
 
     const headers = {
       'Content-Type': 'application/json'
