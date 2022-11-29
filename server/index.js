@@ -138,11 +138,58 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       }
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
-
+      if (state.battlefield) {
+        decideWinner(state);
+      }
     })
     .catch(err => next(err));
 });
 
+function decideWinner(state) {
+  const { battlefield } = state;
+  // console.log(battlefield);
+  const bestRank = 0;
+  let winner;
+  for (const key in battlefield) {
+    if (battlefield[key].rank === 'jack') {
+      battlefield[key].rank = 11;
+    } else if (battlefield[key].rank === 'queen') {
+      battlefield[key].rank = 12;
+    } else if (battlefield[key].rank === 'king') {
+      battlefield[key].rank = 13;
+    } else if (battlefield[key].rank === 'ace') {
+      battlefield[key].rank = 14;
+    }
+    if (battlefield[key].rank > bestRank) {
+      winner = key;
+    } else if (battlefield[key].rank === bestRank) {
+      const randomNumber = genRandomNumber();
+      const players = getUsernames(state.roomId);
+      if (randomNumber > 5) {
+        winner = players[1];
+      } else if (randomNumber < 5) {
+        winner = players[2];
+      }
+    }
+  }
+  io.to(state.roomId).emit('winner-decided', winner);
+}
+
+function genRandomNumber() {
+  const randomNumber = Math.floor(Math.random() * 10);
+  return randomNumber;
+}
+
+function getUsernames(roomId) {
+  const players = {
+    player1: null,
+    player2: null
+  };
+  const splitUsernames = roomId.split('-');
+  players.player1 = splitUsernames[1];
+  players.player2 = splitUsernames[2];
+
+}
 app.use(errorMiddleware);
 
 const onlinePlayers = {};

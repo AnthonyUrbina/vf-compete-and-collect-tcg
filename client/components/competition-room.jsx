@@ -88,9 +88,9 @@ export default class CompetitionRoom extends React.Component {
     const clientCardShowing = this.state[client + 'CardShowing'];
     const opponent = this.getOpponentUsername();
     const opponentCardShowing = this.state[opponent + 'CardShowing'];
-    if (clientCardShowing) {
-      return;
-    }
+    // if (clientCardShowing) {
+    //   return;
+    // }
     const { gameId } = this.state;
     const clientDeck = this.state[client + 'Deck'];
     const copyOfClientDeck = [...clientDeck];
@@ -99,10 +99,12 @@ export default class CompetitionRoom extends React.Component {
     copyOfState[client + 'Deck'] = copyOfClientDeck;
     copyOfState[client + 'CardShowing'] = cardFlipped;
     copyOfState.lastToFlip = client;
-    copyOfState.battlefieldEmpty = true;
+    copyOfState.battlefield = {};
     copyOfState.roomId = parseRoute(window.location.hash).path;
+
     if (opponentCardShowing) {
-      copyOfState.battlefieldEmpty = false;
+      copyOfState.battlefield[client] = cardFlipped[0];
+      copyOfState.battlefield[opponent] = opponentCardShowing[0];
     }
 
     const headers = {
