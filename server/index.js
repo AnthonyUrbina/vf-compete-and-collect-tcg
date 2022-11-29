@@ -275,3 +275,20 @@ function dealer(shuffled, players) {
 server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
+
+/*
+- decide winner should only be called by once
+- it should not be called by a client
+- on server side
+- how do i figure out when two cards are placed
+- when patch is made after client flips card
+- you make a query to get state
+- if both players CardShowing property is present call decideWinner()
+- doesn't seem clean to do that inside the returned promise of a db query
+- i don't currently have the names of both players
+- think i got it
+- socket.on('flip-card')
+- if both cards are sh
+- both client's should not be telling the server that it's time to decideWinner()
+- the server should see that both cards are placed and then decideWinner
+*/

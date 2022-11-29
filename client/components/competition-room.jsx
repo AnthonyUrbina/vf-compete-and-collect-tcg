@@ -86,6 +86,8 @@ export default class CompetitionRoom extends React.Component {
   flipCard() {
     const client = this.props.user.username;
     const clientCardShowing = this.state[client + 'CardShowing'];
+    const opponent = this.getOpponentUsername();
+    const opponentCardShowing = this.state[opponent + 'CardShowing'];
     if (clientCardShowing) {
       return;
     }
@@ -97,7 +99,11 @@ export default class CompetitionRoom extends React.Component {
     copyOfState[client + 'Deck'] = copyOfClientDeck;
     copyOfState[client + 'CardShowing'] = cardFlipped;
     copyOfState.lastToFlip = client;
+    copyOfState.battlefieldEmpty = true;
     copyOfState.roomId = parseRoute(window.location.hash).path;
+    if (opponentCardShowing) {
+      copyOfState.battlefieldEmpty = false;
+    }
 
     const headers = {
       'Content-Type': 'application/json'
