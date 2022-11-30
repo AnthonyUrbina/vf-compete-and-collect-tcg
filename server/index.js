@@ -178,21 +178,24 @@ function decideWinner(battlefield, roomId, state) {
 function handleWin(winner, state, players) {
   const player1 = players.player1;
   const player2 = players.player2;
-  const copyOfState = { ...state };
-  const winnerDeck = copyOfState[winner + 'Deck'];
-  const player1CardShowing = copyOfState[player1 + 'CardShowing'];
-  const player2CardShowing = copyOfState[player2 + 'CardShowing'];
+  const { gameId } = state;
+  if (!state[winner + 'SideDeck']) {
+    state[winner + 'SideDeck'] = [];
+  }
+  const winnerSideDeck = state[winner + 'SideDeck'];
+  const player1CardShowing = state[player1 + 'CardShowing'];
+  const player2CardShowing = state[player2 + 'CardShowing'];
   const winnings = [];
   winnings.push(player2CardShowing[0]);
-  copyOfState[player2 + 'CardShowing'] = null;
+  state[player2 + 'CardShowing'] = null;
 
   winnings.push(player1CardShowing[0]);
-  copyOfState[player1 + 'CardShowing'] = null;
+  state[player1 + 'CardShowing'] = null;
 
   winnings.sort();
 
-  const newWinnerDeck = winnerDeck.concat(winnings);
-  copyOfState[winner + 'Deck'] = newWinnerDeck;
+  const newWinnerDeck = winnerSideDeck.concat(winnings);
+  state[winner + 'SideDeck'] = newWinnerDeck;
 
   const sql = `
     update "games"
@@ -200,7 +203,7 @@ function handleWin(winner, state, players) {
        where "gameId" = $1
        returning "state"
     `;
-  const params = [state.gameId, state];
+  const params = [gameId, state];
 
   db.query(sql, params)
     .then(result => {

@@ -32,9 +32,9 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('flip-card', state => {
       this.setState(state);
     });
-    this.socket.on('winner-decided', copyOfState => {
-      console.log('winner winner chicken dinner', copyOfState);
-      this.setState(copyOfState);
+    this.socket.on('winner-decided', state => {
+      console.log('winner winner chicken dinner', state[this.props.user.username + 'SideDeck']);
+      this.setState(state);
       /*
       push CardShowing of both players into CardDeck of winner
       first put them in an array and sort then, then push to winner
