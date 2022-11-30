@@ -140,13 +140,14 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       res.status(200).json(state);
 
       if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideWinner, 2000, battlefield, roomId);
+        setTimeout(decideWinner, 2000, battlefield, roomId, state);
       }
     })
     .catch(err => next(err));
 });
 
-function decideWinner(battlefield, roomId) {
+function decideWinner(battlefield, roomId, state) {
+  const players = getUsernames(roomId);
   let bestRank = 0;
   let winner;
   for (const key in battlefield) {
@@ -164,7 +165,6 @@ function decideWinner(battlefield, roomId) {
       winner = key;
     } else if (battlefield[key].rank === bestRank) {
       const randomNumber = genRandomNumber();
-      const players = getUsernames(roomId);
       if (randomNumber > 5) {
         winner = players.player2;
       } else if (randomNumber < 5) {
@@ -172,7 +172,45 @@ function decideWinner(battlefield, roomId) {
       }
     }
   }
-  io.to(roomId).emit('winner-decided', winner);
+  handleWin(winner, state, players);
+}
+
+function handleWin(winner, state, players) {
+  const player1 = players.player1;
+  const player2 = players.player2;
+  const copyOfState = { ...state };
+  const winnerDeck = copyOfState[winner + 'Deck'];
+  const player1CardShowing = copyOfState[player1 + 'CardShowing'];
+  const player2CardShowing = copyOfState[player2 + 'CardShowing'];
+  const winnings = [];
+  winnings.push(player2CardShowing[0]);
+  copyOfState[player2 + 'CardShowing'] = null;
+
+  winnings.push(player1CardShowing[0]);
+  copyOfState[player1 + 'CardShowing'] = null;
+
+  winnings.sort();
+
+  const newWinnerDeck = winnerDeck.concat(winnings);
+  copyOfState[winner + 'Deck'] = newWinnerDeck;
+
+  const sql = `
+    update "games"
+       set "state" = $2
+       where "gameId" = $1
+       returning "state"
+    `;
+  const params = [state.gameId, state];
+
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      const { roomId } = state;
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      io.to(roomId).emit('winner-decided', state);
+    });
 }
 
 function genRandomNumber() {
@@ -186,9 +224,9 @@ function getUsernames(roomId) {
     player2: null
   };
   const splitUsernames = roomId.split('-');
-  players.player1 = splitUsernames[1];
-  players.player2 = splitUsernames[2];
-
+  players.player1 = splitUsernames[0];
+  players.player2 = splitUsernames[1];
+  return players;
 }
 app.use(errorMiddleware);
 

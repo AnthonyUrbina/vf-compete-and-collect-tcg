@@ -32,31 +32,8 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('flip-card', state => {
       this.setState(state);
     });
-    this.socket.on('winner-decided', winner => {
-      console.log('winner winner chicken dinner', winner);
-      const copyOfState = { ...this.state };
-      const winnerDeck = copyOfState[winner + 'Deck'];
-      const client = this.props.user.username;
-      const clientCardShowing = this.state[client + 'CardShowing'];
-      const opponent = this.getOpponentUsername();
-      const opponentCardShowing = this.state[opponent + 'CardShowing'];
-      const winnings = [];
-      winnings.push(opponentCardShowing[0]);
-      console.log('opponent', copyOfState[opponent + 'CardShowing']);
-      copyOfState[opponent + 'CardShowing'] = null;
-      console.log('opponent post', copyOfState[opponent + 'CardShowing']);
-
-      winnings.push(clientCardShowing[0]);
-      console.log('client', copyOfState[client + 'CardShowing']);
-      copyOfState[client + 'CardShowing'] = null;
-      console.log('client post', copyOfState[client + 'CardShowing']);
-
-      winnings.sort();
-      console.log('winnerDeck', winnerDeck);
-      console.log('sorted winnings', winnings);
-      const newWinnerDeck = winnerDeck.concat(winnings);
-      copyOfState[winner + 'Deck'] = newWinnerDeck;
-      console.log('copyOfState[winner + deck]', copyOfState[winner + 'Deck']);
+    this.socket.on('winner-decided', copyOfState => {
+      console.log('winner winner chicken dinner', copyOfState);
       this.setState(copyOfState);
       /*
       push CardShowing of both players into CardDeck of winner
