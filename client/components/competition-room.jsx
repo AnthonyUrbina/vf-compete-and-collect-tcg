@@ -130,6 +130,50 @@ export default class CompetitionRoom extends React.Component {
       .then(data => this.setState(data));
   }
 
+  showOpponentWinningCards() {
+    const opponent = this.getOpponentUsername();
+    const opponentSideDeck = this.state[opponent + 'SideDeck'];
+    if (opponentSideDeck) {
+      console.log(opponentSideDeck);
+      const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
+      const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
+      const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
+      const secondToLastCardSuit = opponentSideDeck[opponentSideDeck.length - 2].suit;
+      const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
+      const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
+      const className = 'flipped-card';
+
+      return (
+        <>
+          <img src={srcTop} alt={srcTop} className={className} />
+          <img src={srcBottom} alt={srcBottom} className={className} />
+        </>
+      );
+    }
+  }
+
+  showClientWinningCards() {
+    const client = this.props.user.username;
+    const clientSideDeck = this.state[client + 'SideDeck'];
+    if (clientSideDeck) {
+      console.log(clientSideDeck);
+      const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
+      const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
+      const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;
+      const secondToLastCardSuit = clientSideDeck[clientSideDeck.length - 2].suit;
+      const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
+      const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
+      const className = 'flipped-card';
+
+      return (
+        <>
+          <img src={srcTop} alt={srcTop} className={className} />
+          <img src={srcBottom} alt={srcBottom} className={className} />
+        </>
+      );
+    }
+  }
+
   render() {
     return (
       <>
@@ -142,6 +186,7 @@ export default class CompetitionRoom extends React.Component {
             <p className='player-names-size'>{this.getOpponentUsername()}</p>
           </div>
         </div>
+        {this.showOpponentWinningCards()}
         <div className="row">
           <div className="column-full">
             <div className="player-deck match-deck">
@@ -179,6 +224,7 @@ export default class CompetitionRoom extends React.Component {
             <p className='player-names-size'>You</p>
           </div>
         </div>
+        {this.showClientWinningCards()}
       </>
     );
   }
