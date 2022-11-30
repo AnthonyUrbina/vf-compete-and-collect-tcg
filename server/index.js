@@ -132,23 +132,22 @@ app.patch('/api/games/:gameId', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
-      const { roomId } = state;
+      const { roomId, battlefield } = state;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
-      if (state.battlefield) {
-        decideWinner(state);
+
+      if (Object.keys(battlefield).length === 2) {
+        setTimeout(decideWinner, 2000, battlefield, roomId);
       }
     })
     .catch(err => next(err));
 });
 
-function decideWinner(state) {
-  const { battlefield } = state;
-  // console.log(battlefield);
-  const bestRank = 0;
+function decideWinner(battlefield, roomId) {
+  let bestRank = 0;
   let winner;
   for (const key in battlefield) {
     if (battlefield[key].rank === 'jack') {
@@ -161,18 +160,19 @@ function decideWinner(state) {
       battlefield[key].rank = 14;
     }
     if (battlefield[key].rank > bestRank) {
+      bestRank = battlefield[key].rank;
       winner = key;
     } else if (battlefield[key].rank === bestRank) {
       const randomNumber = genRandomNumber();
-      const players = getUsernames(state.roomId);
+      const players = getUsernames(roomId);
       if (randomNumber > 5) {
-        winner = players[1];
+        winner = players.player2;
       } else if (randomNumber < 5) {
-        winner = players[2];
+        winner = players.player2;
       }
     }
   }
-  io.to(state.roomId).emit('winner-decided', winner);
+  io.to(roomId).emit('winner-decided', winner);
 }
 
 function genRandomNumber() {

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -30,6 +31,37 @@ export default class CompetitionRoom extends React.Component {
     }
     this.socket.on('flip-card', state => {
       this.setState(state);
+    });
+    this.socket.on('winner-decided', winner => {
+      console.log('winner winner chicken dinner', winner);
+      const copyOfState = { ...this.state };
+      const winnerDeck = copyOfState[winner + 'Deck'];
+      const client = this.props.user.username;
+      const clientCardShowing = this.state[client + 'CardShowing'];
+      const opponent = this.getOpponentUsername();
+      const opponentCardShowing = this.state[opponent + 'CardShowing'];
+      const winnings = [];
+      winnings.push(opponentCardShowing[0]);
+      console.log('opponent', copyOfState[opponent + 'CardShowing']);
+      copyOfState[opponent + 'CardShowing'] = null;
+      console.log('opponent post', copyOfState[opponent + 'CardShowing']);
+
+      winnings.push(clientCardShowing[0]);
+      console.log('client', copyOfState[client + 'CardShowing']);
+      copyOfState[client + 'CardShowing'] = null;
+      console.log('client post', copyOfState[client + 'CardShowing']);
+
+      winnings.sort();
+      console.log('winnerDeck', winnerDeck);
+      console.log('sorted winnings', winnings);
+      const newWinnerDeck = winnerDeck.concat(winnings);
+      copyOfState[winner + 'Deck'] = newWinnerDeck;
+      console.log('copyOfState[winner + deck]', copyOfState[winner + 'Deck']);
+      this.setState(copyOfState);
+      /*
+      push CardShowing of both players into CardDeck of winner
+      first put them in an array and sort then, then push to winner
+      */
     });
   }
 
@@ -88,9 +120,9 @@ export default class CompetitionRoom extends React.Component {
     const clientCardShowing = this.state[client + 'CardShowing'];
     const opponent = this.getOpponentUsername();
     const opponentCardShowing = this.state[opponent + 'CardShowing'];
-    // if (clientCardShowing) {
-    //   return;
-    // }
+    if (clientCardShowing) {
+      return;
+    }
     const { gameId } = this.state;
     const clientDeck = this.state[client + 'Deck'];
     const copyOfClientDeck = [...clientDeck];

@@ -96,7 +96,6 @@ export default class Lobby extends React.Component {
     }
     if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
       const opponentUsername = event.target.dataset.username;
-      console.log(opponentUsername);
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
       this.socket.emit('invite-sent', opponentSocketId);
       this.setState({
