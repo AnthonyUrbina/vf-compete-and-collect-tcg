@@ -81,9 +81,45 @@ h3 {
   margin-top: 5rem;
 }
 
+/* .deck-1 {
+  position: relative;
+  z-index: 5;
+}
+
+.deck-2 {
+  position: absolute;
+  left: 0.25rem;
+  top: 0.15rem;
+  z-index: 4;
+}
+
+.deck-3 {
+  position: absolute;
+  left: 0.45rem;
+  top: 0.25rem;
+  z-index: 3;
+}
+
+.deck-4 {
+  position: absolute;
+  left: 0.65rem;
+  top: 0.45rem;
+  z-index: 2;
+}
+
+.deck-5 {
+  position: absolute;
+  left: 0.85rem;
+  top: 0.55rem;
+  z-index: 1;
+} */
 .deck-cards {
   width: 78px;
   height: 107px;
+}
+
+.deck-1 {
+  position: relative;
 }
 
 .deck-2 {
@@ -245,10 +281,10 @@ li {
   margin-top: 0.5rem;
 }
 
-.player-2-deck {
+/* .player-2-deck {
   position: absolute;
   bottom: 14%;
-}
+} */
 
 .flipped-card {
   width: 76px;
@@ -264,13 +300,8 @@ li {
   height: 23.75vh;
 }
 
-.battlefield {
-  position: relative;
-}
-
 .opponent-flipped {
-  position: absolute;
-  right: 43%;
+  position: relative;
   z-index: 1;
 }
 
@@ -279,9 +310,42 @@ li {
   align-items: center;
 }
 
+.cage {
+  position: relative;
+  display: flex;
+}
+
+.opponent-flipped-container {
+  position: relative;
+  left: 15%;
+  bottom: 15%;
+}
+
+.client-flipped-container {
+  position: relative;
+  right: 15%;
+  top: 15%;
+}
+
 .client-on-top {
   position: relative;
   z-index: 2;
+}
+
+.column-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: calc(100vh - 66.94px);
+}
+
+.battlefield {
+  display: flex;
+  position: relative;
+  flex-grow: 1;
+  flex-direction: column-reverse;
+  justify-content: center;
+  width: 100%;
 }
 
 @media screen and (min-width: 768px) {
