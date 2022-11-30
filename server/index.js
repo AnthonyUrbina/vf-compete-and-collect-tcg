@@ -176,19 +176,18 @@ function decideWinner(battlefield, roomId, state) {
 }
 
 function handleWin(winner, state, players) {
-  const player1 = players.player1;
-  const player2 = players.player2;
-  const { gameId } = state;
   if (!state[winner + 'SideDeck']) {
     state[winner + 'SideDeck'] = [];
   }
   const winnerSideDeck = state[winner + 'SideDeck'];
+  const player1 = players.player1;
+  const player2 = players.player2;
+  const { gameId } = state;
   const player1CardShowing = state[player1 + 'CardShowing'];
   const player2CardShowing = state[player2 + 'CardShowing'];
   const winnings = [];
   winnings.push(player2CardShowing[0]);
   state[player2 + 'CardShowing'] = null;
-
   winnings.push(player1CardShowing[0]);
   state[player1 + 'CardShowing'] = null;
 
