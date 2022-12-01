@@ -194,17 +194,17 @@ export default class Lobby extends React.Component {
   render() {
     return (
       <>
-        <div className="row">
+        <div className="row header">
           <h1 className='home-header-color'>WAR</h1>
         </div>
-        <div className="row">
-          <div className="column-full name-avatar-spacing">
+        <div className="row center">
+          <div className="name-avatar-spacing">
             <img className='player-avatar-img-size' src="images/player1.png" alt="player1" />
             <p className='player-names-size'>Bill</p>
           </div>
         </div>
-        <div className="row">
-          <div className="column-full">
+        <div className="row center">
+          <div>
             <div className="player-deck">
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
               <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
@@ -214,11 +214,11 @@ export default class Lobby extends React.Component {
             </div>
           </div>
         </div>
-        <div className='row'>
+        <div className="row center">
           <button onClick={this.handleClick} id='online-players-button'>Online Players</button>
         </div>
-        <div className="row ">
-          <div className="column-full name-avatar-spacing player-2-stretch">
+        <div className="row center">
+          <div className="name-avatar-spacing player-2-stretch">
             <img className='player-avatar-img-size' src="images/player2.png" alt="player1" />
             <p className='player-names-size'>You</p>
           </div>

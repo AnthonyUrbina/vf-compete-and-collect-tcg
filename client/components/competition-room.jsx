@@ -143,10 +143,10 @@ export default class CompetitionRoom extends React.Component {
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
 
       return (
-        <div className='side-deck'>
-          <img src={srcTop} alt={srcTop} className="flipped-card top"/>
-          <img src={srcBottom} alt={srcBottom} className="flipped-card bottom"/>
-        </div>
+        <>
+          <img src={srcTop} alt={srcTop} className="flipped-card top" />
+          <img src={srcBottom} alt={srcBottom} className="flipped-card bottom" />
+        </>
       );
     }
   }
@@ -164,10 +164,10 @@ export default class CompetitionRoom extends React.Component {
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
 
       return (
-        <div className='side-deck'>
+        <>
           <img src={srcTop} alt={srcTop} className="flipped-card top" />
           <img src={srcBottom} alt={srcBottom} className="flipped-card bottom" />
-        </div>
+        </>
       );
     }
   }
@@ -179,22 +179,27 @@ export default class CompetitionRoom extends React.Component {
           <h1 className='home-header-color'>WAR</h1>
         </div>
         <div className="row">
-          <div className="column-full a">
-            {this.showOpponentWinningCards()}
-            {this.showClientWinningCards()}
-          </div>
           <div className="column-full">
             <div className='name-avatar-spacing'>
-              <img className='player-avatar-img-size' src="images/player1.png" alt="player1" />
-              <p className='player-names-size'>{this.getOpponentUsername()}</p>
+              <div className="column-half">
+                <img className='player-avatar-img-size' src="images/player1.png" alt="player1" />
+              </div>
+              <div className="column-half">
+                <p className='player-names-size'>{this.getOpponentUsername()}</p>
+              </div>
             </div>
-            <div className="player-deck match-deck">
-              <div>
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+            <div className="row center">
+              <div className='side-deck flipped-card'>
+                {this.showOpponentWinningCards()}
+              </div>
+              <div className="column-one-fourth">
+                <div className="player-deck match-deck">
+                  <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
+                  <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
+                  <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
+                  <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
+                  <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+                </div>
               </div>
             </div>
             <div className='battlefield'>
@@ -207,14 +212,21 @@ export default class CompetitionRoom extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="player-deck match-deck player-2-deck">
-              <button onClick={this.flipCard} className='player2-button'>
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
-              </button>
+            <div className="row center">
+              <div className='side-deck flipped-card'>
+                {this.showClientWinningCards()}
+              </div>
+              <div className="column-one-fourth">
+                <div className="player-deck match-deck player-2-deck">
+                  <button onClick={this.flipCard} className='player2-button'>
+                    <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
+                    <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
+                    <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
+                    <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
+                    <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className='name-avatar-spacing'>
