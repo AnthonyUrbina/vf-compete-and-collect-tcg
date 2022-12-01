@@ -141,13 +141,12 @@ export default class CompetitionRoom extends React.Component {
       const secondToLastCardSuit = opponentSideDeck[opponentSideDeck.length - 2].suit;
       const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
-      const className = 'flipped-card';
 
       return (
-        <>
-          <img src={srcTop} alt={srcTop} className={className} />
-          <img src={srcBottom} alt={srcBottom} className={className} />
-        </>
+        <div className='side-deck'>
+          <img src={srcTop} alt={srcTop} className="flipped-card top"/>
+          <img src={srcBottom} alt={srcBottom} className="flipped-card bottom"/>
+        </div>
       );
     }
   }
@@ -163,13 +162,12 @@ export default class CompetitionRoom extends React.Component {
       const secondToLastCardSuit = clientSideDeck[clientSideDeck.length - 2].suit;
       const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
-      const className = 'flipped-card';
 
       return (
-        <>
-          <img src={srcTop} alt={srcTop} className={className} />
-          <img src={srcBottom} alt={srcBottom} className={className} />
-        </>
+        <div className='side-deck'>
+          <img src={srcTop} alt={srcTop} className="flipped-card top" />
+          <img src={srcBottom} alt={srcBottom} className="flipped-card bottom" />
+        </div>
       );
     }
   }
@@ -177,10 +175,14 @@ export default class CompetitionRoom extends React.Component {
   render() {
     return (
       <>
-        <div className="row">
+        <div className="row header">
           <h1 className='home-header-color'>WAR</h1>
         </div>
         <div className="row">
+          <div className="column-full a">
+            {this.showOpponentWinningCards()}
+            {this.showClientWinningCards()}
+          </div>
           <div className="column-full">
             <div className='name-avatar-spacing'>
               <img className='player-avatar-img-size' src="images/player1.png" alt="player1" />
@@ -214,6 +216,7 @@ export default class CompetitionRoom extends React.Component {
                 <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
               </button>
             </div>
+
             <div className='name-avatar-spacing'>
               <img className='player-avatar-img-size' src="images/player2.png" alt="player1" />
               <p className='player-names-size'>You</p>

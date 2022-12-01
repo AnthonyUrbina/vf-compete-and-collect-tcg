@@ -36,6 +36,10 @@ h3 {
 
 .row {
   display: flex;
+  align-items: center;
+}
+
+.row.header {
   justify-content: center;
 }
 
@@ -313,6 +317,7 @@ li {
 .cage {
   position: relative;
   display: flex;
+  justify-content: center;
 }
 
 .opponent-flipped-container {
@@ -346,6 +351,27 @@ li {
   flex-direction: column-reverse;
   justify-content: center;
   width: 100%;
+}
+
+.s-row {
+  flex-direction: row-reverse;
+  align-items: baseline;
+}
+
+.side-deck {
+  position: relative;
+  left: 20%;
+}
+
+.flipped-card.top {
+  position: absolute;
+  transform: rotate(-12deg);
+}
+
+.column-full.a {
+  height: calc(100vh - 66.94px - (83.5px * 2));
+  flex-basis: 25%;
+  justify-content: space-between;
 }
 
 @media screen and (min-width: 768px) {
