@@ -14,7 +14,7 @@ export default class AuthPage extends React.Component {
 
     return (
       <>
-        <div className='row center'>
+        <div className="row center">
           <div className='header-spacing'>
             <h1>WAR</h1>
           </div>

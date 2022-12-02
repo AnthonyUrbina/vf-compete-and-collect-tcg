@@ -195,38 +195,38 @@ export default class Lobby extends React.Component {
     return (
       <>
         <div className="row header">
-          <h1 className='home-header-color'>WAR</h1>
+          <h1 className="home-header-color">WAR</h1>
         </div>
         <div className="row center">
           <div className="name-avatar-spacing">
-            <img className='player-avatar-img-size' src="images/player1.png" alt="player1" />
-            <p className='player-names-size'>Bill</p>
+            <img className="player-avatar-img-size" src="images/player1.png" alt="player1" />
+            <p className="player-names-size">Bill</p>
           </div>
         </div>
         <div className="row center">
           <div>
             <div className="player-deck">
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
+              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
+              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
+              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
+              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
             </div>
           </div>
         </div>
         <div className="row center">
-          <button onClick={this.handleClick} id='online-players-button'>Online Players</button>
+          <button onClick={this.handleClick} id="online-players-button">Online Players</button>
         </div>
         <div className="row center">
           <div className="name-avatar-spacing player-2-stretch">
-            <img className='player-avatar-img-size' src="images/player2.png" alt="player1" />
-            <p className='player-names-size'>You</p>
+            <img className="player-avatar-img-size" src="images/player2.png" alt="player1" />
+            <p className="player-names-size">You</p>
           </div>
         </div>
         <div className={this.chooseModalClass()}>
           <button onClick={this.handleClick} className="fa-solid fa-x" />
           <h3>War Multiplayer</h3>
-          <p className='modal-text'>
+          <p className="modal-text">
             These are the players currently online. Click<br />
             on them to challenge them to a game of war!
           </p>
@@ -235,10 +235,10 @@ export default class Lobby extends React.Component {
           </ul>
         </div>
         <div className={this.chooseChallengerModalClass()}>
-          <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
+          <h3 className="challenger-modal-title">{this.chooseChallengeModalTitle()}</h3>
           {this.chooseChallengeModalText()}
-          <div className='vertical-center'>
-            <img className='player-avatar-img-size challenger-modal-img' src="images/player1.png" alt="" />
+          <div className="vertical-center">
+            <img className="player-avatar-img-size challenger-modal-img" src="images/player1.png" alt="" />
             {this.chooseChallengeModalButtons()}
           </div>
         </div>
