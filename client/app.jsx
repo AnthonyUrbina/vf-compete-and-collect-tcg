@@ -53,14 +53,24 @@ export default class App extends React.Component {
     }
   }
 
+  chooseBackgroundColor() {
+    if (this.state.user) {
+      return 'lobby';
+    } else {
+      return '';
+    }
+  }
+
   render() {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
     const context = { handleSignIn, user, route };
     return (
       <AppContext.Provider value={context}>
-        <div className={this.chooseContainerColor()}>
-          {this.choosePage()}
+        <div className={this.chooseBackgroundColor()}>
+          <div className={this.chooseContainerColor()}>
+            {this.choosePage()}
+          </div>
         </div>
       </AppContext.Provider>
     );

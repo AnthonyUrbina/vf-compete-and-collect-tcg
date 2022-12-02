@@ -42,7 +42,7 @@ input::placeholder {
   color: #abb5be;
 }
 
-.container.lobby {
+.lobby {
   background-color: #00a000;
 }
 
@@ -96,6 +96,10 @@ h3 {
 }
 
 .modal-player-text {
+  font-weight: 300;
+}
+
+.opponent-modal-text {
   font-weight: 300;
 }
 

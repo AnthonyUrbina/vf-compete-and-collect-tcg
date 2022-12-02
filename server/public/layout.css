@@ -36,7 +36,31 @@ h3 {
 
 .row {
   display: flex;
+}
+
+.row.header {
   justify-content: center;
+}
+
+.row.align-decks {
+  align-items: center;
+  width: 100%;
+}
+
+.column-one-eighth {
+  flex-basis: calc(100%/8);
+}
+
+.column-half {
+  flex-basis: 50%;
+}
+
+.column-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: calc(100vh - 66.94px);
+  flex-basis: 100%;
 }
 
 .home-header-color {
@@ -53,10 +77,15 @@ h3 {
   text-align: center;
 }
 
-.center-horizontal {
+.center-vertical {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
 }
 
 .name-avatar-spacing {
@@ -86,10 +115,14 @@ h3 {
   height: 107px;
 }
 
+.deck-1 {
+  position: relative;
+}
+
 .deck-2 {
   position: absolute;
-  right: 0.2rem;
   bottom: 0.35rem;
+  right: 0.2rem;
 }
 
 .deck-3 {
@@ -204,7 +237,7 @@ li {
   margin-right: 0;
 }
 
-.vertical-alignment {
+.vertical-center {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -227,10 +260,6 @@ li {
   border-radius: 0.25rem;
 }
 
-.opponent-modal-text {
-  font-weight: 300;
-}
-
 .accept-button {
   margin-right: 0.5rem;
 }
@@ -240,14 +269,8 @@ li {
 }
 
 .match-deck {
-  position: relative;
   margin-right: 0;
   margin-top: 0.5rem;
-}
-
-.player-2-deck {
-  position: absolute;
-  bottom: 14%;
 }
 
 .flipped-card {
@@ -255,28 +278,36 @@ li {
   height: 111px;
 }
 
-.client-card-column {
-  display: flex;
-  align-items: flex-end;
-}
-
 .battlefield-row {
   height: 23.75vh;
 }
 
-.battlefield {
-  position: relative;
-}
-
 .opponent-flipped {
-  position: absolute;
-  right: 43%;
+  position: relative;
   z-index: 1;
 }
 
-.opponent-card-columm {
+.cage {
   display: flex;
-  align-items: center;
+  justify-content: center;
+}
+
+.bundle {
+  display: flex;
+  flex-grow: 0.5;
+  padding-left: 0.75rem;
+}
+
+.opponent-flipped-container {
+  position: relative;
+  left: 6%;
+  bottom: 15%;
+}
+
+.client-flipped-container {
+  position: relative;
+  right: 6%;
+  top: 15%;
 }
 
 .client-on-top {
@@ -284,8 +315,30 @@ li {
   z-index: 2;
 }
 
+.battlefield {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column-reverse;
+  justify-content: center;
+  width: 100%;
+}
+
+.side-deck {
+  position: relative;
+  left: -12%;
+}
+
+.flipped-card.top {
+  position: absolute;
+  transform: rotate(-12deg);
+}
+
 @media screen and (min-width: 768px) {
-  .center-horizontal {
+  .container {
+    width: 375px;
+  }
+
+  .center-vertical {
     flex-direction: row;
   }
 
@@ -296,42 +349,14 @@ li {
   .header-spacing {
     padding-top: 2rem;
   }
-
-  .player-2-stretch {
-    bottom: 7%;
-  }
-
-  .player-2-deck {
-    bottom: 17%;
-  }
-
-  .battlefield-row {
-    height: 27.25vh;
-  }
-
-  .opponent-flipped {
-    right: 48.25%;
-  }
 }
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
-  .player-2-stretch {
-    bottom: 7%;
+  .container {
+    max-width: 375px;
   }
 
-  .client-card {
-    margin-top: 5rem;
-  }
-
-  .player-2-deck {
-    bottom: 17%;
-  }
-
-  .battlefield-row {
-    height: 27.25vh;
-  }
-
-  .opponent-flipped {
-    right: 45%;
+  .header-spacing {
+    padding-top: 2rem;
   }
 }

@@ -31,6 +31,13 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('flip-card', state => {
       this.setState(state);
     });
+    this.socket.on('winner-decided', state => {
+      this.setState(state);
+      /*
+      push CardShowing of both players into CardDeck of winner
+      first put them in an array and sort then, then push to winner
+      */
+    });
   }
 
   componentWillUnmount() {
@@ -86,6 +93,8 @@ export default class CompetitionRoom extends React.Component {
   flipCard() {
     const client = this.props.user.username;
     const clientCardShowing = this.state[client + 'CardShowing'];
+    const opponent = this.getOpponentUsername();
+    const opponentCardShowing = this.state[opponent + 'CardShowing'];
     if (clientCardShowing) {
       return;
     }
@@ -97,7 +106,13 @@ export default class CompetitionRoom extends React.Component {
     copyOfState[client + 'Deck'] = copyOfClientDeck;
     copyOfState[client + 'CardShowing'] = cardFlipped;
     copyOfState.lastToFlip = client;
+    copyOfState.battlefield = {};
     copyOfState.roomId = parseRoute(window.location.hash).path;
+
+    if (opponentCardShowing) {
+      copyOfState.battlefield[client] = cardFlipped[0];
+      copyOfState.battlefield[opponent] = opponentCardShowing[0];
+    }
 
     const headers = {
       'Content-Type': 'application/json'
@@ -113,53 +128,107 @@ export default class CompetitionRoom extends React.Component {
       .then(data => this.setState(data));
   }
 
+  showOpponentWinningCards() {
+    const opponent = this.getOpponentUsername();
+    const opponentSideDeck = this.state[opponent + 'SideDeck'];
+    if (opponentSideDeck) {
+      const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
+      const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
+      const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
+      const secondToLastCardSuit = opponentSideDeck[opponentSideDeck.length - 2].suit;
+      const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
+      const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
+
+      return (
+        <>
+          <img src={srcTop} alt={srcTop} className="flipped-card top" />
+          <img src={srcBottom} alt={srcBottom} className="flipped-card bottom" />
+        </>
+      );
+    }
+  }
+
+  showClientWinningCards() {
+    const client = this.props.user.username;
+    const clientSideDeck = this.state[client + 'SideDeck'];
+    if (clientSideDeck) {
+      const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
+      const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
+      const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;
+      const secondToLastCardSuit = clientSideDeck[clientSideDeck.length - 2].suit;
+      const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
+      const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
+
+      return (
+        <>
+          <img src={srcTop} alt={srcTop} className="flipped-card top" />
+          <img src={srcBottom} alt={srcBottom} className="flipped-card bottom" />
+        </>
+      );
+    }
+  }
+
   render() {
     return (
       <>
-        <div className="row">
-          <h1 className='home-header-color'>WAR</h1>
-        </div>
-        <div className="row">
-          <div className="column-full name-avatar-spacing">
-            <img className='player-avatar-img-size' src="images/player1.png" alt="player1" />
-            <p className='player-names-size'>{this.getOpponentUsername()}</p>
-          </div>
+        <div className="row header">
+          <h1 className="home-header-color">WAR</h1>
         </div>
         <div className="row">
           <div className="column-full">
-            <div className="player-deck match-deck">
-              <div>
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-                <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
+            <div className="name-avatar-spacing">
+              <div className="column-half">
+                <img className="player-avatar-img-size" src="images/player1.png" alt="player1" />
+              </div>
+              <div className="column-half">
+                <p className="player-names-size">{this.getOpponentUsername()}</p>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="row battlefield-row">
-          <div className="column-full opponent-card-columm">
-            {this.showOpponentCard()}
+            <div className="row center align-decks">
+              <div className="side-deck flipped-card">
+                {this.showOpponentWinningCards()}
+              </div>
+              <div className="column-one-eighth bundle">
+                <div className="player-deck match-deck">
+                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
+                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
+                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
+                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
+                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
+                </div>
+              </div>
+            </div>
+            <div className="battlefield">
+              <div className="cage">
+                <div className="opponent-flipped-container flipped-card">
+                  {this.showOpponentCard()}
+                </div>
+                <div className="client-flipped-container flipped-card">
+                  {this.showClientCard()}
+                </div>
+              </div>
+            </div>
+            <div className="row center align-decks">
+              <div className="side-deck flipped-card">
+                {this.showClientWinningCards()}
+              </div>
+              <div className="column-one-eighth bundle">
+                <div className="player-deck match-deck player-2-deck">
+                  <button onClick={this.flipCard} className="player2-button">
+                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
+                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
+                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
+                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
+                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          </div>
-          <div className="column-full client-card-column">
-            {this.showClientCard()}
-          </div>
-        </div>
-        <div className="row">
-          <div className="player-deck match-deck player-2-deck">
-            <button onClick={this.flipCard} className='player2-button'>
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-3' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-4' />
-              <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-5' />
-            </button>
-          </div>
-          <div className="column-full name-avatar-spacing player-2-stretch">
-            <img className='player-avatar-img-size' src="images/player2.png" alt="player1" />
-            <p className='player-names-size'>You</p>
+            <div className="name-avatar-spacing">
+              <img className="player-avatar-img-size" src="images/player2.png" alt="player1" />
+              <p className="player-names-size">You</p>
+            </div>
           </div>
         </div>
       </>

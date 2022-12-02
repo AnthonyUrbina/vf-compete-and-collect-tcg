@@ -14,16 +14,16 @@ export default class AuthPage extends React.Component {
 
     return (
       <>
-        <div className='row'>
-          <div className='column-full header-spacing'>
+        <div className="row center">
+          <div className='header-spacing'>
             <h1>WAR</h1>
           </div>
         </div>
-        <div className="row center-horizontal">
-          <div className="column-full">
+        <div className="row center-vertical">
+          <div className="">
             <img src="images/ace.png" alt="ace" />
           </div>
-          <div className="column-full form-spacing">
+          <div className="form-spacing">
             <AuthForm action={path} handleSignIn={this.context.handleSignIn} />
             <p>{altQuestion} <a href={altHref}>{altAnchor}</a></p>
           </div>
