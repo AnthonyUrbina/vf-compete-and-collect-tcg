@@ -37,8 +37,8 @@ app.post('/api/auth/sign-up', (req, res, next) => {
     .then(hashedPassword => {
       const sql = `
         insert into "users" ("username", "hashedPassword")
-        values ($1, $2)
-        returning "userId", "username";
+             values ($1, $2)
+          returning "userId", "username";
       `;
 
       const params = [username, hashedPassword];
@@ -102,9 +102,9 @@ app.get('/api/games/retrieve/:userId', (req, res, next) => {
 inner join "users"
         on "challenger" = "userId"
         or "opponent" = "userId"
-        where "challenger" = $1
+     where "challenger" = $1
         or "opponent" = $1
-        limit 1;
+      limit 1;
   `;
 
   const params = [userId];
@@ -124,8 +124,8 @@ app.patch('/api/games/:gameId', (req, res, next) => {
   const sql = `
     update "games"
        set "state" = $2
-       where "gameId" = $1
-       returning "state"
+     where "gameId" = $1
+ returning "state"
   `;
   const params = [gameId, state];
 
@@ -146,90 +146,6 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     .catch(err => next(err));
 });
 
-function decideWinner(battlefield, roomId, state) {
-  const players = getUsernames(roomId);
-  let bestRank = 0;
-  let winner;
-  for (const key in battlefield) {
-    if (battlefield[key].rank === 'jack') {
-      battlefield[key].rank = 11;
-    } else if (battlefield[key].rank === 'queen') {
-      battlefield[key].rank = 12;
-    } else if (battlefield[key].rank === 'king') {
-      battlefield[key].rank = 13;
-    } else if (battlefield[key].rank === 'ace') {
-      battlefield[key].rank = 14;
-    }
-    if (battlefield[key].rank > bestRank) {
-      bestRank = battlefield[key].rank;
-      winner = key;
-    } else if (battlefield[key].rank === bestRank) {
-      const randomNumber = genRandomNumber();
-      if (randomNumber > 5) {
-        winner = players.player2;
-      } else if (randomNumber < 5) {
-        winner = players.player2;
-      }
-    }
-  }
-  handleWin(winner, state, players);
-}
-
-function handleWin(winner, state, players) {
-  if (!state[winner + 'SideDeck']) {
-    state[winner + 'SideDeck'] = [];
-  }
-  const winnerSideDeck = state[winner + 'SideDeck'];
-  const player1 = players.player1;
-  const player2 = players.player2;
-  const { gameId } = state;
-  const player1CardShowing = state[player1 + 'CardShowing'];
-  const player2CardShowing = state[player2 + 'CardShowing'];
-  const winnings = [];
-  winnings.push(player2CardShowing[0]);
-  state[player2 + 'CardShowing'] = null;
-  winnings.push(player1CardShowing[0]);
-  state[player1 + 'CardShowing'] = null;
-
-  winnings.sort();
-
-  const newWinnerDeck = winnerSideDeck.concat(winnings);
-  state[winner + 'SideDeck'] = newWinnerDeck;
-
-  const sql = `
-    update "games"
-       set "state" = $2
-       where "gameId" = $1
-       returning "state"
-    `;
-  const params = [gameId, state];
-
-  db.query(sql, params)
-    .then(result => {
-      const { state } = result.rows[0];
-      const { roomId } = state;
-      if (!result.rows[0]) {
-        throw new ClientError(400, 'this gameId does not exist');
-      }
-      io.to(roomId).emit('winner-decided', state);
-    });
-}
-
-function genRandomNumber() {
-  const randomNumber = Math.floor(Math.random() * 10);
-  return randomNumber;
-}
-
-function getUsernames(roomId) {
-  const players = {
-    player1: null,
-    player2: null
-  };
-  const splitUsernames = roomId.split('-');
-  players.player1 = splitUsernames[0];
-  players.player2 = splitUsernames[1];
-  return players;
-}
 app.use(errorMiddleware);
 
 const onlinePlayers = {};
@@ -321,8 +237,8 @@ io.on('connection', socket => {
 
     const sql = `
       insert into "games" ("challenger", "opponent", "state")
-      values ($1, $2, $3)
-      returning *;
+           values ($1, $2, $3)
+        returning *;
     `;
     const params = [challengerId, socket.userId, JSONstate];
 
@@ -357,6 +273,91 @@ function getDeck(rank, suit) {
 function dealer(shuffled, players) {
   players[0].deck = shuffled.slice(0, 26);
   players[1].deck = shuffled.slice(26, 52);
+}
+
+function genRandomNumber() {
+  const randomNumber = Math.floor(Math.random() * 10);
+  return randomNumber;
+}
+
+function getUsernames(roomId) {
+  const players = {
+    player1: null,
+    player2: null
+  };
+  const splitUsernames = roomId.split('-');
+  players.player1 = splitUsernames[0];
+  players.player2 = splitUsernames[1];
+  return players;
+}
+
+function decideWinner(battlefield, roomId, state) {
+  const players = getUsernames(roomId);
+  let bestRank = 0;
+  let winner;
+  for (const key in battlefield) {
+    if (battlefield[key].rank === 'jack') {
+      battlefield[key].rank = 11;
+    } else if (battlefield[key].rank === 'queen') {
+      battlefield[key].rank = 12;
+    } else if (battlefield[key].rank === 'king') {
+      battlefield[key].rank = 13;
+    } else if (battlefield[key].rank === 'ace') {
+      battlefield[key].rank = 14;
+    }
+    if (battlefield[key].rank > bestRank) {
+      bestRank = battlefield[key].rank;
+      winner = key;
+    } else if (battlefield[key].rank === bestRank) {
+      const randomNumber = genRandomNumber();
+      if (randomNumber > 5) {
+        winner = players.player2;
+      } else if (randomNumber < 5) {
+        winner = players.player2;
+      }
+    }
+  }
+  handleWin(winner, state, players);
+}
+
+function handleWin(winner, state, players) {
+  if (!state[winner + 'SideDeck']) {
+    state[winner + 'SideDeck'] = [];
+  }
+  const winnerSideDeck = state[winner + 'SideDeck'];
+  const player1 = players.player1;
+  const player2 = players.player2;
+  const { gameId } = state;
+  const player1CardShowing = state[player1 + 'CardShowing'];
+  const player2CardShowing = state[player2 + 'CardShowing'];
+  const winnings = [];
+  winnings.push(player2CardShowing[0]);
+  state[player2 + 'CardShowing'] = null;
+  winnings.push(player1CardShowing[0]);
+  state[player1 + 'CardShowing'] = null;
+
+  winnings.sort();
+
+  const newWinnerDeck = winnerSideDeck.concat(winnings);
+  state[winner + 'SideDeck'] = newWinnerDeck;
+
+  const sql = `
+    update "games"
+       set "state" = $2
+     where "gameId" = $1
+ returning "state"
+    `;
+  const params = [gameId, state];
+
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      const { roomId } = state;
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      io.to(roomId).emit('winner-decided', state);
+    });
 }
 
 server.listen(process.env.PORT, () => {
