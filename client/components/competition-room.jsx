@@ -188,11 +188,11 @@ export default class CompetitionRoom extends React.Component {
                 <p className='player-names-size'>{this.getOpponentUsername()}</p>
               </div>
             </div>
-            <div className="row center">
+            <div className="row center align-decks">
               <div className='side-deck flipped-card'>
                 {this.showOpponentWinningCards()}
               </div>
-              <div className="column-one-fourth">
+              <div className="column-one-eighth bundle">
                 <div className="player-deck match-deck">
                   <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />
                   <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-2' />
@@ -212,11 +212,11 @@ export default class CompetitionRoom extends React.Component {
                 </div>
               </div>
             </div>
-            <div className="row center">
+            <div className="row center align-decks">
               <div className='side-deck flipped-card'>
                 {this.showClientWinningCards()}
               </div>
-              <div className="column-one-fourth">
+              <div className="column-one-eighth bundle">
                 <div className="player-deck match-deck player-2-deck">
                   <button onClick={this.flipCard} className='player2-button'>
                     <img src="images/backofcard.png" alt="backofcard" className='deck-cards deck-1' />

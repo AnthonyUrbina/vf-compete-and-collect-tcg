@@ -99,6 +99,10 @@ h3 {
   font-weight: 300;
 }
 
+.opponent-modal-text {
+  font-weight: 300;
+}
+
 .overlay {
   background-color: rgb(29 29 29 / 75%);
 }
