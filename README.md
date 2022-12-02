@@ -49,16 +49,17 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
 ### System Requirements
 
 - Node.js 10 or higher
+- Socket.io 4.5.4 or higher
 - NPM 6 or higher
-- MongoDB 4 or higher
+- PostgreSQL 14.3 or higher
 
 ### Getting Started
 
 1. Clone the repository.
 
     ```shell
-    git clone https://github.com/Learning-Fuze/sgt-react
-    cd sgt-react
+    git clone https://github.com/AnthonyUrbina/final-project
+    cd final-project
     ```
 
 1. Install all dependencies with NPM.
@@ -67,10 +68,10 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
     npm install
     ```
 
-1. Import the example database to MongoDB.
+1. Import the example database to PostgreSQL.
 
     ```shell
-    mongoimport --db sgt-react database/dump.json
+    npm run db:import
     ```
 
 1. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
