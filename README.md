@@ -5,7 +5,7 @@ A full stack JavaScript application for people who want to play cards.
 
 ## Why I Built This
 
-As a competitive-gaming enthusiast , I wanted to build an application for people to compete against each-other in real time.
+As a competitive-gaming enthusiast , I wanted to build an application for people to compete against each-other in real-time.
 
 ## Technologies Used
 
@@ -13,10 +13,13 @@ As a competitive-gaming enthusiast , I wanted to build an application for people
 - Webpack
 - Socket.io
 - Node.js
+- Express
 - PostgreSQL
 - HTML5
 - CSS3
 - Dokku
+- AWS
+- Lodash
 
 ## Live Demo
 
@@ -42,7 +45,8 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
 
 ## Preview
 
-![SGT React](assets/sgt-react.gif)
+![faceoff-mobile](server/assets/faceoff-mobile.gif)
+![enter-match-mobile](server/assets/enter-match-mobile.gif)
 
 ## Development
 
