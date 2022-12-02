@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -33,7 +32,6 @@ export default class CompetitionRoom extends React.Component {
       this.setState(state);
     });
     this.socket.on('winner-decided', state => {
-      console.log('winner winner chicken dinner', state[this.props.user.username + 'SideDeck']);
       this.setState(state);
       /*
       push CardShowing of both players into CardDeck of winner
@@ -134,7 +132,6 @@ export default class CompetitionRoom extends React.Component {
     const opponent = this.getOpponentUsername();
     const opponentSideDeck = this.state[opponent + 'SideDeck'];
     if (opponentSideDeck) {
-      console.log(opponentSideDeck);
       const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
       const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
       const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
@@ -155,7 +152,6 @@ export default class CompetitionRoom extends React.Component {
     const client = this.props.user.username;
     const clientSideDeck = this.state[client + 'SideDeck'];
     if (clientSideDeck) {
-      console.log(clientSideDeck);
       const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
       const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
       const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;

@@ -338,7 +338,7 @@ li {
     width: 375px;
   }
 
-  .center-horizontal {
+  .center-vertical {
     flex-direction: row;
   }
 
@@ -356,7 +356,7 @@ li {
     max-width: 375px;
   }
 
-  .client-card {
-    margin-top: 5rem;
+  .header-spacing {
+    padding-top: 2rem;
   }
 }
