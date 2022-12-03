@@ -6,7 +6,7 @@ drop schema "public" cascade;
 
 create schema "public";
 
- CREATE TABLE "public.users" (
+ CREATE TABLE "public"."users" (
 	"userId" serial NOT NULL,
 	"username" TEXT NOT NULL UNIQUE,
 	"hashedPassword" TEXT NOT NULL UNIQUE,
@@ -17,7 +17,7 @@ create schema "public";
 
 
 
-CREATE TABLE "public.games" (
+CREATE TABLE "public"."games" (
 	"challenger" int NOT NULL,
 	"opponent" int NOT NULL,
 	"state" json,

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -133,7 +134,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     .then(result => {
       const { state } = result.rows[0];
       const { roomId, battlefield } = state;
-      const players = getUsernames();
+      // const players = getUsernames(roomId);
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
@@ -141,33 +142,22 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       res.status(200).json(state);
 
       if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideWinner, 2000, state);
-      }
-
-      for (const username in players) {
-        const playerDeck = state[`${players[username]}Deck`];
-        const playerSideDeck = state[`${players[username]}SideDeck`];
-        const player = players[username];
-
-        if (!playerDeck && playerSideDeck) {
-          outOfCards(state, playerDeck, playerSideDeck, player);
-        } else if (!playerDeck && !playerSideDeck) {
-          const loser = players[username];
-          outOfCards(loser);
-
-        }
+        setTimeout(decideWinner, 200, state);
       }
     })
     .catch(err => next(err));
 });
 
-function outOfCards(state, loser, playerDeck, playerSideDeck, player) {
+function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
   const { gameId, roomId } = state;
-
-  if (!playerDeck && playerSideDeck) {
-    playerDeck = playerSideDeck;
-    state[player + 'Deck'] = playerDeck;
+  console.log('can u hear me?');
+  console.log('state', state);
+  console.log('loser', loser);
+  if (!playerDeck.length && playerSideDeck) {
+    state[player + 'Deck'] = playerSideDeck;
     state[player + 'SideDeck'] = [];
+    console.log(`${state[player + 'Deck']}`, state[player + 'Deck']);
+    console.log(`${state[player + 'SideDeck']}`, state[player + 'SideDeck']);
     const sql = `
         update "games"
            set "state" = $2
@@ -185,8 +175,8 @@ function outOfCards(state, loser, playerDeck, playerSideDeck, player) {
     state.loser = loser;
     const sql = `
         update "games"
-           set "state" = $2
-           set "isActive" = 'false'
+           set "state" = $2,
+               "isActive" = 'false'
          where "gameId" = $1
      returning "state"
     `;
@@ -289,8 +279,8 @@ io.on('connection', socket => {
     const JSONstate = JSON.stringify(state);
 
     const sql = `
-      insert into "games" ("challenger", "opponent", "state")
-           values ($1, $2, $3)
+      insert into "games" ("challenger", "opponent", "state", "isActive")
+           values ($1, $2, $3, 'true')
         returning *;
     `;
     const params = [challengerId, socket.userId, JSONstate];
@@ -324,7 +314,7 @@ function getDeck(rank, suit) {
 }
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 26);
+  players[0].deck = shuffled.slice(0, 2);
   players[1].deck = shuffled.slice(26, 52);
 }
 
@@ -411,6 +401,26 @@ function handleWin(winner, state, players) {
         throw new ClientError(400, 'this gameId does not exist');
       }
       io.to(roomId).emit('winner-decided', state);
+
+      for (const username in players) {
+        const playerDeck = state[players[username] + 'Deck'];
+        const playerSideDeck = state[players[username] + 'SideDeck'];
+        const player = players[username];
+        console.log('playerDeck', playerDeck);
+        console.log('playerSideDeck', playerSideDeck);
+        console.log('player', player);
+        console.assert(!playerDeck.length, 'playerDeck is not falsy');
+        console.assert(playerSideDeck, 'playerSideDeck is falsy');
+        if (!playerDeck.length && playerSideDeck) {
+          console.log('ayyyyyy');
+          outOfCards(state, playerDeck, playerSideDeck, player);
+        } else if (!playerDeck.length && !playerSideDeck) {
+
+          console.log('beeee');
+          const loser = players[username];
+          outOfCards(state, playerDeck, playerSideDeck, player, loser);
+        }
+      }
     });
 }
 

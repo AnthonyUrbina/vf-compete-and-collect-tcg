@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -32,6 +33,15 @@ export default class CompetitionRoom extends React.Component {
       this.setState(state);
     });
     this.socket.on('winner-decided', state => {
+      this.setState(state);
+    });
+
+    this.socket.on('deck-replaced', state => {
+      console.log(state);
+      this.setState(state);
+    });
+
+    this.socket.on('game-created', state => {
       this.setState(state);
     });
   }
@@ -127,7 +137,10 @@ export default class CompetitionRoom extends React.Component {
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
     const opponentSideDeck = this.state[opponent + 'SideDeck'];
-    if (opponentSideDeck) {
+    if (!opponentSideDeck) {
+      return;
+    }
+    if (opponentSideDeck.length !== 0) {
       const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
       const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
       const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
@@ -147,7 +160,11 @@ export default class CompetitionRoom extends React.Component {
   showClientWinningCards() {
     const client = this.props.user.username;
     const clientSideDeck = this.state[client + 'SideDeck'];
-    if (clientSideDeck) {
+    console.log('clientSideDeck', clientSideDeck);
+    if (!clientSideDeck) {
+      return;
+    }
+    if (clientSideDeck.length !== 0) {
       const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
       const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
       const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;
