@@ -33,10 +33,6 @@ export default class CompetitionRoom extends React.Component {
     });
     this.socket.on('winner-decided', state => {
       this.setState(state);
-      /*
-      push CardShowing of both players into CardDeck of winner
-      first put them in an array and sort then, then push to winner
-      */
     });
   }
 
