@@ -218,6 +218,36 @@ export default class CompetitionRoom extends React.Component {
     );
   }
 
+  pickWinnerText() {
+    const { loser } = this.state;
+
+    if (!loser) {
+      return;
+    }
+
+    const opponent = this.getOpponentUsername();
+    const client = this.props.user.username;
+    if (client === loser) {
+      return opponent;
+    } else {
+      return client;
+    }
+  }
+
+  pickWinnerAvatar() {
+    const { loser } = this.state;
+    if (!loser) {
+      return;
+    }
+
+    const client = this.props.user.username;
+    if (client === loser) {
+      return 'images/player1.png';
+    } else {
+      return 'images/player2.png';
+    }
+  }
+
   render() {
     return (
       <>
@@ -273,14 +303,14 @@ export default class CompetitionRoom extends React.Component {
           <div className="row center">
             <img className='trophy' src="images/trophy.png" alt="trophy" />
             <div>
-              <img className="winner-avatar" src="images/player1.png" alt="" />
-              <p className='winner-modal-text'>oak</p>
+              <img className="winner-avatar" src={this.pickWinnerAvatar()} alt="" />
+              <p className='winner-modal-text'>{this.pickWinnerText()}</p>
               <a href="#" className='challenger-modal-button winner-modal-button'>Main Menu</a>
             </div>
             <img className='trophy' src="images/trophy.png" alt="trophy" />
           </div>
         </div>
-        <div className='overlay.hidden' />
+        <div className='overlay.hidden'/>
       </>
     );
   }
