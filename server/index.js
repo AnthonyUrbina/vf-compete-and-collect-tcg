@@ -133,6 +133,8 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     .then(result => {
       const { state } = result.rows[0];
       const { roomId, battlefield } = state;
+      const players = getUsernames();
+      const { player1, player2 } = players;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
@@ -145,6 +147,51 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     })
     .catch(err => next(err));
 });
+
+function outOfCards(state) {
+  const { gameId, roomId } = state;
+  const players = getUsernames();
+  // const { player1, player2 } = players;
+  for (const username in players) {
+    let playerDeck = state[`${players[username]}Deck`];
+    const playerSideDeck = state[`${players[username]}SideDeck`];
+
+    if (!playerDeck && playerSideDeck) {
+      playerDeck = playerSideDeck;
+      state[`${players[username]}Deck`] = playerDeck;
+      state[`${players[username]}SideDeck`] = [];
+      const sql = `
+        update "games"
+           set "state" = $2
+         where "gameId" = $1
+     returning "state"
+    `;
+      const params = [gameId, state];
+
+      db.query(sql, params)
+        .then(result => {
+          io.to(roomId).emit('deck-replaced', state);
+        });
+
+    } else if (!playerDeck && !playerSideDeck) {
+      const loser = players[username];
+      state.loser = loser;
+      const sql = `
+        update "games"
+           set "state" = $2
+           set "isActive" = 'false'
+         where "gameId" = $1
+     returning "state"
+    `;
+      const params = [gameId, state];
+
+      db.query(sql, params)
+        .then(result => {
+          io.to(roomId).emit('game-over', state);
+        });
+    }
+  }
+}
 
 app.use(errorMiddleware);
 
@@ -327,8 +374,7 @@ function handleWin(winner, state, players) {
     state[winner + 'SideDeck'] = [];
   }
   const winnerSideDeck = state[winner + 'SideDeck'];
-  const player1 = players.player1;
-  const player2 = players.player2;
+  const { player1, player2 } = players;
   const { gameId } = state;
   const player1CardShowing = state[player1 + 'CardShowing'];
   const player2CardShowing = state[player2 + 'CardShowing'];
