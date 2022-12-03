@@ -333,6 +333,51 @@ li {
   transform: rotate(-12deg);
 }
 
+.winner-modal {
+  text-align: center;
+  width: 375px;
+  height: 193px;
+  position: fixed;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+  background-color: #f00;
+}
+
+.winner-modal-title {
+  color: #ffd700;
+  padding: 0;
+  margin: 0;
+  font-size: 48px;
+}
+
+.winner-modal-text {
+  color: white;
+  margin: 0;
+  font-weight: lighter;
+}
+
+.trophy {
+  width: 44px;
+  height: 36px;
+  margin-top: 0.75rem;
+}
+
+.winner-avatar {
+  width: 78px;
+  height: 65.24px;
+  margin-left: 0.75rem;
+  margin-right: 0.75rem;
+}
+
+.winner-modal-button {
+  margin: 0.25rem;
+  display: block;
+  text-decoration: none;
+}
+
 @media screen and (min-width: 768px) {
   .container {
     width: 375px;

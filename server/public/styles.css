@@ -153,3 +153,8 @@ h3 {
   border: none;
   padding: 0;
 }
+
+.winner-modal-button {
+  font-size: 10px;
+  font-family: inter, sans-serif;
+}

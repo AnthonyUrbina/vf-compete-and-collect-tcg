@@ -37,7 +37,6 @@ export default class CompetitionRoom extends React.Component {
     });
 
     this.socket.on('deck-replaced', state => {
-      console.log(state);
       this.setState(state);
     });
 
@@ -190,14 +189,13 @@ export default class CompetitionRoom extends React.Component {
       }
     }
     return (
-      <button onClick={this.flipCard} className="player2-button">
+      <div className="player-deck match-deck">
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
-      </button>
-
+      </div>
     );
   }
 
@@ -217,7 +215,6 @@ export default class CompetitionRoom extends React.Component {
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
         <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
       </button>
-
     );
   }
 
@@ -271,6 +268,19 @@ export default class CompetitionRoom extends React.Component {
             </div>
           </div>
         </div>
+        <div className="winner-modal">
+          <h1 className="winner-modal-title">WINNER</h1>
+          <div className="row center">
+            <img className='trophy' src="images/trophy.png" alt="trophy" />
+            <div>
+              <img className="winner-avatar" src="images/player1.png" alt="" />
+              <p className='winner-modal-text'>oak</p>
+              <a href="#" className='challenger-modal-button winner-modal-button'>Main Menu</a>
+            </div>
+            <img className='trophy' src="images/trophy.png" alt="trophy" />
+          </div>
+        </div>
+        <div className='overlay.hidden' />
       </>
     );
   }

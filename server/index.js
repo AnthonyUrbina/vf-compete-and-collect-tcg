@@ -104,6 +104,7 @@ inner join "users"
         on "challenger" = "userId"
         or "opponent" = "userId"
      where "challenger" = $1
+       and "isActive" = 'true'
         or "opponent" = $1
       limit 1;
   `;
