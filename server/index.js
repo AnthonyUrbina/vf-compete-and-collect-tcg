@@ -140,7 +140,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       res.status(200).json(state);
 
       if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideWinner, 2000, battlefield, roomId, state);
+        setTimeout(decideWinner, 2000, state);
       }
     })
     .catch(err => next(err));
@@ -291,7 +291,8 @@ function getUsernames(roomId) {
   return players;
 }
 
-function decideWinner(battlefield, roomId, state) {
+function decideWinner(state) {
+  const { roomId, battlefield } = state;
   const players = getUsernames(roomId);
   let bestRank = 0;
   let winner;
@@ -305,6 +306,7 @@ function decideWinner(battlefield, roomId, state) {
     } else if (battlefield[key].rank === 'ace') {
       battlefield[key].rank = 14;
     }
+
     if (battlefield[key].rank > bestRank) {
       bestRank = battlefield[key].rank;
       winner = key;
