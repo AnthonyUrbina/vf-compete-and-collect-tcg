@@ -181,6 +181,46 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
+  showOpponentDeck() {
+    const opponent = this.getOpponentUsername();
+    const opponentDeck = this.state[opponent + 'Deck'];
+    if (opponentDeck) {
+      if (!opponentDeck.length) {
+        return;
+      }
+    }
+    return (
+      <button onClick={this.flipCard} className="player2-button">
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
+      </button>
+
+    );
+  }
+
+  showClientDeck() {
+    const client = this.props.user.username;
+    const clientDeck = this.state[client + 'Deck'];
+    if (clientDeck) {
+      if (!clientDeck.length) {
+        return;
+      }
+    }
+    return (
+      <button onClick={this.flipCard} className="player2-button">
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
+        <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
+      </button>
+
+    );
+  }
+
   render() {
     return (
       <>
@@ -202,13 +242,7 @@ export default class CompetitionRoom extends React.Component {
                 {this.showOpponentWinningCards()}
               </div>
               <div className="column-one-eighth bundle">
-                <div className="player-deck match-deck">
-                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
-                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
-                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
-                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
-                  <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
-                </div>
+                {this.showOpponentDeck()}
               </div>
             </div>
             <div className="battlefield">
@@ -227,17 +261,10 @@ export default class CompetitionRoom extends React.Component {
               </div>
               <div className="column-one-eighth bundle">
                 <div className="player-deck match-deck player-2-deck">
-                  <button onClick={this.flipCard} className="player2-button">
-                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
-                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
-                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
-                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
-                    <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
-                  </button>
+                  {this.showClientDeck()}
                 </div>
               </div>
             </div>
-
             <div className="name-avatar-spacing">
               <img className="player-avatar-img-size" src="images/player2.png" alt="player1" />
               <p className="player-names-size">You</p>
