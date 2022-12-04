@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -114,7 +113,6 @@ inner join "users"
       if (!result.rows[0]) {
         throw new ClientError(400, 'this user is not in any active games');
       }
-      console.log(result.rows[0]);
       res.status(200).json(result.rows);
     })
     .catch(err => next(err));
@@ -154,8 +152,7 @@ function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
   if (!playerDeck.length && playerSideDeck.length) {
     state[player + 'Deck'] = playerSideDeck;
     state[player + 'SideDeck'] = [];
-    console.log(`${state[player + 'Deck']}`, state[player + 'Deck']);
-    console.log(`${state[player + 'SideDeck']}`, state[player + 'SideDeck']);
+
     const sql = `
         update "games"
            set "state" = $2

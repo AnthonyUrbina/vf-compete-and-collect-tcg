@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -141,8 +140,6 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
     if (opponentSideDeck.length !== 0) {
-      console.log('oppponentSideDeck length', opponentSideDeck.length);
-      console.log('opponentDeck length', this.state[opponent + 'SideDeck'].length);
       const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
       const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
       const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
@@ -166,8 +163,6 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
     if (clientSideDeck.length !== 0) {
-      console.log('clientSideDeck length', clientSideDeck.length);
-      console.log('clientDeck length', this.state[client + 'SideDeck'].length);
       const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
       const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
       const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;
