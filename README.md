@@ -52,9 +52,9 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
 
 ### System Requirements
 
-- Node.js 10 or higher
+- Node.js 18 or higher
 - Socket.io 4.5.4 or higher
-- NPM 6 or higher
+- NPM 18 or higher
 - PostgreSQL 14.3 or higher
 
 ### Getting Started
@@ -76,6 +76,19 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
 
     ```shell
     npm run db:import
+    ```
+
+1. Make a copy of the .env.example file. Name your copy `.env`.
+
+    ```shell
+    cp .env.example .env
+    ```
+
+1. Set up your environmental variables in `.env`. Replace `changeMe` with your own credentials.
+
+    ```shell
+    TOKEN_SECRET=changeMe
+    DATABASE_URL=postgres://dev:dev@localhost/changeMe?sslmode=disable
     ```
 
 1. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
