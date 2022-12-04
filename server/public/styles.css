@@ -7,17 +7,15 @@ p {
   font-size: 12px;
 }
 
-i {
+i,
+button,
+a {
   cursor: pointer;
 }
 
 form {
   font-family: Inter, sans-serif;
   font-size: 16px;
-}
-
-button {
-  cursor: pointer;
 }
 
 h1 {
