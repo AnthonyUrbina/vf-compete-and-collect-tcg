@@ -133,7 +133,6 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     .then(result => {
       const { state } = result.rows[0];
       const { roomId, battlefield } = state;
-      // const players = getUsernames(roomId);
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
