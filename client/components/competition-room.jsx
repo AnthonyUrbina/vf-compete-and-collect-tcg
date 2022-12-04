@@ -136,10 +136,13 @@ export default class CompetitionRoom extends React.Component {
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
     const opponentSideDeck = this.state[opponent + 'SideDeck'];
+
     if (!opponentSideDeck) {
       return;
     }
     if (opponentSideDeck.length !== 0) {
+      console.log('oppponentSideDeck length', opponentSideDeck.length);
+      console.log('opponentDeck length', this.state[opponent + 'SideDeck'].length);
       const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
       const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
       const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
@@ -159,11 +162,12 @@ export default class CompetitionRoom extends React.Component {
   showClientWinningCards() {
     const client = this.props.user.username;
     const clientSideDeck = this.state[client + 'SideDeck'];
-    console.log('clientSideDeck', clientSideDeck);
     if (!clientSideDeck) {
       return;
     }
     if (clientSideDeck.length !== 0) {
+      console.log('clientSideDeck length', clientSideDeck.length);
+      console.log('clientDeck length', this.state[client + 'SideDeck'].length);
       const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
       const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
       const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;
@@ -248,6 +252,24 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
+  showWinnerModal() {
+    const { loser } = this.state;
+
+    if (!loser) {
+      return 'winner-modal hidden';
+    }
+    return 'winner-modal';
+  }
+
+  showOverlay() {
+    const { loser } = this.state;
+
+    if (!loser) {
+      return 'overlay hidden';
+    }
+    return 'overlay';
+  }
+
   render() {
     return (
       <>
@@ -298,7 +320,7 @@ export default class CompetitionRoom extends React.Component {
             </div>
           </div>
         </div>
-        <div className="winner-modal">
+        <div className={this.showWinnerModal()}>
           <h1 className="winner-modal-title">WINNER</h1>
           <div className="row center">
             <img className='trophy' src="images/trophy.png" alt="trophy" />
@@ -310,7 +332,7 @@ export default class CompetitionRoom extends React.Component {
             <img className='trophy' src="images/trophy.png" alt="trophy" />
           </div>
         </div>
-        <div className='overlay.hidden'/>
+        <div className={this.showOverlay()}/>
       </>
     );
   }

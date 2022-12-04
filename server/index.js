@@ -151,9 +151,6 @@ app.patch('/api/games/:gameId', (req, res, next) => {
 
 function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
   const { gameId, roomId } = state;
-  console.log('can u hear me?');
-  console.log('state', state);
-  console.log('loser', loser);
   if (!playerDeck.length && playerSideDeck) {
     state[player + 'Deck'] = playerSideDeck;
     state[player + 'SideDeck'] = [];
@@ -316,7 +313,7 @@ function getDeck(rank, suit) {
 
 function dealer(shuffled, players) {
   players[0].deck = shuffled.slice(0, 2);
-  players[1].deck = shuffled.slice(26, 52);
+  players[1].deck = shuffled.slice(2, 4);
 }
 
 function genRandomNumber() {
@@ -407,17 +404,9 @@ function handleWin(winner, state, players) {
         const playerDeck = state[players[username] + 'Deck'];
         const playerSideDeck = state[players[username] + 'SideDeck'];
         const player = players[username];
-        console.log('playerDeck', playerDeck);
-        console.log('playerSideDeck', playerSideDeck);
-        console.log('player', player);
-        console.assert(!playerDeck.length, 'playerDeck is not falsy');
-        console.assert(playerSideDeck, 'playerSideDeck is falsy');
         if (!playerDeck.length && playerSideDeck) {
-          console.log('ayyyyyy');
           outOfCards(state, playerDeck, playerSideDeck, player);
         } else if (!playerDeck.length && !playerSideDeck) {
-
-          console.log('beeee');
           const loser = players[username];
           outOfCards(state, playerDeck, playerSideDeck, player, loser);
         }
