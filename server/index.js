@@ -273,8 +273,8 @@ function getDeck(rank, suit) {
 }
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 3);
-  players[1].deck = shuffled.slice(3, 7);
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 52);
 }
 
 function genRandomNumber() {
