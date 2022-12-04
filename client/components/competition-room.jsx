@@ -290,7 +290,7 @@ export default class CompetitionRoom extends React.Component {
               </div>
             </div>
             <div className="battlefield">
-              <div className="cage">
+              <div className="center">
                 <div className="opponent-flipped-container flipped-card">
                   {this.showOpponentCard()}
                 </div>

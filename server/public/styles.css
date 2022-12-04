@@ -155,4 +155,19 @@ h3 {
 .winner-modal-button {
   font-size: 10px;
   font-family: inter, sans-serif;
+  text-decoration: none;
+}
+
+.winner-modal-text {
+  color: white;
+  font-weight: lighter;
+}
+
+.winner-modal-title {
+  color: #ffd700;
+  font-size: 48px;
+}
+
+.winner-modal {
+  background-color: #f00;
 }
