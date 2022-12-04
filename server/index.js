@@ -35,6 +35,7 @@ app.post('/api/auth/sign-up', (req, res, next) => {
   }
   argon2.hash(password)
     .then(hashedPassword => {
+
       const sql = `
         insert into "users" ("username", "hashedPassword")
              values ($1, $2)
@@ -42,7 +43,6 @@ app.post('/api/auth/sign-up', (req, res, next) => {
       `;
 
       const params = [username, hashedPassword];
-
       db.query(sql, params)
         .then(result => {
           res.status(201).json(result.rows[0]);
@@ -57,6 +57,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
   if (!username || !password) {
     throw new ClientError(400, 'username and password are required fields');
   }
+
   const sql = `
     select "userId",
            "hashedPassword"
@@ -65,7 +66,6 @@ app.post('/api/auth/sign-in', (req, res, next) => {
   `;
 
   const params = [username];
-
   db.query(sql, params)
     .then(result => {
       const { userId, hashedPassword } = result.rows[0];
@@ -121,12 +121,14 @@ inner join "users"
 app.patch('/api/games/:gameId', (req, res, next) => {
   const { gameId } = req.params;
   const state = req.body;
+
   const sql = `
     update "games"
        set "state" = $2
      where "gameId" = $1
  returning "state"
   `;
+
   const params = [gameId, state];
 
   db.query(sql, params)
@@ -145,43 +147,6 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     })
     .catch(err => next(err));
 });
-
-function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
-  const { gameId, roomId } = state;
-  if (!playerDeck.length && playerSideDeck.length) {
-    state[player + 'Deck'] = playerSideDeck;
-    state[player + 'SideDeck'] = [];
-
-    const sql = `
-        update "games"
-           set "state" = $2
-         where "gameId" = $1
-     returning "state"
-    `;
-    const params = [gameId, state];
-
-    db.query(sql, params)
-      .then(result => {
-        io.to(roomId).emit('deck-replaced', state);
-      });
-
-  } else if (loser) {
-    state.loser = loser;
-    const sql = `
-        update "games"
-           set "state" = $2,
-               "isActive" = 'false'
-         where "gameId" = $1
-     returning "state"
-    `;
-    const params = [gameId, state];
-
-    db.query(sql, params)
-      .then(result => {
-        io.to(roomId).emit('game-over', state);
-      });
-  }
-}
 
 app.use(errorMiddleware);
 
@@ -277,8 +242,8 @@ io.on('connection', socket => {
            values ($1, $2, $3, 'true')
         returning *;
     `;
-    const params = [challengerId, socket.userId, JSONstate];
 
+    const params = [challengerId, socket.userId, JSONstate];
     db.query(sql, params)
       .then(result => {
         socket.to(challengerSocketId).emit('opponent-joined', inviteInfo);
@@ -308,8 +273,8 @@ function getDeck(rank, suit) {
 }
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 2);
-  players[1].deck = shuffled.slice(2, 4);
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 52);
 }
 
 function genRandomNumber() {
@@ -385,8 +350,8 @@ function handleWin(winner, state, players) {
      where "gameId" = $1
  returning "state"
     `;
-  const params = [gameId, state];
 
+  const params = [gameId, state];
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
@@ -395,7 +360,6 @@ function handleWin(winner, state, players) {
         throw new ClientError(400, 'this gameId does not exist');
       }
       io.to(roomId).emit('winner-decided', state);
-
       for (const username in players) {
         const playerDeck = state[players[username] + 'Deck'];
         const playerSideDeck = state[players[username] + 'SideDeck'];
@@ -408,6 +372,43 @@ function handleWin(winner, state, players) {
         }
       }
     });
+}
+
+function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
+  const { gameId, roomId } = state;
+  if (!playerDeck.length && playerSideDeck.length) {
+    state[player + 'Deck'] = playerSideDeck;
+    state[player + 'SideDeck'] = [];
+
+    const sql = `
+        update "games"
+           set "state" = $2
+         where "gameId" = $1
+     returning "state"
+    `;
+
+    const params = [gameId, state];
+    db.query(sql, params)
+      .then(result => {
+        io.to(roomId).emit('deck-replaced', state);
+      });
+  } else if (loser) {
+    state.loser = loser;
+
+    const sql = `
+        update "games"
+           set "state" = $2,
+               "isActive" = 'false'
+         where "gameId" = $1
+     returning "state"
+    `;
+
+    const params = [gameId, state];
+    db.query(sql, params)
+      .then(result => {
+        io.to(roomId).emit('game-over', state);
+      });
+  }
 }
 
 server.listen(process.env.PORT, () => {

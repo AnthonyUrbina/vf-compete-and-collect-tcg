@@ -135,7 +135,6 @@ export default class CompetitionRoom extends React.Component {
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
     const opponentSideDeck = this.state[opponent + 'SideDeck'];
-
     if (!opponentSideDeck) {
       return;
     }
@@ -146,7 +145,6 @@ export default class CompetitionRoom extends React.Component {
       const secondToLastCardSuit = opponentSideDeck[opponentSideDeck.length - 2].suit;
       const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
-
       return (
         <>
           <img src={srcTop} alt={srcTop} className="flipped-card top" />
@@ -169,7 +167,6 @@ export default class CompetitionRoom extends React.Component {
       const secondToLastCardSuit = clientSideDeck[clientSideDeck.length - 2].suit;
       const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
-
       return (
         <>
           <img src={srcTop} alt={srcTop} className="flipped-card top" />
@@ -219,11 +216,9 @@ export default class CompetitionRoom extends React.Component {
 
   pickWinnerText() {
     const { loser } = this.state;
-
     if (!loser) {
       return;
     }
-
     const opponent = this.getOpponentUsername();
     const client = this.props.user.username;
     if (client === loser) {
@@ -238,7 +233,6 @@ export default class CompetitionRoom extends React.Component {
     if (!loser) {
       return;
     }
-
     const client = this.props.user.username;
     if (client === loser) {
       return 'images/player1.png';
@@ -249,7 +243,6 @@ export default class CompetitionRoom extends React.Component {
 
   showWinnerModal() {
     const { loser } = this.state;
-
     if (!loser) {
       return 'winner-modal hidden';
     }
@@ -258,7 +251,6 @@ export default class CompetitionRoom extends React.Component {
 
   showOverlay() {
     const { loser } = this.state;
-
     if (!loser) {
       return 'overlay hidden';
     }
