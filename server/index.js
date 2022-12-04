@@ -103,9 +103,8 @@ app.get('/api/games/retrieve/:userId', (req, res, next) => {
 inner join "users"
         on "challenger" = "userId"
         or "opponent" = "userId"
-     where "challenger" = $1
-       and "isActive" = 'true'
-        or "opponent" = $1
+     where "isActive" = 'true'
+      and ("challenger" = $1 or "opponent" = $1)
       limit 1;
   `;
 
@@ -115,6 +114,7 @@ inner join "users"
       if (!result.rows[0]) {
         throw new ClientError(400, 'this user is not in any active games');
       }
+      console.log(result.rows[0]);
       res.status(200).json(result.rows);
     })
     .catch(err => next(err));
@@ -151,7 +151,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
 
 function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
   const { gameId, roomId } = state;
-  if (!playerDeck.length && playerSideDeck) {
+  if (!playerDeck.length && playerSideDeck.length) {
     state[player + 'Deck'] = playerSideDeck;
     state[player + 'SideDeck'] = [];
     console.log(`${state[player + 'Deck']}`, state[player + 'Deck']);
@@ -354,7 +354,7 @@ function decideWinner(state) {
     } else if (battlefield[key].rank === bestRank) {
       const randomNumber = genRandomNumber();
       if (randomNumber > 5) {
-        winner = players.player2;
+        winner = players.player1;
       } else if (randomNumber < 5) {
         winner = players.player2;
       }
@@ -404,9 +404,9 @@ function handleWin(winner, state, players) {
         const playerDeck = state[players[username] + 'Deck'];
         const playerSideDeck = state[players[username] + 'SideDeck'];
         const player = players[username];
-        if (!playerDeck.length && playerSideDeck) {
+        if (!playerDeck.length && playerSideDeck.length) {
           outOfCards(state, playerDeck, playerSideDeck, player);
-        } else if (!playerDeck.length && !playerSideDeck) {
+        } else if (!playerDeck.length && !playerSideDeck.length) {
           const loser = players[username];
           outOfCards(state, playerDeck, playerSideDeck, player, loser);
         }
