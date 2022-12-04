@@ -142,7 +142,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       res.status(200).json(state);
 
       if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideWinner, 200, state);
+        setTimeout(decideWinner, 500, state);
       }
     })
     .catch(err => next(err));
@@ -273,8 +273,8 @@ function getDeck(rank, suit) {
 }
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 26);
-  players[1].deck = shuffled.slice(26, 52);
+  players[0].deck = shuffled.slice(0, 3);
+  players[1].deck = shuffled.slice(3, 7);
 }
 
 function genRandomNumber() {
@@ -364,6 +364,9 @@ function handleWin(winner, state, players) {
         const playerDeck = state[players[username] + 'Deck'];
         const playerSideDeck = state[players[username] + 'SideDeck'];
         const player = players[username];
+        if (!playerDeck && !playerSideDeck) {
+          return;
+        }
         if (!playerDeck.length && playerSideDeck.length) {
           outOfCards(state, playerDeck, playerSideDeck, player);
         } else if (!playerDeck.length && !playerSideDeck.length) {
@@ -394,7 +397,6 @@ function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
       });
   } else if (loser) {
     state.loser = loser;
-
     const sql = `
         update "games"
            set "state" = $2,
