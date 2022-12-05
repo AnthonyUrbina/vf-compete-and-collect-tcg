@@ -84,7 +84,7 @@ li {
   padding-top: 0;
 }
 
-#form-button {
+.form-button {
   width: 223px;
   height: 38px;
   margin-bottom: 0.5rem;
@@ -163,6 +163,10 @@ li {
 .player-2-stretch {
   position: absolute;
   bottom: 2%;
+}
+
+.player2-button {
+  padding: 0;
 }
 
 #online-players-button {
@@ -397,9 +401,12 @@ li {
 }
 
 .input-error-message {
-  color: red;
   margin: 0.25rem;
   text-align: left;
+}
+
+.demo-button {
+  padding: 0;
 }
 
 .spinner-container {
