@@ -6,7 +6,8 @@ export default class AuthForm extends React.Component {
     this.state = {
       username: '',
       password: '',
-      error: null
+      error: null,
+      fetchingData: null
     };
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -20,17 +21,16 @@ export default class AuthForm extends React.Component {
     const headers = {
       'Content-Type': 'application/json'
     };
-
+    this.setState({ fetchingData: true });
     fetch(`/api/auth/${action}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(this.state)
     })
-
       .then(response => response.json())
       .then(result => {
+        this.setState({ fetchingData: false });
         const { error, user, token } = result;
-        console.log(result);
         if (result.error) {
           this.setState({ error });
         }
@@ -72,14 +72,25 @@ export default class AuthForm extends React.Component {
     }
   }
 
+  showButtonContent() {
+    const { fetchingData } = this.state;
+    const { action } = this.props;
+    if (fetchingData) {
+      return <div className="lds-spinner"><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
+    } else if (action === 'sign-in') {
+      return 'Sign In';
+    } else if (action === 'sign-up') {
+      return 'Sign Up';
+    }
+  }
+
   render() {
-    const altButtonText = this.props.action === 'sign-in' ? 'Sign In' : 'Sign Up';
     return (
       <form onSubmit={this.handleSubmit}>
         <input autoFocus required type="text" placeholder='Username' value={this.state.username} onChange={this.handleUsernameChange} />
         <input ref={this.errorMessage} required type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange} id='password-input' />
         {this.handleError()}
-        <button id='form-button'>{altButtonText}</button>
+        <button id='form-button' className='name-avatar-spacing'>{this.showButtonContent()}</button>
       </form>
     );
   }
