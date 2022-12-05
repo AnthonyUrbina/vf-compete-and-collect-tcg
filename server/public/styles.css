@@ -7,17 +7,15 @@ p {
   font-size: 12px;
 }
 
-i {
+i,
+button,
+a {
   cursor: pointer;
 }
 
 form {
   font-family: Inter, sans-serif;
   font-size: 16px;
-}
-
-button {
-  cursor: pointer;
 }
 
 h1 {
@@ -152,4 +150,24 @@ h3 {
   background-color: transparent;
   border: none;
   padding: 0;
+}
+
+.winner-modal-button {
+  font-size: 10px;
+  font-family: inter, sans-serif;
+  text-decoration: none;
+}
+
+.winner-modal-text {
+  color: white;
+  font-weight: lighter;
+}
+
+.winner-modal-title {
+  color: #ffd700;
+  font-size: 48px;
+}
+
+.winner-modal {
+  background-color: #f00;
 }
