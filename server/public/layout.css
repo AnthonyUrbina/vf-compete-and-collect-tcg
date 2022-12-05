@@ -368,6 +368,40 @@ li {
   text-decoration: none;
 }
 
+.auth-error-modal {
+  height: 150px;
+  width: 356px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+  background-color: #fffaf0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-modal-text {
+  font-size: 24px;
+  text-shadow: none;
+  margin: 0;
+  padding: 0;
+  font-family: inter, sans-serif;
+}
+
+#password-input {
+  margin-bottom: 0;
+}
+
+.input-error-message {
+  color: red;
+  margin: 0.25rem;
+  text-align: left;
+}
+
 @media screen and (min-width: 768px) {
   .container {
     width: 375px;
