@@ -15,6 +15,14 @@ export default class AuthForm extends React.Component {
     this.errorMessage = React.createRef();
   }
 
+  componentDidMount() {
+    window.addEventListener('hashchange', () => {
+      this.setState({
+        error: null
+      });
+    });
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     const { action } = this.props;
@@ -34,7 +42,7 @@ export default class AuthForm extends React.Component {
         if (result.error) {
           this.setState({ error });
         }
-        if (action === 'sign-up') {
+        if (action === 'sign-up' && !error) {
           window.location.hash = 'sign-in';
           this.errorMessage.current.blur();
           this.setState({ username: '', password: '' });
@@ -63,7 +71,7 @@ export default class AuthForm extends React.Component {
     }
   }
 
-  handleError() {
+  showErrorMessage() {
     const { error } = this.state;
     if (error) {
       return <p className='input-error-message'>{error}.</p>;
@@ -76,7 +84,7 @@ export default class AuthForm extends React.Component {
     const { fetchingData } = this.state;
     const { action } = this.props;
     if (fetchingData) {
-      return <div className="lds-spinner"><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
+      return <div className="lds-spinner auth"><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
     } else if (action === 'sign-in') {
       return 'Sign In';
     } else if (action === 'sign-up') {
@@ -84,14 +92,26 @@ export default class AuthForm extends React.Component {
     }
   }
 
+  chooseAlts() {
+    const path = this.props.action;
+    const altHref = path === 'sign-in' ? '#sign-up' : '#sign-in';
+    const altAnchor = path === 'sign-in' ? 'Sign Up' : 'Sign in';
+    const altQuestion = path === 'sign-in' ? "Don't have an account?" : 'Already have an account?';
+
+    return <p>{altQuestion} <a href={altHref}>{altAnchor}</a></p>;
+  }
+
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input autoFocus required type="text" placeholder='Username' value={this.state.username} onChange={this.handleUsernameChange} />
-        <input ref={this.errorMessage} required type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange} id='password-input' />
-        {this.handleError()}
-        <button id='form-button' className='name-avatar-spacing'>{this.showButtonContent()}</button>
-      </form>
+      <>
+        <form onSubmit={this.handleSubmit}>
+          <input autoFocus required type="text" placeholder='Username' value={this.state.username} onChange={this.handleUsernameChange} />
+          <input ref={this.errorMessage} required type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange} id='password-input' />
+          {this.showErrorMessage()}
+          <button id='form-button' className='name-avatar-spacing'>{this.showButtonContent()}</button>
+        </form>
+        {this.chooseAlts()}
+      </>
     );
   }
 }

@@ -8,10 +8,6 @@ export default class AuthPage extends React.Component {
     if (this.context.user) return <Redirect to="" />;
 
     const { path } = this.context.route;
-    const altHref = path === 'sign-in' ? '#sign-up' : '#sign-in';
-    const altAnchor = path === 'sign-in' ? 'Sign Up' : 'Sign in';
-    const altQuestion = path === 'sign-in' ? "Don't have an account?" : 'Already have an account?';
-
     return (
       <>
         <div className="row center">
@@ -25,7 +21,6 @@ export default class AuthPage extends React.Component {
           </div>
           <div className="form-spacing">
             <AuthForm action={path} handleSignIn={this.context.handleSignIn} />
-            <p>{altQuestion} <a href={altHref}>{altAnchor}</a></p>
           </div>
         </div>
       </>

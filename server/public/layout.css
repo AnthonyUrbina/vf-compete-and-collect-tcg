@@ -402,29 +402,57 @@ li {
   text-align: left;
 }
 
+.spinner-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .lds-spinner {
   color: official;
   display: inline-block;
   position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-spinner.auth {
   width: 20px;
   height: 20px;
 }
 
 .lds-spinner div {
-  transform-origin: 10px 10px;
+  transform-origin: 40px 40px;
   animation: lds-spinner 1.2s linear infinite;
+}
+
+.lds-spinner.auth div {
+  transform-origin: 10px 10px;
 }
 
 .lds-spinner div::after {
   content: " ";
   display: block;
   position: absolute;
+  top: 3px;
+  left: 37px;
+  width: 6px;
+  height: 18px;
+  border-radius: 20%;
+  background: white;
+}
+
+.lds-spinner.auth div::after {
   top: 0.75px;
   left: 9.25px;
   width: 1.5px;
   height: 4.5px;
-  border-radius: 20%;
-  background: white;
 }
 
 .lds-spinner div:nth-child(1) {
