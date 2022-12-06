@@ -75,7 +75,7 @@ export default class Lobby extends React.Component {
     }
 
     const playerAppearance = usernames.map(username =>
-      <li key={username}>
+      <li key={username} className='flex-column-center'>
         <button onClick={this.handleClick} className='war-multiplayer-modal-li-button'>
           <img data-username={username} className='player-avatar-img-size modal-img-spacing' src="images/player1.png" alt="" />
           <p data-username={username} className='modal-player-text'>{username}</p>
@@ -194,51 +194,51 @@ export default class Lobby extends React.Component {
   render() {
     return (
       <>
-        <div className="row header">
-          <h1 className="home-header-color">WAR</h1>
+        <div className='row center'>
+          <h1 className='home-header-color'>WAR</h1>
         </div>
-        <div className="row center">
-          <div className="name-avatar-spacing">
-            <img className="player-avatar-img-size" src="images/player1.png" alt="player1" />
-            <p className="player-names-size">Bill</p>
+        <div className='row center'>
+          <div className='center-horiz-vert'>
+            <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />
+            <p className='player-names-size'>Bill</p>
           </div>
         </div>
-        <div className="row center">
+        <div className='row center'>
           <div>
-            <div className="player-deck">
-              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-1" />
-              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-2" />
-              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-3" />
-              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-4" />
-              <img src="images/backofcard.png" alt="backofcard" className="deck-cards deck-5" />
+            <div className='player-deck'>
+              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-1' />
+              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-2' />
+              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-3' />
+              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-4' />
+              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-5' />
             </div>
           </div>
         </div>
-        <div className="row center">
-          <button onClick={this.handleClick} id="online-players-button">Online Players</button>
+        <div className='row center'>
+          <button onClick={this.handleClick} id='online-players-button'>Online Players</button>
         </div>
-        <div className="row center">
-          <div className="name-avatar-spacing player-2-stretch">
-            <img className="player-avatar-img-size" src="images/player2.png" alt="player1" />
-            <p className="player-names-size">You</p>
+        <div className='row center'>
+          <div className='center-horiz-vert player-2-stretch'>
+            <img className='player-avatar-img-size' src='images/player2.png' alt='player1' />
+            <p className='player-names-size'>You</p>
           </div>
         </div>
         <div className={this.chooseModalClass()}>
-          <button onClick={this.handleClick} className="fa-solid fa-x" />
+          <button onClick={this.handleClick} className='fa-solid fa-x' />
           <h3>War Multiplayer</h3>
-          <p className="modal-text">
+          <p className='modal-text'>
             These are the players currently online. Click<br />
             on them to challenge them to a game of war!
           </p>
-          <ul>
+          <ul className='center'>
             {this.showOnlinePlayers()}
           </ul>
         </div>
         <div className={this.chooseChallengerModalClass()}>
-          <h3 className="challenger-modal-title">{this.chooseChallengeModalTitle()}</h3>
+          <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
           {this.chooseChallengeModalText()}
-          <div className="vertical-center">
-            <img className="player-avatar-img-size challenger-modal-img" src="images/player1.png" alt="" />
+          <div className='center-column'>
+            <img className='player-avatar-img-size challenger-modal-img' src='images/player1.png'/>
             {this.chooseChallengeModalButtons()}
           </div>
         </div>

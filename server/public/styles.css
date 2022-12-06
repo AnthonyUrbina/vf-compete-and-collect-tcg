@@ -1,5 +1,6 @@
 body {
   background-color: white;
+  font-weight: 300;
 }
 
 p {
@@ -90,15 +91,6 @@ h3 {
 
 .modal-text {
   border-bottom: solid 1px #d9cccc;
-  font-weight: 300;
-}
-
-.modal-player-text {
-  font-weight: 300;
-}
-
-.opponent-modal-text {
-  font-weight: 300;
 }
 
 .overlay {
@@ -117,10 +109,6 @@ h3 {
 
 .challenger-modal-box {
   background-color: #fffaf0;
-}
-
-.challenger-modal-text {
-  font-weight: 300;
 }
 
 .challenger-modal-button {
