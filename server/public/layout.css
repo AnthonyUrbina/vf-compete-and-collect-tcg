@@ -26,17 +26,12 @@ h3 {
 }
 
 ul {
-  display: flex;
   list-style: none;
   padding: 0;
-  justify-content: center;
   flex-wrap: wrap;
 }
 
 li {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin-left: 0.25rem;
   margin-right: 0.25rem;
   margin-bottom: 1rem;
@@ -53,10 +48,6 @@ li {
 
 .row {
   display: flex;
-}
-
-.row.header {
-  justify-content: center;
 }
 
 .row.align-decks {
@@ -94,7 +85,7 @@ li {
   text-align: center;
 }
 
-.center-vertical {
+.center-column {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -105,7 +96,7 @@ li {
   justify-content: center;
 }
 
-.name-avatar-spacing {
+.center-horiz-vert {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -203,10 +194,6 @@ li {
   border-radius: 0.25rem;
 }
 
-.modal-box.hidden {
-  display: none;
-}
-
 .modal-img-spacing {
   margin-bottom: 0.25rem;
   margin-right: 0;
@@ -239,12 +226,6 @@ li {
 
 .challenger-modal-img {
   margin-right: 0;
-}
-
-.vertical-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .war-multiplayer-modal-li-button {
@@ -315,10 +296,8 @@ li {
 }
 
 .battlefield {
-  display: flex;
   flex-grow: 1;
-  flex-direction: column-reverse;
-  justify-content: center;
+  align-items: center;
   width: 100%;
 }
 
@@ -372,22 +351,6 @@ li {
   text-decoration: none;
 }
 
-.auth-error-modal {
-  height: 150px;
-  width: 356px;
-  text-align: center;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  border-radius: 0.25rem;
-  background-color: #fffaf0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .auth-modal-text {
   font-size: 24px;
   text-shadow: none;
@@ -416,9 +379,6 @@ li {
   transform: translate(-50%, -50%);
   z-index: 2;
   border-radius: 0.25rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .lds-spinner {
@@ -537,9 +497,9 @@ li {
     width: 375px;
   }
 
-  .center-vertical {
+  /* .center-column {
     flex-direction: row;
-  }
+  } */
 
   .form-spacing {
     padding-top: 2.25rem;

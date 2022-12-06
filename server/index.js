@@ -130,7 +130,6 @@ app.patch('/api/games/:gameId', (req, res, next) => {
   `;
 
   const params = [gameId, state];
-
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
