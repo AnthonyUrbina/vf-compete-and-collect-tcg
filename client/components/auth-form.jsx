@@ -12,7 +12,7 @@ export default class AuthForm extends React.Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDemo = this.handleDemo.bind(this);
+    this.handleDemoClick = this.handleDemoClick.bind(this);
     this.errorMessage = React.createRef();
   }
 
