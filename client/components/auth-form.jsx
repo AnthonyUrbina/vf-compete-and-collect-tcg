@@ -5,11 +5,23 @@ export default class AuthForm extends React.Component {
     super(props);
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      error: null,
+      fetchingData: null
     };
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDemo = this.handleDemo.bind(this);
+    this.errorMessage = React.createRef();
+  }
+
+  componentDidMount() {
+    window.addEventListener('hashchange', () => {
+      this.setState({
+        error: null
+      });
+    });
   }
 
   handleSubmit(event) {
@@ -18,43 +30,102 @@ export default class AuthForm extends React.Component {
     const headers = {
       'Content-Type': 'application/json'
     };
-
+    this.setState({ fetchingData: true });
     fetch(`/api/auth/${action}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(this.state)
     })
-
       .then(response => response.json())
       .then(result => {
-        if (action === 'sign-up') {
+        this.setState({ fetchingData: false });
+        const { error, user, token } = result;
+        if (result.error) {
+          this.setState({ error });
+        }
+        if (action === 'sign-up' && !error) {
           window.location.hash = 'sign-in';
-        } else if (result.user && result.token) {
+          this.errorMessage.current.blur();
+          this.setState({ username: '', password: '' });
+        } else if (user && token) {
           this.props.handleSignIn(result);
+          this.setState({ username: '', password: '' });
         }
       });
-
-    this.setState({ username: '', password: '' });
   }
 
   handleUsernameChange(event) {
-    this.setState({ username: event.target.value });
-
+    const { error } = this.state;
+    if (error) {
+      this.setState({ username: event.target.value, error: null });
+    } else {
+      this.setState({ username: event.target.value });
+    }
   }
 
   handlePasswordChange(event) {
-    this.setState({ password: event.target.value });
+    const { error } = this.state;
+    if (error) {
+      this.setState({ password: event.target.value, error: null });
+    } else {
+      this.setState({ password: event.target.value });
+    }
+  }
+
+  showErrorMessage() {
+    const { error } = this.state;
+    if (error) {
+      return <p className='input-error-message'>{error}.</p>;
+    } else {
+      return <p className='input-error-message'>&nbsp;</p>;
+    }
+  }
+
+  showButtonContent() {
+    const { fetchingData } = this.state;
+    const { action } = this.props;
+    if (fetchingData) {
+      return <div className="lds-spinner auth"><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
+    } else if (action === 'sign-in') {
+      return 'Sign In';
+    } else if (action === 'sign-up') {
+      return 'Sign Up';
+    }
+  }
+
+  chooseAlts() {
+    const path = this.props.action;
+    const altHref = path === 'sign-in' ? '#sign-up' : '#sign-in';
+    const altAnchor = path === 'sign-in' ? 'Sign Up' : 'Sign in';
+    const altQuestion = path === 'sign-in' ? "Don't have an account?" : 'Already have an account?';
+
+    return <p>{altQuestion} <a href={altHref}>{altAnchor}</a></p>;
+  }
+
+  handleDemoClick() {
+    this.setState({ username: 'Demo', password: 'password123' });
+  }
+
+  showDemoButton() {
+    const path = this.props.action;
+    if (path === 'sign-in') {
+      return <button className='form-button' onClick={this.handleDemoClick}>Demo Account</button>;
+
+    }
   }
 
   render() {
-
-    const altButtonText = this.props.action === 'sign-in' ? 'Sign In' : 'Sign Up';
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input type="text" placeholder='Username' value={this.state.username} onChange={this.handleUsernameChange} />
-        <input type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange} />
-        <button id='form-button'>{altButtonText}</button>
-      </form>
+      <>
+        <form onSubmit={this.handleSubmit}>
+          <input autoFocus required type="text" placeholder='Username' value={this.state.username} onChange={this.handleUsernameChange} />
+          <input ref={this.errorMessage} required type="password" placeholder='Password' value={this.state.password} onChange={this.handlePasswordChange} id='password-input' />
+          {this.showErrorMessage()}
+          <button className='name-avatar-spacing form-button demo-button'>{this.showButtonContent()}</button>
+        </form>
+        {this.showDemoButton()}
+        {this.chooseAlts()}
+      </>
     );
   }
 }

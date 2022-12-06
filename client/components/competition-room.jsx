@@ -5,19 +5,21 @@ import parseRoute from '../lib/parse-route';
 export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
   }
 
   componentDidMount() {
     const { user } = this.props;
     const { userId } = user;
+    this.setState({ fetchingData: true });
     fetch(`/api/games/retrieve/${userId}`,
       { method: 'GET' })
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];
         state.gameId = gameId;
+        state.fetchingData = false;
         this.setState(state);
       });
     if (user) {
@@ -251,10 +253,19 @@ export default class CompetitionRoom extends React.Component {
 
   showOverlay() {
     const { loser } = this.state;
-    if (!loser) {
-      return 'overlay hidden';
+    if (loser) {
+      return 'overlay';
     }
-    return 'overlay';
+    return 'overlay hidden';
+  }
+
+  showSpinner() {
+    const { fetchingData } = this.state;
+    if (fetchingData) {
+      return 'spinner-container';
+    } else {
+      return 'spinner-container hidden';
+    }
   }
 
   render() {
@@ -320,6 +331,9 @@ export default class CompetitionRoom extends React.Component {
           </div>
         </div>
         <div className={this.showOverlay()}/>
+        <div className={this.showSpinner()}>
+          <div className="lds-spinner"><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
+        </div>
       </>
     );
   }

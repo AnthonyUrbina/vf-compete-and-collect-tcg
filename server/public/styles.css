@@ -44,10 +44,10 @@ input::placeholder {
   background-color: #00a000;
 }
 
-#form-button {
+.form-button {
   border-radius: 0.25rem;
   font-size: inherit;
-  font-family: inherit;
+  font-family: inter, sans-serif;
   color: white;
   background-color: #00a000;
   box-shadow: 0 8px 14px -4px rgb(0 0 0 / 25%);
@@ -170,4 +170,8 @@ h3 {
 
 .winner-modal {
   background-color: #f00;
+}
+
+.input-error-message {
+  color: red;
 }
