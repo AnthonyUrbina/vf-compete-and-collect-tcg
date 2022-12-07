@@ -62,8 +62,8 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
 1. Clone the repository.
 
     ```shell
-    git clone https://github.com/AnthonyUrbina/final-project
-    cd final-project
+    git clone https://github.com/AnthonyUrbina/War
+    cd War
     ```
 
 1. Install all dependencies with NPM.
