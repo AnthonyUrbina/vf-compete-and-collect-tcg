@@ -225,7 +225,7 @@ export default class Lobby extends React.Component {
         </div>
         <div className={this.chooseModalClass()}>
           <button onClick={this.handleClick} className='fa-solid fa-x' />
-          <h3>War Multiplayer</h3>
+          <h3>Online Players</h3>
           <p className='modal-text'>
             These are the players currently online. Click<br />
             on them to challenge them to a game of war!
