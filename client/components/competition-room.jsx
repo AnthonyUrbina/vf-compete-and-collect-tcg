@@ -15,8 +15,14 @@ export default class CompetitionRoom extends React.Component {
     const { user } = this.props;
     const opponent = this.getOpponentUsername();
     this.setState({ fetchingData: true });
-    fetch(`/api/games/retrieve/${token}/${opponent}`,
-      { method: 'GET' })
+    const headers = {
+      'X-Access-Token': token
+    };
+    fetch(`/api/games/retrieve/${opponent}`,
+      {
+        method: 'GET',
+        headers
+      })
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];

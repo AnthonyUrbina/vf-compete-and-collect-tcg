@@ -1,6 +1,7 @@
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
+const authorizationMiddleware = require('./authorization-middleware');
 const pg = require('pg');
 const argon2 = require('argon2');
 const ClientError = require('./client-error');
@@ -88,11 +89,40 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 
 });
 
-app.get('/api/games/retrieve/:token/:opponent', (req, res, next) => {
-  const { token, opponent } = req.params;
-  if (!token) {
-    throw new ClientError(400, 'token is required');
-  }
+app.patch('/api/games/:gameId', (req, res, next) => {
+  const { gameId } = req.params;
+  const state = req.body;
+
+  const sql = `
+    update "games"
+       set "state" = $2
+     where "gameId" = $1
+ returning "state"
+  `;
+
+  const params = [gameId, state];
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      const { roomId, battlefield } = state;
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      io.to(roomId).emit('flip-card', state);
+      res.status(200).json(state);
+
+      if (Object.keys(battlefield).length === 2) {
+        setTimeout(decideFaceoffWinner, 500, state);
+      }
+    })
+    .catch(err => next(err));
+});
+
+app.use(authorizationMiddleware);
+
+app.get('/api/games/retrieve/:opponent', (req, res, next) => {
+  const { opponent } = req.params;
+  const token = req.headers['x-access-token'];
 
   const payload = jwt.verify(token, process.env.TOKEN_SECRET);
   const { userId } = payload;
@@ -137,35 +167,6 @@ app.get('/api/games/retrieve/:token/:opponent', (req, res, next) => {
         })
         .catch(err => next(err));
 
-    })
-    .catch(err => next(err));
-});
-
-app.patch('/api/games/:gameId', (req, res, next) => {
-  const { gameId } = req.params;
-  const state = req.body;
-
-  const sql = `
-    update "games"
-       set "state" = $2
-     where "gameId" = $1
- returning "state"
-  `;
-
-  const params = [gameId, state];
-  db.query(sql, params)
-    .then(result => {
-      const { state } = result.rows[0];
-      const { roomId, battlefield } = state;
-      if (!result.rows[0]) {
-        throw new ClientError(400, 'this gameId does not exist');
-      }
-      io.to(roomId).emit('flip-card', state);
-      res.status(200).json(state);
-
-      if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideFaceoffWinner, 500, state);
-      }
     })
     .catch(err => next(err));
 });
