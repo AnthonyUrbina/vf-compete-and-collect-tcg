@@ -338,9 +338,9 @@ function handleFaceoffWin(winner, state, players) {
   winnings.push(player1CardShowing[0]);
   state[player1 + 'CardShowing'] = null;
 
-  winnings.sort();
+  const sortedWinings = winnings.sort((card1, card2) => card1.rank - card2.rank);
 
-  const newWinnerDeck = winnerSideDeck.concat(winnings);
+  const newWinnerDeck = winnerSideDeck.concat(sortedWinings);
   state[winner + 'SideDeck'] = newWinnerDeck;
 
   const sql = `
