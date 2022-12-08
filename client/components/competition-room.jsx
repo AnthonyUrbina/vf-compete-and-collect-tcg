@@ -10,10 +10,12 @@ export default class CompetitionRoom extends React.Component {
   }
 
   componentDidMount() {
+    const roomId = parseRoute(window.location.hash).path;
+    const token = window.localStorage.getItem('war-jwt');
     const { user } = this.props;
-    const { userId } = user;
+    const opponent = this.getOpponentUsername();
     this.setState({ fetchingData: true });
-    fetch(`/api/games/retrieve/${userId}`,
+    fetch(`/api/games/retrieve/${token}/${opponent}`,
       { method: 'GET' })
       .then(res => res.json())
       .then(result => {
@@ -23,8 +25,6 @@ export default class CompetitionRoom extends React.Component {
         this.setState(state);
       });
     if (user) {
-      const roomId = parseRoute(window.location.hash).path;
-      const token = window.localStorage.getItem('war-jwt');
       this.socket = io('/', {
         auth: { token },
         query: { roomId }

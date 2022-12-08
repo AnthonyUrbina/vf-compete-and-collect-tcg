@@ -88,32 +88,55 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 
 });
 
-app.get('/api/games/retrieve/:userId', (req, res, next) => {
-  const { userId } = req.params;
-  if (!userId) {
-    throw new ClientError(400, 'userId is required');
+app.get('/api/games/retrieve/:token/:opponent', (req, res, next) => {
+  const { token, opponent } = req.params;
+  if (!token) {
+    throw new ClientError(400, 'token is required');
   }
 
-  const sql = `
-    select "users"."username",
-           "games"."state",
-           "games"."gameId"
-      from "games"
-inner join "users"
-        on "challenger" = "userId"
-        or "opponent" = "userId"
-     where "isActive" = 'true'
-      and ("challenger" = $1 or "opponent" = $1)
-      limit 1;
-  `;
+  const payload = jwt.verify(token, process.env.TOKEN_SECRET);
+  const { userId } = payload;
 
-  const params = [userId];
+  const sql = `
+    select "userId"
+      from "users"
+     where "username" = $1
+  `;
+  const params = [opponent];
+
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
-        throw new ClientError(400, 'this user is not in any active games');
+        throw new ClientError(400, 'this user does not exist');
       }
-      res.status(200).json(result.rows);
+      const opponentId = result.rows[0].userId;
+
+      const sql = `
+        select "users"."username",
+              "games"."state",
+              "games"."gameId"
+          from "games"
+    inner join "users"
+            on "challenger" = "userId"
+            or "opponent" = "userId"
+        where "isActive" = 'true'
+          and (
+            ("challenger" = $1) and ("opponent" = $2) or
+            ("challenger" = $2) and ("opponent" = $1)
+            )
+          limit 1;
+      `;
+
+      const params = [userId, opponentId];
+      db.query(sql, params)
+        .then(result => {
+          if (!result.rows[0]) {
+            throw new ClientError(400, 'this user is not in any active games');
+          }
+          res.status(200).json(result.rows);
+        })
+        .catch(err => next(err));
+
     })
     .catch(err => next(err));
 });
