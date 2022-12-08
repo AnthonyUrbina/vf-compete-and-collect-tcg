@@ -230,6 +230,8 @@ io.on('connection', socket => {
     const state = {
       [challengerUsername + 'Deck']: players[0].deck,
       [socket.nickname + 'Deck']: players[1].deck,
+      [challengerUsername + 'SideDeck']: [],
+      [socket.nickname + 'SideDeck']: [],
       [challengerUsername + 'CardShowing']: null,
       [socket.nickname + 'CardShowing']: null
     };
@@ -363,9 +365,7 @@ function handleFaceoffWin(winner, state, players) {
         const playerDeck = state[players[username] + 'Deck'];
         const playerSideDeck = state[players[username] + 'SideDeck'];
         const player = players[username];
-        if (!playerDeck && !playerSideDeck) {
-          return;
-        }
+
         if (!playerDeck.length && playerSideDeck.length) {
           outOfCards(state, playerDeck, playerSideDeck, player);
         } else if (!playerDeck.length && !playerSideDeck.length) {
