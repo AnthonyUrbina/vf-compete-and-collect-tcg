@@ -141,7 +141,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       res.status(200).json(state);
 
       if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideWinner, 500, state);
+        setTimeout(decideFaceoffWinner, 500, state);
       }
     })
     .catch(err => next(err));
@@ -292,7 +292,7 @@ function getUsernames(roomId) {
   return players;
 }
 
-function decideWinner(state) {
+function decideFaceoffWinner(state) {
   const { roomId, battlefield } = state;
   const players = getUsernames(roomId);
   let bestRank = 0;
@@ -320,10 +320,10 @@ function decideWinner(state) {
       }
     }
   }
-  handleWin(winner, state, players);
+  handleFaceoffWin(winner, state, players);
 }
 
-function handleWin(winner, state, players) {
+function handleFaceoffWin(winner, state, players) {
   if (!state[winner + 'SideDeck']) {
     state[winner + 'SideDeck'] = [];
   }
