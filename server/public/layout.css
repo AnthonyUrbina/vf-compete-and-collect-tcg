@@ -497,9 +497,9 @@ li {
     width: 375px;
   }
 
-  /* .center-column {
+  .center-column {
     flex-direction: row;
-  } */
+  }
 
   .form-spacing {
     padding-top: 2.25rem;

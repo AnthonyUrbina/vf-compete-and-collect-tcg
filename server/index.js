@@ -253,10 +253,10 @@ io.on('connection', socket => {
     const state = {
       [challengerUsername + 'Deck']: players[0].deck,
       [socket.nickname + 'Deck']: players[1].deck,
-      [challengerUsername + 'SideDeck']: [],
-      [socket.nickname + 'SideDeck']: [],
-      [challengerUsername + 'CardShowing']: null,
-      [socket.nickname + 'CardShowing']: null
+      [challengerUsername + 'WinPile']: [],
+      [socket.nickname + 'WinPile']: [],
+      [challengerUsername + 'FaceUp']: null,
+      [socket.nickname + 'FaceUp']: null
     };
 
     const JSONstate = JSON.stringify(state);
@@ -349,24 +349,24 @@ function decideFaceoffWinner(state) {
 }
 
 function handleFaceoffWin(winner, state, players) {
-  if (!state[winner + 'SideDeck']) {
-    state[winner + 'SideDeck'] = [];
+  if (!state[winner + 'WinPile']) {
+    state[winner + 'WinPile'] = [];
   }
-  const winnerSideDeck = state[winner + 'SideDeck'];
+  const winnerWinPile = state[winner + 'WinPile'];
   const { player1, player2 } = players;
   const { gameId } = state;
-  const player1CardShowing = state[player1 + 'CardShowing'];
-  const player2CardShowing = state[player2 + 'CardShowing'];
-  const winnings = [];
-  winnings.push(player2CardShowing[0]);
-  state[player2 + 'CardShowing'] = null;
-  winnings.push(player1CardShowing[0]);
-  state[player1 + 'CardShowing'] = null;
+  const player1FaceUp = state[player1 + 'FaceUp'];
+  const player2FaceUp = state[player2 + 'FaceUp'];
+  const activeCards = [];
+  activeCards.push(player2FaceUp[0]);
+  state[player2 + 'FaceUp'] = null;
+  activeCards.push(player1FaceUp[0]);
+  state[player1 + 'FaceUp'] = null;
 
-  const sortedWinings = winnings.sort((card1, card2) => card1.rank - card2.rank);
+  const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
 
-  const newWinnerDeck = winnerSideDeck.concat(sortedWinings);
-  state[winner + 'SideDeck'] = newWinnerDeck;
+  const newWinnerDeck = winnerWinPile.concat(sortedWinings);
+  state[winner + 'WinPile'] = newWinnerDeck;
 
   const sql = `
     update "games"
@@ -386,24 +386,24 @@ function handleFaceoffWin(winner, state, players) {
       io.to(roomId).emit('winner-decided', state);
       for (const username in players) {
         const playerDeck = state[players[username] + 'Deck'];
-        const playerSideDeck = state[players[username] + 'SideDeck'];
+        const playerWinPile = state[players[username] + 'WinPile'];
         const player = players[username];
 
-        if (!playerDeck.length && playerSideDeck.length) {
-          outOfCards(state, playerDeck, playerSideDeck, player);
-        } else if (!playerDeck.length && !playerSideDeck.length) {
+        if (!playerDeck.length && playerWinPile.length) {
+          outOfCards(state, playerDeck, playerWinPile, player);
+        } else if (!playerDeck.length && !playerWinPile.length) {
           const loser = players[username];
-          outOfCards(state, playerDeck, playerSideDeck, player, loser);
+          outOfCards(state, playerDeck, playerWinPile, player, loser);
         }
       }
     });
 }
 
-function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
+function outOfCards(state, playerDeck, playerWinPile, player, loser) {
   const { gameId, roomId } = state;
-  if (!playerDeck.length && playerSideDeck.length) {
-    state[player + 'Deck'] = playerSideDeck;
-    state[player + 'SideDeck'] = [];
+  if (!playerDeck.length && playerWinPile.length) {
+    state[player + 'Deck'] = playerWinPile;
+    state[player + 'WinPile'] = [];
 
     const sql = `
         update "games"
