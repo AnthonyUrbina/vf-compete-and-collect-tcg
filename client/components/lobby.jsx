@@ -195,7 +195,7 @@ export default class Lobby extends React.Component {
     return (
       <>
         <div className='row center'>
-          <h1 className='home-header-color'>WAR</h1>
+          <h1 className='home-header-color'>Lobby</h1>
         </div>
         <div className='row center'>
           <div className='center-horiz-vert'>
