@@ -215,7 +215,7 @@ export default class Lobby extends React.Component {
           </div>
         </div>
         <div className='row center'>
-          <button onClick={this.handleClick} id='online-players-button'>Online Players</button>
+          <button onClick={this.handleClick} id='online-players-button'>View Online Players</button>
         </div>
         <div className='row center'>
           <div className='center-horiz-vert player-2-stretch'>
