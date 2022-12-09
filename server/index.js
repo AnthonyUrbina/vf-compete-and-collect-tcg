@@ -1,6 +1,7 @@
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
+const authorizationMiddleware = require('./authorization-middleware');
 const pg = require('pg');
 const argon2 = require('argon2');
 const ClientError = require('./client-error');
@@ -88,36 +89,6 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 
 });
 
-app.get('/api/games/retrieve/:userId', (req, res, next) => {
-  const { userId } = req.params;
-  if (!userId) {
-    throw new ClientError(400, 'userId is required');
-  }
-
-  const sql = `
-    select "users"."username",
-           "games"."state",
-           "games"."gameId"
-      from "games"
-inner join "users"
-        on "challenger" = "userId"
-        or "opponent" = "userId"
-     where "isActive" = 'true'
-      and ("challenger" = $1 or "opponent" = $1)
-      limit 1;
-  `;
-
-  const params = [userId];
-  db.query(sql, params)
-    .then(result => {
-      if (!result.rows[0]) {
-        throw new ClientError(400, 'this user is not in any active games');
-      }
-      res.status(200).json(result.rows);
-    })
-    .catch(err => next(err));
-});
-
 app.patch('/api/games/:gameId', (req, res, next) => {
   const { gameId } = req.params;
   const state = req.body;
@@ -141,8 +112,61 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       res.status(200).json(state);
 
       if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideWinner, 500, state);
+        setTimeout(decideFaceoffWinner, 500, state);
       }
+    })
+    .catch(err => next(err));
+});
+
+app.use(authorizationMiddleware);
+
+app.get('/api/games/retrieve/:opponent', (req, res, next) => {
+  const { opponent } = req.params;
+  const token = req.headers['x-access-token'];
+
+  const payload = jwt.verify(token, process.env.TOKEN_SECRET);
+  const { userId } = payload;
+
+  const sql = `
+    select "userId"
+      from "users"
+     where "username" = $1
+  `;
+  const params = [opponent];
+
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this user does not exist');
+      }
+      const opponentId = result.rows[0].userId;
+
+      const sql = `
+        select "users"."username",
+              "games"."state",
+              "games"."gameId"
+          from "games"
+    inner join "users"
+            on "challenger" = "userId"
+            or "opponent" = "userId"
+        where "isActive" = 'true'
+          and (
+            ("challenger" = $1) and ("opponent" = $2) or
+            ("challenger" = $2) and ("opponent" = $1)
+            )
+          limit 1;
+      `;
+
+      const params = [userId, opponentId];
+      db.query(sql, params)
+        .then(result => {
+          if (!result.rows[0]) {
+            throw new ClientError(400, 'this user is not in any active games');
+          }
+          res.status(200).json(result.rows);
+        })
+        .catch(err => next(err));
+
     })
     .catch(err => next(err));
 });
@@ -230,8 +254,10 @@ io.on('connection', socket => {
     const state = {
       [challengerUsername + 'Deck']: players[0].deck,
       [socket.nickname + 'Deck']: players[1].deck,
-      [challengerUsername + 'CardShowing']: null,
-      [socket.nickname + 'CardShowing']: null
+      [challengerUsername + 'WinPile']: [],
+      [socket.nickname + 'WinPile']: [],
+      [challengerUsername + 'FaceUp']: null,
+      [socket.nickname + 'FaceUp']: null
     };
 
     const JSONstate = JSON.stringify(state);
@@ -292,7 +318,7 @@ function getUsernames(roomId) {
   return players;
 }
 
-function decideWinner(state) {
+function decideFaceoffWinner(state) {
   const { roomId, battlefield } = state;
   const players = getUsernames(roomId);
   let bestRank = 0;
@@ -320,28 +346,28 @@ function decideWinner(state) {
       }
     }
   }
-  handleWin(winner, state, players);
+  handleFaceoffWin(winner, state, players);
 }
 
-function handleWin(winner, state, players) {
-  if (!state[winner + 'SideDeck']) {
-    state[winner + 'SideDeck'] = [];
+function handleFaceoffWin(winner, state, players) {
+  if (!state[winner + 'WinPile']) {
+    state[winner + 'WinPile'] = [];
   }
-  const winnerSideDeck = state[winner + 'SideDeck'];
+  const winnerWinPile = state[winner + 'WinPile'];
   const { player1, player2 } = players;
   const { gameId } = state;
-  const player1CardShowing = state[player1 + 'CardShowing'];
-  const player2CardShowing = state[player2 + 'CardShowing'];
-  const winnings = [];
-  winnings.push(player2CardShowing[0]);
-  state[player2 + 'CardShowing'] = null;
-  winnings.push(player1CardShowing[0]);
-  state[player1 + 'CardShowing'] = null;
+  const player1FaceUp = state[player1 + 'FaceUp'];
+  const player2FaceUp = state[player2 + 'FaceUp'];
+  const activeCards = [];
+  activeCards.push(player2FaceUp[0]);
+  state[player2 + 'FaceUp'] = null;
+  activeCards.push(player1FaceUp[0]);
+  state[player1 + 'FaceUp'] = null;
 
-  winnings.sort();
+  const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
 
-  const newWinnerDeck = winnerSideDeck.concat(winnings);
-  state[winner + 'SideDeck'] = newWinnerDeck;
+  const newWinnerDeck = winnerWinPile.concat(sortedWinings);
+  state[winner + 'WinPile'] = newWinnerDeck;
 
   const sql = `
     update "games"
@@ -361,26 +387,24 @@ function handleWin(winner, state, players) {
       io.to(roomId).emit('winner-decided', state);
       for (const username in players) {
         const playerDeck = state[players[username] + 'Deck'];
-        const playerSideDeck = state[players[username] + 'SideDeck'];
+        const playerWinPile = state[players[username] + 'WinPile'];
         const player = players[username];
-        if (!playerDeck && !playerSideDeck) {
-          return;
-        }
-        if (!playerDeck.length && playerSideDeck.length) {
-          outOfCards(state, playerDeck, playerSideDeck, player);
-        } else if (!playerDeck.length && !playerSideDeck.length) {
+
+        if (!playerDeck.length && playerWinPile.length) {
+          outOfCards(state, playerDeck, playerWinPile, player);
+        } else if (!playerDeck.length && !playerWinPile.length) {
           const loser = players[username];
-          outOfCards(state, playerDeck, playerSideDeck, player, loser);
+          outOfCards(state, playerDeck, playerWinPile, player, loser);
         }
       }
     });
 }
 
-function outOfCards(state, playerDeck, playerSideDeck, player, loser) {
+function outOfCards(state, playerDeck, playerWinPile, player, loser) {
   const { gameId, roomId } = state;
-  if (!playerDeck.length && playerSideDeck.length) {
-    state[player + 'Deck'] = playerSideDeck;
-    state[player + 'SideDeck'] = [];
+  if (!playerDeck.length && playerWinPile.length) {
+    state[player + 'Deck'] = playerWinPile;
+    state[player + 'WinPile'] = [];
 
     const sql = `
         update "games"

@@ -15,7 +15,7 @@ export default class AuthPage extends React.Component {
             <h1>WAR</h1>
           </div>
         </div>
-        <div className="row center-vertical">
+        <div className="row center-column">
           <div className="">
             <img src="images/ace.png" alt="ace" />
           </div>

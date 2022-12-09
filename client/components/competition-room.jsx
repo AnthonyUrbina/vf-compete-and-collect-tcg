@@ -10,11 +10,19 @@ export default class CompetitionRoom extends React.Component {
   }
 
   componentDidMount() {
+    const roomId = parseRoute(window.location.hash).path;
+    const token = window.localStorage.getItem('war-jwt');
     const { user } = this.props;
-    const { userId } = user;
+    const opponent = this.getOpponentUsername();
     this.setState({ fetchingData: true });
-    fetch(`/api/games/retrieve/${userId}`,
-      { method: 'GET' })
+    const headers = {
+      'X-Access-Token': token
+    };
+    fetch(`/api/games/retrieve/${opponent}`,
+      {
+        method: 'GET',
+        headers
+      })
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];
@@ -23,8 +31,6 @@ export default class CompetitionRoom extends React.Component {
         this.setState(state);
       });
     if (user) {
-      const roomId = parseRoute(window.location.hash).path;
-      const token = window.localStorage.getItem('war-jwt');
       this.socket = io('/', {
         auth: { token },
         query: { roomId }
@@ -67,10 +73,10 @@ export default class CompetitionRoom extends React.Component {
 
   showClientCard() {
     const client = this.props.user.username;
-    const clientCardShowing = this.state[client + 'CardShowing'];
-    if (clientCardShowing) {
-      const suit = clientCardShowing[0].suit;
-      const rank = clientCardShowing[0].rank;
+    const clientFaceUp = this.state[client + 'FaceUp'];
+    if (clientFaceUp) {
+      const suit = clientFaceUp[0].suit;
+      const rank = clientFaceUp[0].rank;
       const src = `images/cards/${rank}_of_${suit}.png`;
       let className = 'flipped-card';
       if (this.state.lastToFlip === client) {
@@ -84,10 +90,10 @@ export default class CompetitionRoom extends React.Component {
 
   showOpponentCard() {
     const opponent = this.getOpponentUsername();
-    const opponentCardShowing = this.state[opponent + 'CardShowing'];
-    if (opponentCardShowing) {
-      const suit = opponentCardShowing[0].suit;
-      const rank = opponentCardShowing[0].rank;
+    const opponentFaceUp = this.state[opponent + 'FaceUp'];
+    if (opponentFaceUp) {
+      const suit = opponentFaceUp[0].suit;
+      const rank = opponentFaceUp[0].rank;
       const src = `images/cards/${rank}_of_${suit}.png`;
       const className = 'flipped-card opponent-flipped';
       return (
@@ -98,10 +104,10 @@ export default class CompetitionRoom extends React.Component {
 
   flipCard() {
     const client = this.props.user.username;
-    const clientCardShowing = this.state[client + 'CardShowing'];
+    const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
-    const opponentCardShowing = this.state[opponent + 'CardShowing'];
-    if (clientCardShowing) {
+    const opponentFaceUp = this.state[opponent + 'FaceUp'];
+    if (clientFaceUp) {
       return;
     }
     const { gameId } = this.state;
@@ -110,14 +116,14 @@ export default class CompetitionRoom extends React.Component {
     const cardFlipped = copyOfClientDeck.splice(0, 1);
     const copyOfState = { ...this.state };
     copyOfState[client + 'Deck'] = copyOfClientDeck;
-    copyOfState[client + 'CardShowing'] = cardFlipped;
+    copyOfState[client + 'FaceUp'] = cardFlipped;
     copyOfState.lastToFlip = client;
     copyOfState.battlefield = {};
     copyOfState.roomId = parseRoute(window.location.hash).path;
 
-    if (opponentCardShowing) {
+    if (opponentFaceUp) {
       copyOfState.battlefield[client] = cardFlipped[0];
-      copyOfState.battlefield[opponent] = opponentCardShowing[0];
+      copyOfState.battlefield[opponent] = opponentFaceUp[0];
     }
 
     const headers = {
@@ -136,15 +142,15 @@ export default class CompetitionRoom extends React.Component {
 
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
-    const opponentSideDeck = this.state[opponent + 'SideDeck'];
-    if (!opponentSideDeck) {
+    const opponentWinPile = this.state[opponent + 'WinPile'];
+    if (!opponentWinPile) {
       return;
     }
-    if (opponentSideDeck.length !== 0) {
-      const lastCardRank = opponentSideDeck[opponentSideDeck.length - 1].rank;
-      const lastCardSuit = opponentSideDeck[opponentSideDeck.length - 1].suit;
-      const secondToLastCardRank = opponentSideDeck[opponentSideDeck.length - 2].rank;
-      const secondToLastCardSuit = opponentSideDeck[opponentSideDeck.length - 2].suit;
+    if (opponentWinPile.length !== 0) {
+      const lastCardRank = opponentWinPile[opponentWinPile.length - 1].rank;
+      const lastCardSuit = opponentWinPile[opponentWinPile.length - 1].suit;
+      const secondToLastCardRank = opponentWinPile[opponentWinPile.length - 2].rank;
+      const secondToLastCardSuit = opponentWinPile[opponentWinPile.length - 2].suit;
       const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
       return (
@@ -158,15 +164,16 @@ export default class CompetitionRoom extends React.Component {
 
   showClientWinningCards() {
     const client = this.props.user.username;
-    const clientSideDeck = this.state[client + 'SideDeck'];
-    if (!clientSideDeck) {
+    const clientWinPile = this.state[client + 'WinPile'];
+
+    if (!clientWinPile) {
       return;
     }
-    if (clientSideDeck.length !== 0) {
-      const lastCardRank = clientSideDeck[clientSideDeck.length - 1].rank;
-      const lastCardSuit = clientSideDeck[clientSideDeck.length - 1].suit;
-      const secondToLastCardRank = clientSideDeck[clientSideDeck.length - 2].rank;
-      const secondToLastCardSuit = clientSideDeck[clientSideDeck.length - 2].suit;
+    if (clientWinPile.length !== 0) {
+      const lastCardRank = clientWinPile[clientWinPile.length - 1].rank;
+      const lastCardSuit = clientWinPile[clientWinPile.length - 1].suit;
+      const secondToLastCardRank = clientWinPile[clientWinPile.length - 2].rank;
+      const secondToLastCardSuit = clientWinPile[clientWinPile.length - 2].suit;
       const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
       const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
       return (

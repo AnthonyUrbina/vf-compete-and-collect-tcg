@@ -195,7 +195,7 @@ export default class Lobby extends React.Component {
     return (
       <>
         <div className='row center'>
-          <h1 className='home-header-color'>WAR</h1>
+          <h1 className='home-header-color'>Lobby</h1>
         </div>
         <div className='row center'>
           <div className='center-horiz-vert'>
@@ -215,7 +215,7 @@ export default class Lobby extends React.Component {
           </div>
         </div>
         <div className='row center'>
-          <button onClick={this.handleClick} id='online-players-button'>Online Players</button>
+          <button onClick={this.handleClick} id='online-players-button'>View Online Players</button>
         </div>
         <div className='row center'>
           <div className='center-horiz-vert player-2-stretch'>
@@ -225,7 +225,7 @@ export default class Lobby extends React.Component {
         </div>
         <div className={this.chooseModalClass()}>
           <button onClick={this.handleClick} className='fa-solid fa-x' />
-          <h3>War Multiplayer</h3>
+          <h3>Online Players</h3>
           <p className='modal-text'>
             These are the players currently online. Click<br />
             on them to challenge them to a game of war!
@@ -237,7 +237,7 @@ export default class Lobby extends React.Component {
         <div className={this.chooseChallengerModalClass()}>
           <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
           {this.chooseChallengeModalText()}
-          <div className='center-column'>
+          <div className='center-column modal'>
             <img className='player-avatar-img-size challenger-modal-img' src='images/player1.png'/>
             {this.chooseChallengeModalButtons()}
           </div>
