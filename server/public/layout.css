@@ -501,6 +501,10 @@ li {
     flex-direction: row;
   }
 
+  .center-column.modal {
+    flex-direction: column;
+  }
+
   .form-spacing {
     padding-top: 2.25rem;
   }

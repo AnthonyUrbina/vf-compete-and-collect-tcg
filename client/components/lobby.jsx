@@ -237,7 +237,7 @@ export default class Lobby extends React.Component {
         <div className={this.chooseChallengerModalClass()}>
           <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
           {this.chooseChallengeModalText()}
-          <div className='center-column'>
+          <div className='center-column modal'>
             <img className='player-avatar-img-size challenger-modal-img' src='images/player1.png'/>
             {this.chooseChallengeModalButtons()}
           </div>
