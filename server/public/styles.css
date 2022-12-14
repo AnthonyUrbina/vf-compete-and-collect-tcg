@@ -163,3 +163,7 @@ h3 {
 .input-error-message {
   color: red;
 }
+
+.sign-out-modal {
+  background-color: #fffaf0;
+}

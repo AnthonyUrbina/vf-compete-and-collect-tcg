@@ -339,6 +339,17 @@ export default class CompetitionRoom extends React.Component {
         <div className={this.showSpinner()}>
           <div className='lds-spinner'><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
         </div>
+        <div className='sign-out-modal'>
+          {/* <button onClick={this.handleClick} className='fa-solid fa-x' /> */}
+          <h3 className='sign-out-modal-title'>Sign Out</h3>
+          <p className='sign-out-modal-text'>
+            Are you sure? Signing out now will end your current session.
+          </p>
+          <div className="row sign-out-buttons-spacing">
+            <button className='challenger-modal-button sign-out-modal-button'>Cancel</button>
+            <button className='challenger-modal-button sign-out-modal-button'>Sign Out</button>
+          </div>
+        </div>
       </>
     );
   }
