@@ -14,6 +14,7 @@ export default class App extends React.Component {
       route: parseRoute(window.location.hash)
     };
     this.handleSignIn = this.handleSignIn.bind(this);
+    this.handleSignOut = this.handleSignOut.bind(this);
   }
 
   componentDidMount() {
@@ -31,6 +32,11 @@ export default class App extends React.Component {
     const { user, token } = results;
     window.localStorage.setItem('war-jwt', token);
     this.setState({ user });
+  }
+
+  handleSignOut() {
+    window.localStorage.removeItem('react-context-jwt');
+    this.setState({ user: null });
   }
 
   choosePage() {
@@ -64,7 +70,8 @@ export default class App extends React.Component {
   render() {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
-    const context = { handleSignIn, user, route };
+    const handleSignOut = this.handleSignOut;
+    const context = { handleSignIn, handleSignOut, user, route };
     return (
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>
