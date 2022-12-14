@@ -9,8 +9,8 @@ export default class CompetitionRoom extends React.Component {
     this.flipCard = this.flipCard.bind(this);
     this.handleSignOut = this.props.handleSignOut.bind(this);
     this.handleSignOutClicks = this.handleSignOutClicks.bind(this);
-    this.signOutModal = React.createRef();
-    this.winnerModal = React.createRef();
+    // this.signOutModal = React.createRef();
+    // this.winnerModal = React.createRef();
 
   }
 
@@ -34,6 +34,7 @@ export default class CompetitionRoom extends React.Component {
         state.gameId = gameId;
         state.fetchingData = false;
         state.signOutModalShowing = false;
+        state.returnHomeModalShowing = false;
         this.setState(state);
       });
     if (user) {
@@ -316,12 +317,16 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
+  handleHomeButtonClick() {
+    this.setState({ returnHomeModalShowing: true });
+  }
+
   render() {
     return (
       <>
         <div className='row center header-spacing'>
           <div className="column-one-fourth">
-            <i id='house-icon' className="fa-solid fa-house"/></div>
+            <i id='home-button' className="fa-solid fa-house"/></div>
           <div className="column-half header-">
             <h1 className='home-header-color'>WAR</h1>
           </div>
