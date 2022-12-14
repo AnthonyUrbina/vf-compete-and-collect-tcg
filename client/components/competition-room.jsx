@@ -9,6 +9,9 @@ export default class CompetitionRoom extends React.Component {
     this.flipCard = this.flipCard.bind(this);
     this.handleSignOut = this.props.handleSignOut.bind(this);
     this.handleSignOutClicks = this.handleSignOutClicks.bind(this);
+    this.signOutModal = React.createRef();
+    this.winnerModal = React.createRef();
+
   }
 
   componentDidMount() {
@@ -253,12 +256,39 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
-  showWinnerModal() {
-    const { loser } = this.state;
-    if (!loser) {
-      return 'winner-modal hidden';
+  showModal() {
+    const { loser, signOutModalShowing } = this.state;
+    if (loser) {
+      return (
+        <div className='winnder-modal'>
+          <h1 className='winner-modal-title'>WINNER</h1>
+          <div className='row center'>
+            <img className='trophy' src='images/trophy.png' alt='trophy' />
+            <div>
+              <img className='winner-avatar' src={this.pickWinnerAvatar()} alt='winner-avatar' />
+              <p className='winner-modal-text'>{this.pickWinnerText()}</p>
+              <a href='#' className='challenger-modal-button winner-modal-button'>Main Menu</a>
+            </div>
+            <img className='trophy' src='images/trophy.png' alt='trophy' />
+          </div>
+        </div>
+      );
     }
-    return 'winner-modal';
+
+    if (signOutModalShowing) {
+      return (
+        <div className='sign-out-modal'>
+          <h3 className='sign-out-modal-title'>Sign Out</h3>
+          <p className='sign-out-modal-text'>
+            Are you sure? Signing out now will end your current session.
+          </p>
+          <div className="row sign-out-buttons-spacing">
+            <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={(this.handleSignOutClicks)}>Cancel</button>
+            <button className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
+          </div>
+        </div>
+      );
+    }
   }
 
   showOverlay() {
@@ -279,7 +309,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   handleSignOutClicks(event) {
-    if (event.target.className === 'cancel-button') {
+    if (event.target.id === 'cancel-button') {
       this.setState({ signOutModalShowing: false });
     } else {
       this.setState({ signOutModalShowing: true });
@@ -291,12 +321,12 @@ export default class CompetitionRoom extends React.Component {
       <>
         <div className='row center header-spacing'>
           <div className="column-one-fourth">
-            <i id='house-icon' className="fa-solid fa-house" onClick={this.handleSignOutClicks} /></div>
+            <i id='house-icon' className="fa-solid fa-house"/></div>
           <div className="column-half header-">
             <h1 className='home-header-color'>WAR</h1>
           </div>
           <div className="column-one-fourth">
-            <i className="fa-solid fa-right-from-bracket" />
+            <i className="fa-solid fa-right-from-bracket" onClick={this.handleSignOutClicks}/>
           </div>
         </div>
         <div className='row'>
@@ -341,32 +371,11 @@ export default class CompetitionRoom extends React.Component {
             </div>
           </div>
         </div>
-        <div className={this.showWinnerModal()}>
-          <h1 className='winner-modal-title'>WINNER</h1>
-          <div className='row center'>
-            <img className='trophy' src='images/trophy.png' alt='trophy' />
-            <div>
-              <img className='winner-avatar' src={this.pickWinnerAvatar()} alt='winner-avatar' />
-              <p className='winner-modal-text'>{this.pickWinnerText()}</p>
-              <a href='#' className='challenger-modal-button winner-modal-button'>Main Menu</a>
-            </div>
-            <img className='trophy' src='images/trophy.png' alt='trophy' />
-          </div>
-        </div>
         <div className={this.showOverlay()}/>
         <div className={this.showSpinner()}>
           <div className='lds-spinner'><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
         </div>
-        <div className='sign-out-modal'>
-          <h3 className='sign-out-modal-title'>Sign Out</h3>
-          <p className='sign-out-modal-text'>
-            Are you sure? Signing out now will end your current session.
-          </p>
-          <div className="row sign-out-buttons-spacing">
-            <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={(this.handleSignOutClicks)}>Cancel</button>
-            <button className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
-          </div>
-        </div>
+        {this.showModal()}
       </>
     );
   }
