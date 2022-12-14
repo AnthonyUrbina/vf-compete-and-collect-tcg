@@ -142,9 +142,7 @@ export default class Lobby extends React.Component {
     let socketId = null;
     const { onlinePlayers } = this.state;
     for (const key in onlinePlayers) {
-      if (onlinePlayers[key] === opponentUsername) {
-        socketId = key;
-      }
+      socketId = onlinePlayers[key] === opponentUsername && key;
     }
     return socketId;
   }
