@@ -8,7 +8,7 @@ export default class CompetitionRoom extends React.Component {
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
     this.handleSignOut = this.props.handleSignOut.bind(this);
-    this.handleSignOutClicks = this.handleSignOutClicks.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     // this.signOutModal = React.createRef();
     // this.winnerModal = React.createRef();
 
@@ -258,7 +258,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   showModal() {
-    const { loser, signOutModalShowing } = this.state;
+    const { loser, signOutModalShowing, returnHomeModalShowing } = this.state;
     if (loser) {
       return (
         <div className='winnder-modal'>
@@ -276,15 +276,18 @@ export default class CompetitionRoom extends React.Component {
       );
     }
 
-    if (signOutModalShowing) {
+    if (signOutModalShowing || returnHomeModalShowing) {
+      const modalTitle = signOutModalShowing ? 'Sign Out' : 'Return Home';
+      const modalText = signOutModalShowing ? 'Signing Out' : 'Returning Home';
+
       return (
         <div className='sign-out-modal'>
-          <h3 className='sign-out-modal-title'>Sign Out</h3>
+          <h3 className='sign-out-modal-title'>{modalTitle}</h3>
           <p className='sign-out-modal-text'>
-            Are you sure? Signing out now will end your current session.
+            {`Are you sure? ${modalText} now will end your current session.`}
           </p>
           <div className="row sign-out-buttons-spacing">
-            <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={(this.handleSignOutClicks)}>Cancel</button>
+            <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={this.handleClick}>Cancel</button>
             <button className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
           </div>
         </div>
@@ -309,16 +312,14 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
-  handleSignOutClicks(event) {
+  handleClick(event) {
     if (event.target.id === 'cancel-button') {
-      this.setState({ signOutModalShowing: false });
+      this.setState({ signOutModalShowing: false, returnHomeModalShowing: false });
+    } else if (event.target.id === 'home-button') {
+      this.setState({ returnHomeModalShowing: true });
     } else {
       this.setState({ signOutModalShowing: true });
     }
-  }
-
-  handleHomeButtonClick() {
-    this.setState({ returnHomeModalShowing: true });
   }
 
   render() {
@@ -326,12 +327,12 @@ export default class CompetitionRoom extends React.Component {
       <>
         <div className='row center header-spacing'>
           <div className="column-one-fourth">
-            <i id='home-button' className="fa-solid fa-house"/></div>
+            <i id='home-button' className="fa-solid fa-house" onClick={this.handleClick}/></div>
           <div className="column-half header-">
             <h1 className='home-header-color'>WAR</h1>
           </div>
           <div className="column-one-fourth">
-            <i className="fa-solid fa-right-from-bracket" onClick={this.handleSignOutClicks}/>
+            <i className="fa-solid fa-right-from-bracket" onClick={this.handleClick}/>
           </div>
         </div>
         <div className='row'>
