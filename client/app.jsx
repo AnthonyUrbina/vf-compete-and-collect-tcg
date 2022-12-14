@@ -5,6 +5,7 @@ import AppContext from './lib/app-context';
 import Home from './pages/home';
 import jwtDecode from 'jwt-decode';
 import Game from './pages/game';
+import Navbar from './components/navbar';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -82,6 +83,7 @@ export default class App extends React.Component {
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>
           <div className={this.chooseContainerColor()}>
+            <Navbar />
             {this.choosePage()}
           </div>
         </div>

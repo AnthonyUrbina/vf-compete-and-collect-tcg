@@ -192,7 +192,7 @@ export default class Lobby extends React.Component {
   render() {
     return (
       <>
-        <div className='row center header-spacing'>
+        {/* <div className='row center header-spacing'>
           <div className="column-one-fourth">
             <i className="fa-solid fa-house" /></div>
           <div className="column-half header-">
@@ -201,7 +201,7 @@ export default class Lobby extends React.Component {
           <div className="column-one-fourth">
             <i className="fa-solid fa-right-from-bracket" />
           </div>
-        </div>
+        </div> */}
         <div className='row center'>
           <div className='center-horiz-vert'>
             <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />
