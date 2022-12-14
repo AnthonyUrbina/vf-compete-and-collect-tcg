@@ -278,8 +278,15 @@ export default class CompetitionRoom extends React.Component {
   render() {
     return (
       <>
-        <div className='row center'>
-          <h1 className='home-header-color'>WAR</h1>
+        <div className='row center header-spacing'>
+          <div className="column-one-fourth">
+            <i className="fa-solid fa-house" /></div>
+          <div className="column-half header-">
+            <h1 className='home-header-color'>WAR</h1>
+          </div>
+          <div className="column-one-fourth">
+            <i className="fa-solid fa-right-from-bracket" />
+          </div>
         </div>
         <div className='row'>
           <div className='column-full'>
@@ -340,7 +347,6 @@ export default class CompetitionRoom extends React.Component {
           <div className='lds-spinner'><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
         </div>
         <div className='sign-out-modal'>
-          {/* <button onClick={this.handleClick} className='fa-solid fa-x' /> */}
           <h3 className='sign-out-modal-title'>Sign Out</h3>
           <p className='sign-out-modal-text'>
             Are you sure? Signing out now will end your current session.

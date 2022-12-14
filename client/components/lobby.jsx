@@ -192,8 +192,15 @@ export default class Lobby extends React.Component {
   render() {
     return (
       <>
-        <div className='row center'>
-          <h1 className='home-header-color'>Lobby</h1>
+        <div className='row center header-spacing'>
+          <div className="column-one-fourth">
+            <i className="fa-solid fa-house" /></div>
+          <div className="column-half header-">
+            <h1 className='home-header-color'>WAR</h1>
+          </div>
+          <div className="column-one-fourth">
+            <i className="fa-solid fa-right-from-bracket" />
+          </div>
         </div>
         <div className='row center'>
           <div className='center-horiz-vert'>

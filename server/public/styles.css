@@ -167,3 +167,8 @@ h3 {
 .sign-out-modal {
   background-color: #fffaf0;
 }
+
+.fa-house {
+  font-size: 28px;
+  color: white;
+}
