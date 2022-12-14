@@ -26,7 +26,7 @@ export default class AuthForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const { action } = this.props;
+    const { action, handleSignIn } = this.props;
     const headers = {
       'Content-Type': 'application/json'
     };
@@ -48,7 +48,7 @@ export default class AuthForm extends React.Component {
           this.errorMessage.current.blur();
           this.setState({ username: '', password: '' });
         } else if (user && token) {
-          this.props.handleSignIn(result);
+          handleSignIn(result);
           this.setState({ username: '', password: '' });
         }
       });

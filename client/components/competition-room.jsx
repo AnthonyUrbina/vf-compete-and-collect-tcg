@@ -7,6 +7,7 @@ export default class CompetitionRoom extends React.Component {
     super(props);
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
+    this.handleSignOut = this.props.handleSignOut.bind(this);
   }
 
   componentDidMount() {
@@ -353,7 +354,7 @@ export default class CompetitionRoom extends React.Component {
           </p>
           <div className="row sign-out-buttons-spacing">
             <button className='challenger-modal-button sign-out-modal-button'>Cancel</button>
-            <button className='challenger-modal-button sign-out-modal-button'>Sign Out</button>
+            <button src='' className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
           </div>
         </div>
       </>

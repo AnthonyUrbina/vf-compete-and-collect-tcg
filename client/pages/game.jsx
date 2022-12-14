@@ -5,7 +5,7 @@ import AppContext from '../lib/app-context';
 export default class Game extends React.Component {
   render() {
     return (
-      <CompetitionRoom user={this.context.user} path={this.context.route}/>
+      <CompetitionRoom user={this.context.user} path={this.context.route} handleSignOut={this.context.handleSignOut}/>
     );
   }
 }
