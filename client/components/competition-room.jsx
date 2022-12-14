@@ -8,6 +8,7 @@ export default class CompetitionRoom extends React.Component {
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
     this.handleSignOut = this.props.handleSignOut.bind(this);
+    this.handleSignOutClicks = this.handleSignOutClicks.bind(this);
   }
 
   componentDidMount() {
@@ -29,6 +30,7 @@ export default class CompetitionRoom extends React.Component {
         const { state, gameId } = result[0];
         state.gameId = gameId;
         state.fetchingData = false;
+        state.signOutModalShowing = false;
         this.setState(state);
       });
     if (user) {
@@ -261,18 +263,26 @@ export default class CompetitionRoom extends React.Component {
 
   showOverlay() {
     const { loser } = this.state;
-    if (loser) {
-      return 'overlay';
+    if (!loser) {
+      return 'overlay hidden';
     }
-    return 'overlay hidden';
+    return 'overlay';
   }
 
   showSpinner() {
     const { fetchingData } = this.state;
-    if (fetchingData) {
-      return 'spinner-container center-horiz-vert';
-    } else {
+    if (!fetchingData) {
       return 'spinner-container hidden';
+    } else {
+      return 'spinner-container center-horiz-vert';
+    }
+  }
+
+  handleSignOutClicks(event) {
+    if (event.target.className === 'cancel-button') {
+      this.setState({ signOutModalShowing: false });
+    } else {
+      this.setState({ signOutModalShowing: true });
     }
   }
 
@@ -281,7 +291,7 @@ export default class CompetitionRoom extends React.Component {
       <>
         <div className='row center header-spacing'>
           <div className="column-one-fourth">
-            <i className="fa-solid fa-house" /></div>
+            <i id='house-icon' className="fa-solid fa-house" onClick={this.handleSignOutClicks} /></div>
           <div className="column-half header-">
             <h1 className='home-header-color'>WAR</h1>
           </div>
@@ -353,8 +363,8 @@ export default class CompetitionRoom extends React.Component {
             Are you sure? Signing out now will end your current session.
           </p>
           <div className="row sign-out-buttons-spacing">
-            <button className='challenger-modal-button sign-out-modal-button'>Cancel</button>
-            <button src='' className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
+            <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={(this.handleSignOutClicks)}>Cancel</button>
+            <button className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
           </div>
         </div>
       </>
