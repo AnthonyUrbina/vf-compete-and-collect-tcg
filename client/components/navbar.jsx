@@ -11,6 +11,8 @@ export default class Navbar extends React.Component {
     // this.handleSignOut = this.props.handleSignOut.bind(this);
     // this.handleReturnHome = this.props.handleReturnHome.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleReturnHome = this.handleReturnHome.bind(this);
+    this.homeButton = React.createRef();
   }
 
   handleClick(event) {
@@ -23,8 +25,14 @@ export default class Navbar extends React.Component {
     }
   }
 
+  handleReturnHome() {
+    this.setState({ returnHomeModalShowing: false });
+    window.location.hash = '';
+  }
+
   showModal() {
-    const { handleSignOut, handleReturnHome } = this.context;
+    const { handleSignOut } = this.context;
+    const { handleReturnHome } = this;
     const { signOutModalShowing, returnHomeModalShowing } = this.state;
     if (signOutModalShowing || returnHomeModalShowing) {
       const modalTitle = signOutModalShowing ? 'Sign Out' : 'Return Home';
@@ -47,12 +55,18 @@ export default class Navbar extends React.Component {
     }
   }
 
+  hideHomeButton() {
+    const { path } = this.context.route;
+    const homeButtonClass = path ? 'fa-solid fa-house' : 'fa-solid fa-house hide-icon';
+    return homeButtonClass;
+  }
+
   render() {
     return (
       <>
         <div className='row center header-spacing'>
           <div className="column-one-fourth">
-            <i id='home-button' className="fa-solid fa-house" onClick={this.handleClick} /></div>
+            <i ref={this.homeButton} id='home-button' className={this.hideHomeButton()} onClick={this.handleClick} /></div>
           <div className="column-half header-">
             <h1 className='home-header-color'>WAR</h1>
           </div>

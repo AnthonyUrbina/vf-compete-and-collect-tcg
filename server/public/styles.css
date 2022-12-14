@@ -101,6 +101,12 @@ h3 {
   display: none;
 }
 
+.hide-icon {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .fa-x {
   background-color: transparent;
   border: none;

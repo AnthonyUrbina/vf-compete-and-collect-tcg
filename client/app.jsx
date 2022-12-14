@@ -41,19 +41,25 @@ export default class App extends React.Component {
     this.setState({ user: null });
   }
 
-  handleReturnHome() {
-    window.location.hash = '';
-  }
-
   choosePage() {
     const { path } = this.state.route;
     const { user } = this.state;
     if (path === '') {
-      return <Home />;
+      return (
+        <>
+          <Navbar />
+          <Home />
+        </>
+      );
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
     } else if (user) {
-      return <Game />;
+      return (
+        <>
+          <Navbar />
+          <Game />
+        </>
+      );
     }
   }
 
@@ -83,7 +89,6 @@ export default class App extends React.Component {
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>
           <div className={this.chooseContainerColor()}>
-            <Navbar />
             {this.choosePage()}
           </div>
         </div>
