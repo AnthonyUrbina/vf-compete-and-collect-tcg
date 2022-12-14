@@ -8,6 +8,7 @@ export default class CompetitionRoom extends React.Component {
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
     this.handleSignOut = this.props.handleSignOut.bind(this);
+    this.handleReturnHome = this.props.handleReturnHome.bind(this);
     this.handleClick = this.handleClick.bind(this);
     // this.signOutModal = React.createRef();
     // this.winnerModal = React.createRef();
@@ -279,6 +280,8 @@ export default class CompetitionRoom extends React.Component {
     if (signOutModalShowing || returnHomeModalShowing) {
       const modalTitle = signOutModalShowing ? 'Sign Out' : 'Return Home';
       const modalText = signOutModalShowing ? 'Signing Out' : 'Returning Home';
+      const modalButton = signOutModalShowing ? 'Sign Out' : 'Confirm';
+      const method = signOutModalShowing ? this.handleSignOut : this.handleReturnHome;
 
       return (
         <div className='sign-out-modal'>
@@ -288,7 +291,7 @@ export default class CompetitionRoom extends React.Component {
           </p>
           <div className="row sign-out-buttons-spacing">
             <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={this.handleClick}>Cancel</button>
-            <button className='challenger-modal-button sign-out-modal-button' onClick={this.handleSignOut}>Sign Out</button>
+            <button className='challenger-modal-button sign-out-modal-button' onClick={method}>{modalButton}</button>
           </div>
         </div>
       );

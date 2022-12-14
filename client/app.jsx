@@ -40,6 +40,10 @@ export default class App extends React.Component {
     this.setState({ user: null });
   }
 
+  handleReturnHome() {
+    window.location.hash = '';
+  }
+
   choosePage() {
     const { path } = this.state.route;
     const { user } = this.state;
@@ -72,7 +76,8 @@ export default class App extends React.Component {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
     const handleSignOut = this.handleSignOut;
-    const context = { handleSignIn, handleSignOut, user, route };
+    const handleReturnHome = this.handleReturnHome;
+    const context = { handleSignIn, handleSignOut, handleReturnHome, user, route };
     return (
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>
