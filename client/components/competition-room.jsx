@@ -7,9 +7,6 @@ export default class CompetitionRoom extends React.Component {
     super(props);
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
-    // this.signOutModal = React.createRef();
-    // this.winnerModal = React.createRef();
-
   }
 
   componentDidMount() {

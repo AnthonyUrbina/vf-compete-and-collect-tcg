@@ -485,8 +485,6 @@ li {
 .sign-out-modal {
   text-align: center;
   width: 356px;
-
-  /* height: 193px; */
   position: fixed;
   top: 47%;
   left: 50%;

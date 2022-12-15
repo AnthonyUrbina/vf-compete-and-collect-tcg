@@ -8,8 +8,6 @@ export default class Navbar extends React.Component {
       signOutModalShowing: false,
       returnHomeModalShowing: false
     };
-    // this.handleSignOut = this.props.handleSignOut.bind(this);
-    // this.handleReturnHome = this.props.handleReturnHome.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleReturnHome = this.handleReturnHome.bind(this);
     this.homeButton = React.createRef();

@@ -83,8 +83,7 @@ export default class App extends React.Component {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
     const handleSignOut = this.handleSignOut;
-    const handleReturnHome = this.handleReturnHome;
-    const context = { handleSignIn, handleSignOut, handleReturnHome, user, route };
+    const context = { handleSignIn, handleSignOut, user, route };
     return (
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>
