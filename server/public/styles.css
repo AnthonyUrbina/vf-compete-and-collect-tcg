@@ -176,5 +176,11 @@ h3 {
 
 .fa-house {
   font-size: 28px;
+  width: 28px;
   color: white;
+}
+
+.fa-right-from-bracket {
+  color: white;
+  font-size: 28px;
 }
