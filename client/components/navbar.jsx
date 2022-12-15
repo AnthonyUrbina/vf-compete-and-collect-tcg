@@ -39,14 +39,14 @@ export default class Navbar extends React.Component {
       const method = signOutModalShowing ? handleSignOut : handleReturnHome;
 
       return (
-        <div className='sign-out-modal'>
-          <h3 className='sign-out-modal-title'>{modalTitle}</h3>
-          <p className='sign-out-modal-text'>
+        <div className='nav-bar-modal'>
+          <h3 className='nav-bar-modal-title'>{modalTitle}</h3>
+          <p className='nav-bar-modal-text'>
             {`Are you sure? ${modalText} now will end your current session.`}
           </p>
-          <div className="row sign-out-buttons-spacing">
-            <button id='cancel-button' className='challenger-modal-button sign-out-modal-button' onClick={this.handleClick}>Cancel</button>
-            <button className='challenger-modal-button sign-out-modal-button' onClick={method}>{modalButton}</button>
+          <div className="row nav-bar-buttons-spacing">
+            <button id='cancel-button' className='challenger-modal-button nav-bar-modal-button' onClick={this.handleClick}>Cancel</button>
+            <button className='challenger-modal-button nav-bar-modal-button' onClick={method}>{modalButton}</button>
           </div>
         </div>
       );

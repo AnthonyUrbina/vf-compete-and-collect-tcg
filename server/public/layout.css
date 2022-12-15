@@ -482,8 +482,7 @@ li {
   animation-delay: 0s;
 }
 
-.sign-out-modal {
-  text-align: center;
+.nav-bar-modal {
   width: 356px;
   position: fixed;
   top: 47%;
@@ -493,23 +492,21 @@ li {
   border-radius: 0.25rem;
 }
 
-.sign-out-modal-text {
+.nav-bar-modal-text {
   margin: 0 0.5rem;
-  text-align: left;
 }
 
-.sign-out-modal-title {
+.nav-bar-modal-title {
   margin: 0.75rem 0.5rem;
-  text-align: left;
 }
 
-.sign-out-modal-button {
+.nav-bar-modal-button {
   width: 92px;
   margin: 1.25rem 0;
   margin-right: 0.75rem;
 }
 
-.sign-out-buttons-spacing {
+.nav-bar-buttons-spacing {
   justify-content: flex-end;
 }
 
