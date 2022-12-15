@@ -53,10 +53,9 @@ export default class Navbar extends React.Component {
     }
   }
 
-  hideHomeButton() {
+  chooseHomeButtonClass() {
     const { path } = this.context.route;
-    const homeButtonClass = path ? 'fa-solid fa-house' : 'fa-solid fa-house hide-icon';
-    return homeButtonClass;
+    return path ? 'fa-solid fa-house' : 'fa-solid fa-house hide-icon';
   }
 
   render() {
@@ -64,7 +63,7 @@ export default class Navbar extends React.Component {
       <>
         <div className='row center header-spacing'>
           <div className="column-one-fourth">
-            <a><i ref={this.homeButton} id='home-button' className={this.hideHomeButton()} onClick={this.handleClick}/></a>
+            <a><i ref={this.homeButton} id='home-button' className={this.chooseHomeButtonClass()} onClick={this.handleClick}/></a>
           </div>
           <div className="column-half header-">
             <h1 className='home-header-color'>WAR</h1>

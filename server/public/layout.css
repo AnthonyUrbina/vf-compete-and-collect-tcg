@@ -513,11 +513,6 @@ li {
   justify-content: flex-end;
 }
 
-.fa-right-from-bracket {
-  color: white;
-  font-size: 28px;
-}
-
 .header-spacing {
   align-items: baseline;
   justify-content: space-evenly;

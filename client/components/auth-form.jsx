@@ -109,9 +109,10 @@ export default class AuthForm extends React.Component {
   showDemoButton() {
     const path = this.props.action;
     if (path === 'sign-in') {
-      return <button className='form-button' onClick={this.handleDemoUsernameClick}>Demo Account</button>;
-
+      return;
     }
+    return path === 'sign-in' &&
+    <button className='form-button' onClick={this.handleDemoUsernameClick}>Demo Account</button>;
   }
 
   render() {

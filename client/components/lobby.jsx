@@ -62,9 +62,7 @@ export default class Lobby extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+    this.socket && this.socket.disconnect();
   }
 
   showOnlinePlayers() {

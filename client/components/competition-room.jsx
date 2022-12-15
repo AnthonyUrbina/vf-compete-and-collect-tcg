@@ -53,9 +53,7 @@ export default class CompetitionRoom extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+    this.socket && this.socket.disconnect();
   }
 
   getOpponentUsername() {
@@ -165,7 +163,6 @@ export default class CompetitionRoom extends React.Component {
   showClientWinningCards() {
     const client = this.props.user.username;
     const clientWinPile = this.state[client + 'WinPile'];
-
     if (!clientWinPile) {
       return;
     }
@@ -230,11 +227,7 @@ export default class CompetitionRoom extends React.Component {
     }
     const opponent = this.getOpponentUsername();
     const client = this.props.user.username;
-    if (client === loser) {
-      return opponent;
-    } else {
-      return client;
-    }
+    return client === loser ? opponent : client;
   }
 
   pickWinnerAvatar() {
@@ -243,48 +236,35 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
     const client = this.props.user.username;
-    if (client === loser) {
-      return 'images/player1.png';
-    } else {
-      return 'images/player2.png';
-    }
+    return client === loser ? 'images/player1.png' : 'images/player2.png';
   }
 
   showModal() {
     const { loser } = this.state;
-    if (loser) {
-      return (
-        <div className='winnder-modal'>
-          <h1 className='winner-modal-title'>WINNER</h1>
-          <div className='row center'>
-            <img className='trophy' src='images/trophy.png' alt='trophy' />
-            <div>
-              <img className='winner-avatar' src={this.pickWinnerAvatar()} alt='winner-avatar' />
-              <p className='winner-modal-text'>{this.pickWinnerText()}</p>
-              <a href='#' className='challenger-modal-button winner-modal-button'>Main Menu</a>
-            </div>
-            <img className='trophy' src='images/trophy.png' alt='trophy' />
+    return loser && (
+      <div className='winnder-modal'>
+        <h1 className='winner-modal-title'>WINNER</h1>
+        <div className='row center'>
+          <img className='trophy' src='images/trophy.png' alt='trophy' />
+          <div>
+            <img className='winner-avatar' src={this.pickWinnerAvatar()} alt='winner-avatar' />
+            <p className='winner-modal-text'>{this.pickWinnerText()}</p>
+            <a href='#' className='challenger-modal-button winner-modal-button'>Main Menu</a>
           </div>
+          <img className='trophy' src='images/trophy.png' alt='trophy' />
         </div>
-      );
-    }
+      </div>
+    );
   }
 
   showOverlay() {
     const { loser } = this.state;
-    if (!loser) {
-      return 'overlay hidden';
-    }
-    return 'overlay';
+    return loser ? 'overlay' : 'overlay hidden';
   }
 
   showSpinner() {
     const { fetchingData } = this.state;
-    if (!fetchingData) {
-      return 'spinner-container hidden';
-    } else {
-      return 'spinner-container center-horiz-vert';
-    }
+    return fetchingData ? 'spinner-container center-horiz-vert' : 'spinner-container hidden';
   }
 
   render() {
