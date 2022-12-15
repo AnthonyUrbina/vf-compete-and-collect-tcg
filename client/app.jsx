@@ -5,6 +5,7 @@ import AppContext from './lib/app-context';
 import Home from './pages/home';
 import jwtDecode from 'jwt-decode';
 import Game from './pages/game';
+import Navbar from './components/navbar';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ export default class App extends React.Component {
       route: parseRoute(window.location.hash)
     };
     this.handleSignIn = this.handleSignIn.bind(this);
+    this.handleSignOut = this.handleSignOut.bind(this);
   }
 
   componentDidMount() {
@@ -33,15 +35,31 @@ export default class App extends React.Component {
     this.setState({ user });
   }
 
+  handleSignOut() {
+    window.localStorage.removeItem('war-jwt');
+    window.location.hash = '';
+    this.setState({ user: null });
+  }
+
   choosePage() {
     const { path } = this.state.route;
     const { user } = this.state;
     if (path === '') {
-      return <Home />;
+      return (
+        <>
+          <Navbar />
+          <Home />
+        </>
+      );
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
     } else if (user) {
-      return <Game />;
+      return (
+        <>
+          <Navbar />
+          <Game />
+        </>
+      );
     }
   }
 
@@ -64,7 +82,8 @@ export default class App extends React.Component {
   render() {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
-    const context = { handleSignIn, user, route };
+    const handleSignOut = this.handleSignOut;
+    const context = { handleSignIn, handleSignOut, user, route };
     return (
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>

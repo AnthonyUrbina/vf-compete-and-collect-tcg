@@ -101,6 +101,12 @@ h3 {
   display: none;
 }
 
+.hide-icon {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .fa-x {
   background-color: transparent;
   border: none;
@@ -162,4 +168,19 @@ h3 {
 
 .input-error-message {
   color: red;
+}
+
+.nav-bar-modal {
+  background-color: #fffaf0;
+}
+
+.fa-house {
+  font-size: 28px;
+  width: 28px;
+  color: white;
+}
+
+.fa-right-from-bracket {
+  color: white;
+  font-size: 28px;
 }

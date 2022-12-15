@@ -62,9 +62,7 @@ export default class Lobby extends React.Component {
   }
 
   componentWillUnmount() {
-    if (this.socket) {
-      this.socket.disconnect();
-    }
+    this.socket && this.socket.disconnect();
   }
 
   showOnlinePlayers() {
@@ -142,9 +140,7 @@ export default class Lobby extends React.Component {
     let socketId = null;
     const { onlinePlayers } = this.state;
     for (const key in onlinePlayers) {
-      if (onlinePlayers[key] === opponentUsername) {
-        socketId = key;
-      }
+      socketId = onlinePlayers[key] === opponentUsername && key;
     }
     return socketId;
   }
@@ -194,9 +190,6 @@ export default class Lobby extends React.Component {
   render() {
     return (
       <>
-        <div className='row center'>
-          <h1 className='home-header-color'>Lobby</h1>
-        </div>
         <div className='row center'>
           <div className='center-horiz-vert'>
             <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />

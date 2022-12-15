@@ -482,6 +482,39 @@ li {
   animation-delay: 0s;
 }
 
+.nav-bar-modal {
+  width: 356px;
+  position: fixed;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+}
+
+.nav-bar-modal-text {
+  margin: 0 0.5rem;
+}
+
+.nav-bar-modal-title {
+  margin: 0.75rem 0.5rem;
+}
+
+.nav-bar-modal-button {
+  width: 92px;
+  margin: 1.25rem 0;
+  margin-right: 0.75rem;
+}
+
+.nav-bar-buttons-spacing {
+  justify-content: flex-end;
+}
+
+.header-spacing {
+  align-items: baseline;
+  justify-content: space-evenly;
+}
+
 @keyframes lds-spinner {
   0% {
     opacity: 1;
