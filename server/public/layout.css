@@ -542,7 +542,7 @@ li {
     padding-top: 2.25rem;
   }
 
-  .header-spacing {
+  .header-spacing.auth {
     padding-top: 2rem;
   }
 }
@@ -552,7 +552,7 @@ li {
     max-width: 375px;
   }
 
-  .header-spacing {
+  .header-spacing.auth {
     padding-top: 2rem;
   }
 }
