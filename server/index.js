@@ -257,7 +257,8 @@ io.on('connection', socket => {
       [challengerUsername + 'WinPile']: [],
       [socket.nickname + 'WinPile']: [],
       [challengerUsername + 'FaceUp']: null,
-      [socket.nickname + 'FaceUp']: null
+      [socket.nickname + 'FaceUp']: null,
+      battle: { stage: 0 }
     };
 
     const JSONstate = JSON.stringify(state);
@@ -348,16 +349,10 @@ function decideFaceoffWinner(state) {
 
 function handleFaceoffTie(state, players) {
   // console.log('handleFacoffTie is being called');
-  let { stage } = state.battle;
+  // const { stage } = state.battle;
   const { gameId } = state;
 
-  if (!stage) {
-    stage = 1;
-    state.battle.stage = stage;
-  } else {
-    stage++;
-    state.battle.stage = stage;
-  }
+  state.battle.stage++;
 
   const sql = `
     update "games"
@@ -381,9 +376,9 @@ function handleFaceoffTie(state, players) {
 
 function handleFaceoffWin(winner, state, players) {
   // winpiles should be created upon initial state creation
-  if (!state[winner + 'WinPile']) {
-    state[winner + 'WinPile'] = [];
-  }
+  // if (!state[winner + 'WinPile']) {
+  //   state[winner + 'WinPile'] = [];
+  // }
   const winnerWinPile = state[winner + 'WinPile'];
   const { player1, player2 } = players;
   const { gameId } = state;

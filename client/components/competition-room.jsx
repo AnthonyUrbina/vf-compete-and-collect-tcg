@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -270,6 +271,13 @@ export default class CompetitionRoom extends React.Component {
     return fetchingData ? 'spinner-container center-horiz-vert' : 'spinner-container hidden';
   }
 
+  announceBattle() {
+    const { battle } = this.state;
+    if (!battle) return;
+    const { stage } = this.state.battle;
+    stage ? console.log('stage', stage) : console.log('no stage');
+  }
+
   render() {
     return (
       <>
@@ -320,6 +328,7 @@ export default class CompetitionRoom extends React.Component {
           <div className='lds-spinner'><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
         </div>
         {this.showModal()}
+        {this.announceBattle()}
       </>
     );
   }
