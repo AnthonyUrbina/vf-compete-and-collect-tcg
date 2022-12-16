@@ -346,10 +346,44 @@ function decideFaceoffWinner(state) {
       }
     }
   }
-  handleFaceoffWin(winner, state, players);
+  if (winner) handleFaceoffWin(winner, state, players);
+  else handleFaceoffTie(state, players);
+}
+
+function handleFaceoffTie(state, players) {
+  let { stage } = state.battle;
+  const { gameId } = state;
+
+  if (!stage) {
+    stage = 1;
+    state.battle.stage = stage;
+  } else {
+    stage++;
+    state.battle.stage = stage;
+  }
+
+  const sql = `
+    update "games"
+       set "state" = $2
+     where "gameId" = $1
+ returning "state"
+    `;
+
+  const params = [gameId, state];
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      const { roomId } = state;
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      io.to(roomId).emit('battle-staged', state);
+    });
+
 }
 
 function handleFaceoffWin(winner, state, players) {
+  // winpiles should be created upon initial state creation
   if (!state[winner + 'WinPile']) {
     state[winner + 'WinPile'] = [];
   }

@@ -50,6 +50,9 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('game-over', state => {
       this.setState(state);
     });
+    this.socket.on('battle-staged', state => {
+      this.setState(state);
+    });
   }
 
   componentWillUnmount() {
