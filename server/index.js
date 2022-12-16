@@ -302,10 +302,10 @@ function dealer(shuffled, players) {
   players[1].deck = shuffled.slice(26, 52);
 }
 
-function genRandomNumber() {
-  const randomNumber = Math.floor(Math.random() * 10);
-  return randomNumber;
-}
+// function genRandomNumber() {
+//   const randomNumber = Math.floor(Math.random() * 10);
+//   return randomNumber;
+// }
 
 function getUsernames(roomId) {
   const players = {
@@ -338,19 +338,16 @@ function decideFaceoffWinner(state) {
       bestRank = battlefield[key].rank;
       winner = key;
     } else if (battlefield[key].rank === bestRank) {
-      const randomNumber = genRandomNumber();
-      if (randomNumber > 5) {
-        winner = players.player1;
-      } else if (randomNumber < 5) {
-        winner = players.player2;
-      }
+      winner = null;
     }
   }
-  if (winner) handleFaceoffWin(winner, state, players);
-  else handleFaceoffTie(state, players);
+  // console.assert(!winner, 'there is a winner!');
+  // console.log(winner);
+  winner ? handleFaceoffWin(winner, state, players) : handleFaceoffTie(state, players);
 }
 
 function handleFaceoffTie(state, players) {
+  // console.log('handleFacoffTie is being called');
   let { stage } = state.battle;
   const { gameId } = state;
 
