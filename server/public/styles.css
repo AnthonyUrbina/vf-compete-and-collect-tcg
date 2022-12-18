@@ -189,11 +189,11 @@ h3 {
   color: white;
 }
 
-@keyframes text-size-increase {
+@keyframes text-size {
   from { font-size: 12px; }
   to { font-size: 64px; }
 }
 
 .battle-modal h1 {
-  animation: textSize 2s linear;
+  animation: text-size 0.5s ease;
 }

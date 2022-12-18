@@ -281,7 +281,7 @@ export default class CompetitionRoom extends React.Component {
       console.log(this.battleModal.current);
       this.battleModal.current.className = 'hidden';
       // this.setState({ showBattleModal: false });
-    }, 2500);
+    }, 1450);
     if (stage) {
       return 'battle-modal';
     } else {
