@@ -258,7 +258,9 @@ io.on('connection', socket => {
       [socket.nickname + 'WinPile']: [],
       [challengerUsername + 'FaceUp']: null,
       [socket.nickname + 'FaceUp']: null,
-      battle: { stage: 0 }
+      battle: { stage: 0 },
+      showBattleModal: false
+
     };
 
     const JSONstate = JSON.stringify(state);
@@ -353,6 +355,7 @@ function handleFaceoffTie(state, players) {
   const { gameId } = state;
 
   state.battle.stage++;
+  state.showBattleModal = true;
 
   const sql = `
     update "games"

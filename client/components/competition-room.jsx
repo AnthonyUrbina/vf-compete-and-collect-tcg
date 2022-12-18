@@ -8,6 +8,7 @@ export default class CompetitionRoom extends React.Component {
     super(props);
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
+    this.battleModal = React.createRef();
   }
 
   componentDidMount() {
@@ -53,6 +54,7 @@ export default class CompetitionRoom extends React.Component {
     });
     this.socket.on('battle-staged', state => {
       this.setState(state);
+      // { this.announceBattle(); }
     });
   }
 
@@ -273,14 +275,26 @@ export default class CompetitionRoom extends React.Component {
 
   announceBattle() {
     const { battle } = this.state;
-    if (!battle) return;
+    if (!battle || !this.state.showBattleModal) return 'hidden';
     const { stage } = this.state.battle;
-    stage ? console.log('stage', stage) : console.log('no stage');
+    setTimeout(() => {
+      console.log(this.battleModal.current);
+      this.battleModal.current.className = 'hidden';
+      // this.setState({ showBattleModal: false });
+    }, 2500);
+    if (stage) {
+      return 'battle-modal';
+    } else {
+      return 'hidden';
+    }
   }
 
   render() {
     return (
       <>
+        <div ref={this.battleModal} className={this.announceBattle()}>
+          <h1>BATTLE</h1>
+        </div>
         <div className='row'>
           <div className='column-full'>
             <div className='center-horiz-vert'>
@@ -328,7 +342,7 @@ export default class CompetitionRoom extends React.Component {
           <div className='lds-spinner'><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
         </div>
         {this.showModal()}
-        {this.announceBattle()}
+        {/* {this.announceBattle()} */}
       </>
     );
   }

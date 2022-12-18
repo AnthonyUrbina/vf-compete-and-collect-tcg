@@ -515,6 +515,21 @@ li {
   justify-content: space-evenly;
 }
 
+.battle-modal {
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  border-radius: 0.25rem;
+}
+
+.battle-modal > h1 {
+  margin: 0;
+  padding: 0;
+}
+
 @keyframes lds-spinner {
   0% {
     opacity: 1;

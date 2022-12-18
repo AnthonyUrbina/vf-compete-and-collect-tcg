@@ -184,3 +184,16 @@ h3 {
   color: white;
   font-size: 28px;
 }
+
+.battle-modal > h1 {
+  color: white;
+}
+
+@keyframes text-size-increase {
+  from { font-size: 12px; }
+  to { font-size: 64px; }
+}
+
+.battle-modal h1 {
+  animation: textSize 2s linear;
+}
