@@ -111,37 +111,52 @@ export default class CompetitionRoom extends React.Component {
     const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
-    if (clientFaceUp) {
-      return;
+    const { battle } = this.state;
+    const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
+    if (!clientFaceUp || clientFlipsRemaining) {
+      const { gameId, battle } = this.state;
+      const { stage } = battle;
+      const clientDeck = this.state[client + 'Deck'];
+      const copyOfClientDeck = [...clientDeck];
+      const cardFlipped = copyOfClientDeck.splice(0, 1);
+      const copyOfState = { ...this.state };
+      copyOfState[client + 'Deck'] = copyOfClientDeck;
+      copyOfState.battlefield = {};
+      copyOfState.roomId = parseRoute(window.location.hash).path;
+
+      if (clientFlipsRemaining > 1) {
+        copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
+        copyOfState[client + 'FlipsRemaining']--;
+
+      }
+
+      if (!clientFlipsRemaining) {
+        copyOfState[client + 'FaceUp'] = cardFlipped;
+        copyOfState.lastToFlip = client;
+
+      }
+
+      if (opponentFaceUp && !stage) {
+        copyOfState.battlefield[client] = cardFlipped[0];
+        copyOfState.battlefield[opponent] = opponentFaceUp[0];
+      }
+
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      const req = {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify(copyOfState)
+      };
+      fetch(`/api/games/${gameId}`, req)
+        .then(res => res.json())
+        .then(data => this.setState(data));
+
+    } else if (battle) {
+      // const { stage } = battle;
     }
-    const { gameId } = this.state;
-    const clientDeck = this.state[client + 'Deck'];
-    const copyOfClientDeck = [...clientDeck];
-    const cardFlipped = copyOfClientDeck.splice(0, 1);
-    const copyOfState = { ...this.state };
-    copyOfState[client + 'Deck'] = copyOfClientDeck;
-    copyOfState[client + 'FaceUp'] = cardFlipped;
-    copyOfState.lastToFlip = client;
-    copyOfState.battlefield = {};
-    copyOfState.roomId = parseRoute(window.location.hash).path;
-
-    if (opponentFaceUp) {
-      copyOfState.battlefield[client] = cardFlipped[0];
-      copyOfState.battlefield[opponent] = opponentFaceUp[0];
-    }
-
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-
-    const req = {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify(copyOfState)
-    };
-    fetch(`/api/games/${gameId}`, req)
-      .then(res => res.json())
-      .then(data => this.setState(data));
   }
 
   showOpponentWinningCards() {
@@ -274,8 +289,8 @@ export default class CompetitionRoom extends React.Component {
   }
 
   announceBattle() {
-    const { battle } = this.state;
-    if (!battle || !this.state.showBattleModal) return 'hidden';
+    const { battle, showBattleModal } = this.state;
+    if (!battle || !showBattleModal) return 'hidden';
     const { stage } = this.state.battle;
     setTimeout(() => {
       console.log(this.battleModal.current);
@@ -293,7 +308,7 @@ export default class CompetitionRoom extends React.Component {
     return (
       <>
         <div ref={this.battleModal} className={this.announceBattle()}>
-          <h1>BATTLE</h1>
+          <h1>WAR</h1>
         </div>
         <div className='row'>
           <div className='column-full'>

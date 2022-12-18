@@ -104,16 +104,35 @@ app.patch('/api/games/:gameId', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
-      const { roomId, battlefield } = state;
+      const { roomId, battlefield, battle } = state;
+      const players = getUsernames(roomId);
+      // const { player1, player2 } = players;
+      // const player1FlipsRemaining = state[player1 + 'FlipsRemaining'];
+      // const player2FlipsRemaining = state[player2 + 'FlipsRemaining'];
+      const { stage } = battle;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
 
-      if (Object.keys(battlefield).length === 2) {
+      if (Object.keys(battlefield).length === 2 && !stage) {
         setTimeout(decideFaceoffWinner, 500, state);
+      } else if (stage) {
+        for (const username in players) {
+          const playerDeck = state[players[username] + 'Deck'];
+          const playerWinPile = state[players[username] + 'WinPile'];
+          const player = players[username];
+          if (!playerDeck.length && playerWinPile.length) {
+            outOfCards(state, playerDeck, playerWinPile, player);
+          } else if (!playerDeck.length && !playerWinPile.length) {
+            const loser = players[username];
+            outOfCards(state, playerDeck, playerWinPile, player, loser);
+          }
+        }
+
       }
+
     })
     .catch(err => next(err));
 });
@@ -258,6 +277,10 @@ io.on('connection', socket => {
       [socket.nickname + 'WinPile']: [],
       [challengerUsername + 'FaceUp']: null,
       [socket.nickname + 'FaceUp']: null,
+      [challengerUsername + 'FlipsRemaining']: 0,
+      [socket.nickname + 'FlipsRemaining']: 0,
+      [challengerUsername + 'BattlePile']: [],
+      [socket.nickname + 'BattlePile']: [],
       battle: { stage: 0 },
       showBattleModal: false
 
@@ -353,9 +376,12 @@ function handleFaceoffTie(state, players) {
   // console.log('handleFacoffTie is being called');
   // const { stage } = state.battle;
   const { gameId } = state;
+  const { player1, player2 } = players;
 
   state.battle.stage++;
   state.showBattleModal = true;
+  state[player1 + 'FlipsRemaining'] = 4;
+  state[player2 + 'FlipsRemaining'] = 4;
 
   const sql = `
     update "games"
