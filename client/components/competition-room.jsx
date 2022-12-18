@@ -121,7 +121,8 @@ export default class CompetitionRoom extends React.Component {
       const cardFlipped = copyOfClientDeck.splice(0, 1);
       const copyOfState = { ...this.state };
       copyOfState[client + 'Deck'] = copyOfClientDeck;
-      copyOfState.battlefield = {};
+      // copyOfState.battlefield = {};
+      // this should be serverside after winner is chosen
       copyOfState.roomId = parseRoute(window.location.hash).path;
 
       if (clientFlipsRemaining > 1) {
@@ -263,7 +264,7 @@ export default class CompetitionRoom extends React.Component {
   showModal() {
     const { loser } = this.state;
     return loser && (
-      <div className='winnder-modal'>
+      <div className='winner-modal'>
         <h1 className='winner-modal-title'>WINNER</h1>
         <div className='row center'>
           <img className='trophy' src='images/trophy.png' alt='trophy' />
@@ -304,12 +305,45 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
+  showClientBattlePile() {
+    const client = this.props.user.username;
+    const clientBattlePile = this.state[client + 'BattlePile'];
+    if (!clientBattlePile) {
+      return;
+    }
+
+    const pile = clientBattlePile.map(card => {
+      const { rank, suit } = card;
+      const src = `images/cards/${rank}_of_${suit}.png`;
+      return <img className='battle-cards' key={src} src={src}/>;
+    });
+
+    return pile;
+  }
+
+  showOpponentBattlePile() {
+    const opponent = this.getOpponentUsername();
+    const opponentBattlePile = this.state[opponent + 'BattlePile'];
+    if (!opponentBattlePile) {
+      return;
+    }
+
+    const pile = opponentBattlePile.map(card => {
+      const { rank, suit } = card;
+      const src = `images/cards/${rank}_of_${suit}.png`;
+      return <img className='battle-cards' key={src} src={src} />;
+    });
+
+    return pile;
+  }
+
   render() {
     return (
       <>
         <div ref={this.battleModal} className={this.announceBattle()}>
           <h1>WAR</h1>
         </div>
+        {this.showOpponentBattlePile()}
         <div className='row'>
           <div className='column-full'>
             <div className='center-horiz-vert'>
@@ -358,6 +392,7 @@ export default class CompetitionRoom extends React.Component {
         </div>
         {this.showModal()}
         {/* {this.announceBattle()} */}
+        {this.showClientBattlePile()}
       </>
     );
   }

@@ -530,6 +530,11 @@ li {
   padding: 0;
 }
 
+.battle-cards {
+  width: 38px;
+  height: 55.5px;
+}
+
 @keyframes lds-spinner {
   0% {
     opacity: 1;
