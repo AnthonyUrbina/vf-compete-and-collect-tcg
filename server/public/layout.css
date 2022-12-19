@@ -263,6 +263,10 @@ li {
   height: 111px;
 }
 
+.flipped-card.battle {
+  position: absolute;
+}
+
 .battlefield-row {
   height: 23.75vh;
 }

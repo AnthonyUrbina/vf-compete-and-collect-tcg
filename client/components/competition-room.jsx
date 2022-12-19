@@ -80,15 +80,27 @@ export default class CompetitionRoom extends React.Component {
     const clientFaceUp = this.state[client + 'FaceUp'];
     const { lastToFlip } = this.state;
     if (clientFaceUp) {
-      // const counter = 0;
+      let counter = 0;
       const stack = clientFaceUp.map(card => {
         const { suit, rank } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
-        let className = 'flipped-card';
-        if (lastToFlip === client) {
-          className = 'flipped-card client-on-top';
+
+        let className = counter === 0 && 'flipped-card';
+        className = lastToFlip === client && 'flipped-card client-on-top';
+
+        const zIndex = 1;
+        // zIndex = counter > 0 && counter + 2;
+        let left = 0;
+        let position;
+        let transform;
+        if (counter > 0) {
+          left = '0%';
+          position = 'absolute';
+          transform = 'rotate(2deg)';
         }
-        return <img key={src} src={src} alt={src} className={className} />;
+
+        counter++;
+        return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
       });
       return stack;
 
@@ -105,8 +117,12 @@ export default class CompetitionRoom extends React.Component {
       const className = 'flipped-card opponent-flipped';
       return (
         <img src={src} alt={src} className={className} />
+
+      // const stack = {}
       );
+
     }
+
   }
 
   flipCard() {
@@ -131,7 +147,9 @@ export default class CompetitionRoom extends React.Component {
       if (clientFlipsRemaining > 1) {
         copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
         copyOfState[client + 'FlipsRemaining']--;
-      } else if (clientFlipsRemaining === 1) {
+      }
+
+      if (clientFlipsRemaining === 1) {
         copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
         copyOfState.lastToFlip = client;
         copyOfState[client + 'FlipsRemaining']--;

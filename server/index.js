@@ -414,7 +414,10 @@ function handleFaceoffWin(winner, state, players) {
   const player1FaceUp = state[player1 + 'FaceUp'];
   const player2FaceUp = state[player2 + 'FaceUp'];
   const activeCards = [];
-  activeCards.push(player2FaceUp[0]);
+  player2FaceUp.map(card => activeCards.push(card)
+  );
+  player1FaceUp.map(card => activeCards.push(card)
+  );
   state[player2 + 'FaceUp'] = null;
   activeCards.push(player1FaceUp[0]);
   state[player1 + 'FaceUp'] = null;
