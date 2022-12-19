@@ -78,17 +78,20 @@ export default class CompetitionRoom extends React.Component {
   showClientCard() {
     const client = this.props.user.username;
     const clientFaceUp = this.state[client + 'FaceUp'];
+    const { lastToFlip } = this.state;
     if (clientFaceUp) {
-      const suit = clientFaceUp[0].suit;
-      const rank = clientFaceUp[0].rank;
-      const src = `images/cards/${rank}_of_${suit}.png`;
-      let className = 'flipped-card';
-      if (this.state.lastToFlip === client) {
-        className = 'flipped-card client-on-top';
-      }
-      return (
-        <img src={src} alt={src} className={className} />
-      );
+      // const counter = 0;
+      const stack = clientFaceUp.map(card => {
+        const { suit, rank } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        let className = 'flipped-card';
+        if (lastToFlip === client) {
+          className = 'flipped-card client-on-top';
+        }
+        return <img key={src} src={src} alt={src} className={className} />;
+      });
+      return stack;
+
     }
   }
 
@@ -128,13 +131,19 @@ export default class CompetitionRoom extends React.Component {
       if (clientFlipsRemaining > 1) {
         copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
         copyOfState[client + 'FlipsRemaining']--;
-
+      } else if (clientFlipsRemaining === 1) {
+        copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+        copyOfState.lastToFlip = client;
+        copyOfState[client + 'FlipsRemaining']--;
+        if (opponentFaceUp) {
+          copyOfState.battlefield[client] = cardFlipped[cardFlipped.length - 1];
+          copyOfState.battlefield[opponent] = opponentFaceUp[cardFlipped.length - 1];
+        }
       }
 
       if (!clientFlipsRemaining) {
         copyOfState[client + 'FaceUp'] = cardFlipped;
         copyOfState.lastToFlip = client;
-
       }
 
       if (opponentFaceUp && !stage) {
