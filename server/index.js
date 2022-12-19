@@ -114,25 +114,22 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
+
+      for (const username in players) {
+        const playerDeck = state[players[username] + 'Deck'];
+        const playerWinPile = state[players[username] + 'WinPile'];
+        const player = players[username];
+        if (!playerDeck.length && playerWinPile.length) {
+          outOfCards(state, playerDeck, playerWinPile, player);
+        } else if (!playerDeck.length && !playerWinPile.length) {
+          const loser = players[username];
+          outOfCards(state, playerDeck, playerWinPile, player, loser);
+        }
+      }
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
       if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
         setTimeout(decideFaceoffWinner, 500, state);
-      }
-
-      if (stage) {
-        for (const username in players) {
-          const playerDeck = state[players[username] + 'Deck'];
-          const playerWinPile = state[players[username] + 'WinPile'];
-          const player = players[username];
-          if (!playerDeck.length && playerWinPile.length) {
-            outOfCards(state, playerDeck, playerWinPile, player);
-          } else if (!playerDeck.length && !playerWinPile.length) {
-            const loser = players[username];
-            outOfCards(state, playerDeck, playerWinPile, player, loser);
-          }
-        }
-
       }
 
     })

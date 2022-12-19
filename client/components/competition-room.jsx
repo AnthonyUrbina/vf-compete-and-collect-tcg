@@ -141,9 +141,9 @@ export default class CompetitionRoom extends React.Component {
     const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
-    const { battle } = this.state;
+    const { battle, showBattleModal } = this.state;
     const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
-    if (!clientFaceUp || clientFlipsRemaining) {
+    if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
       const { gameId, battle } = this.state;
       const { stage } = battle;
       const clientDeck = this.state[client + 'Deck'];
@@ -337,7 +337,7 @@ export default class CompetitionRoom extends React.Component {
     setTimeout(() => {
       console.log(this.battleModal.current);
       this.battleModal.current.className = 'hidden';
-      // this.setState({ showBattleModal: false });
+      this.setState({ showBattleModal: false });
     }, 1450);
     if (stage) {
       return 'battle-modal';
