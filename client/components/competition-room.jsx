@@ -84,7 +84,7 @@ export default class CompetitionRoom extends React.Component {
       const stack = clientFaceUp.map(card => {
         const { suit, rank } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
-        let className;
+        let className = 'flipped-card';
         if (counter === 0) className = 'flipped-card';
         if (lastToFlip === client) className = 'flipped-card client-on-top';
 
@@ -143,7 +143,7 @@ export default class CompetitionRoom extends React.Component {
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
     const { battle } = this.state;
     const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
-    if (!clientFaceUp || clientFlipsRemaining) {
+    if (clientFaceUp || clientFlipsRemaining) {
       const { gameId, battle } = this.state;
       const { stage } = battle;
       const clientDeck = this.state[client + 'Deck'];

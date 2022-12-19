@@ -116,7 +116,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
 
-      if (Object.keys(battlefield).length === 2 && !stage) {
+      if (Object.keys(battlefield).length === 2 && (stage && Object.keys(battlefield).length === 2)) {
         setTimeout(decideFaceoffWinner, 500, state);
       } else if (stage) {
         for (const username in players) {
@@ -413,19 +413,34 @@ function handleFaceoffWin(winner, state, players) {
   const { gameId } = state;
   const player1FaceUp = state[player1 + 'FaceUp'];
   const player2FaceUp = state[player2 + 'FaceUp'];
+  const player1BattlePile = state[player1 + 'BattlePile'];
+  const player2BattlePile = state[player2 + 'BattlePile'];
   const activeCards = [];
+  const battleCards = [];
+  if (player1BattlePile && player2BattlePile) {
+    player2BattlePile.map(card => battleCards.push(card)
+    );
+    player1BattlePile.map(card => battleCards.push(card)
+    );
+  }
   player2FaceUp.map(card => activeCards.push(card)
   );
   player1FaceUp.map(card => activeCards.push(card)
   );
+
   state[player2 + 'FaceUp'] = null;
-  activeCards.push(player1FaceUp[0]);
   state[player1 + 'FaceUp'] = null;
+  state[player1 + 'BattlePile'] = [];
+  state[player2 + 'BattlePile'] = [];
   state.battlefield = {};
+
+  const sortedBattleCards = battleCards.sort((card1, card2) => card1.rank - card2.rank);
 
   const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
 
-  const newWinnerDeck = winnerWinPile.concat(sortedWinings);
+  let newWinnerDeck = winnerWinPile.concat(sortedBattleCards);
+  newWinnerDeck = winnerWinPile.concat(sortedWinings);
+
   state[winner + 'WinPile'] = newWinnerDeck;
 
   const sql = `
