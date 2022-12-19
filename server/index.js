@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -115,10 +116,11 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       }
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
-
-      if (Object.keys(battlefield).length === 2 && (stage && Object.keys(battlefield).length === 2)) {
+      if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
         setTimeout(decideFaceoffWinner, 500, state);
-      } else if (stage) {
+      }
+
+      if (stage) {
         for (const username in players) {
           const playerDeck = state[players[username] + 'Deck'];
           const playerWinPile = state[players[username] + 'WinPile'];
@@ -282,7 +284,8 @@ io.on('connection', socket => {
       [challengerUsername + 'BattlePile']: [],
       [socket.nickname + 'BattlePile']: [],
       battle: { stage: 0 },
-      showBattleModal: false
+      showBattleModal: false,
+      battlefield: {}
 
     };
 
@@ -349,6 +352,7 @@ function decideFaceoffWinner(state) {
   const players = getUsernames(roomId);
   let bestRank = 0;
   let winner;
+  let tie = false;
   for (const key in battlefield) {
     if (battlefield[key].rank === 'jack') {
       battlefield[key].rank = 11;
@@ -359,25 +363,31 @@ function decideFaceoffWinner(state) {
     } else if (battlefield[key].rank === 'ace') {
       battlefield[key].rank = 14;
     }
-
+    console.log('card', battlefield[key]);
     if (battlefield[key].rank > bestRank) {
       bestRank = battlefield[key].rank;
       winner = key;
     } else if (battlefield[key].rank === bestRank) {
-      winner = null;
+      tie = true;
     }
   }
+  console.log(bestRank);
+  console.log('winner', winner);
+  console.log('tie', tie);
   // console.assert(!winner, 'there is a winner!');
   // console.log(winner);
-  winner ? handleFaceoffWin(winner, state, players) : handleFaceoffTie(state, players);
+  tie ? handleFaceoffTie(state, players) : handleFaceoffWin(winner, state, players);
+
 }
 
 function handleFaceoffTie(state, players) {
+  console.log('handleFaceoffTie()');
   // console.log('handleFacoffTie is being called');
   // const { stage } = state.battle;
   const { gameId } = state;
   const { player1, player2 } = players;
 
+  state.battlefield = {};
   state.battle.stage++;
   state.showBattleModal = true;
   state[player1 + 'FlipsRemaining'] = 4;
@@ -416,13 +426,7 @@ function handleFaceoffWin(winner, state, players) {
   const player1BattlePile = state[player1 + 'BattlePile'];
   const player2BattlePile = state[player2 + 'BattlePile'];
   const activeCards = [];
-  const battleCards = [];
-  if (player1BattlePile && player2BattlePile) {
-    player2BattlePile.map(card => battleCards.push(card)
-    );
-    player1BattlePile.map(card => battleCards.push(card)
-    );
-  }
+
   player2FaceUp.map(card => activeCards.push(card)
   );
   player1FaceUp.map(card => activeCards.push(card)
@@ -434,12 +438,21 @@ function handleFaceoffWin(winner, state, players) {
   state[player2 + 'BattlePile'] = [];
   state.battlefield = {};
 
-  const sortedBattleCards = battleCards.sort((card1, card2) => card1.rank - card2.rank);
-
   const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
+  let newWinnerDeck = [];
+  if (player1BattlePile && player2BattlePile) {
+    const battleCards = [];
 
-  let newWinnerDeck = winnerWinPile.concat(sortedBattleCards);
-  newWinnerDeck = winnerWinPile.concat(sortedWinings);
+    player2BattlePile.map(card => battleCards.push(card)
+    );
+    player1BattlePile.map(card => battleCards.push(card)
+    );
+    const sortedBattleCards = battleCards.sort((card1, card2) => card1.rank - card2.rank);
+    newWinnerDeck = winnerWinPile.concat(sortedWinings.concat(sortedBattleCards));
+    state.battle.stage = 0;
+  } else {
+    newWinnerDeck = winnerWinPile.concat(sortedWinings);
+  }
 
   state[winner + 'WinPile'] = newWinnerDeck;
 

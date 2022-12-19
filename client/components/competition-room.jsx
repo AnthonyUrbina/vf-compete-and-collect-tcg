@@ -143,7 +143,7 @@ export default class CompetitionRoom extends React.Component {
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
     const { battle } = this.state;
     const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
-    if (clientFaceUp || clientFlipsRemaining) {
+    if (!clientFaceUp || clientFlipsRemaining) {
       const { gameId, battle } = this.state;
       const { stage } = battle;
       const clientDeck = this.state[client + 'Deck'];
@@ -151,6 +151,7 @@ export default class CompetitionRoom extends React.Component {
       const cardFlipped = copyOfClientDeck.splice(0, 1);
       const copyOfState = { ...this.state };
       copyOfState[client + 'Deck'] = copyOfClientDeck;
+      // const clientFaceUp = copyOfState[client + 'FaceUp'];
       // copyOfState.battlefield = {};
       // this should be serverside after winner is chosen
       copyOfState.roomId = parseRoute(window.location.hash).path;
@@ -161,12 +162,14 @@ export default class CompetitionRoom extends React.Component {
       }
 
       if (clientFlipsRemaining === 1) {
+        console.log('cardFlipped', cardFlipped);
         copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+        console.log('copyOfState[clientFaceUp]', copyOfState[client + 'FaceUp']);
         copyOfState.lastToFlip = client;
         copyOfState[client + 'FlipsRemaining']--;
-        if (opponentFaceUp) {
-          copyOfState.battlefield[client] = cardFlipped[cardFlipped.length - 1];
-          copyOfState.battlefield[opponent] = opponentFaceUp[cardFlipped.length - 1];
+        if (opponentFaceUp.length > 1) {
+          copyOfState.battlefield[client] = cardFlipped[0];
+          copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
         }
       }
 
