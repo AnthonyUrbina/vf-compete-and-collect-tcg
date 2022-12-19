@@ -84,9 +84,9 @@ export default class CompetitionRoom extends React.Component {
       const stack = clientFaceUp.map(card => {
         const { suit, rank } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
-
-        let className = counter === 0 && 'flipped-card';
-        className = lastToFlip === client && 'flipped-card client-on-top';
+        let className;
+        if (counter === 0) className = 'flipped-card';
+        if (lastToFlip === client) className = 'flipped-card client-on-top';
 
         const zIndex = 1;
         // zIndex = counter > 0 && counter + 2;
@@ -98,12 +98,13 @@ export default class CompetitionRoom extends React.Component {
           position = 'absolute';
           transform = 'rotate(2deg)';
         }
-
+        console.log(src);
+        console.log('counter', counter);
+        console.log('className', className);
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
       });
       return stack;
-
     }
   }
 
@@ -111,16 +112,26 @@ export default class CompetitionRoom extends React.Component {
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
     if (opponentFaceUp) {
-      const suit = opponentFaceUp[0].suit;
-      const rank = opponentFaceUp[0].rank;
-      const src = `images/cards/${rank}_of_${suit}.png`;
-      const className = 'flipped-card opponent-flipped';
-      return (
-        <img src={src} alt={src} className={className} />
-
-      // const stack = {}
-      );
-
+      let counter = 0;
+      const stack = opponentFaceUp.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const className = 'flipped-card opponent-flipped';
+        const zIndex = 1;
+        // zIndex = counter > 0 && counter + 2;
+        let left = 0;
+        let position;
+        let transform;
+        if (counter > 0) {
+          left = '0%';
+          position = 'absolute';
+          transform = 'rotate(2deg)';
+        }
+        counter++;
+        return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
+      })
+      ;
+      return stack;
     }
 
   }
