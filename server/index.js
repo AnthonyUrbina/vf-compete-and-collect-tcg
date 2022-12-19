@@ -121,7 +121,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
         const player = players[username];
         if (!playerDeck.length && playerWinPile.length) {
           outOfCards(state, playerDeck, playerWinPile, player);
-        } else if (!playerDeck.length && !playerWinPile.length) {
+        } else if (!playerDeck.length && !playerWinPile.length && !stage) {
           const loser = players[username];
           outOfCards(state, playerDeck, playerWinPile, player, loser);
         }
@@ -324,8 +324,39 @@ function getDeck(rank, suit) {
 }
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 26);
-  players[1].deck = shuffled.slice(26, 52);
+  // players[0].deck = shuffled.slice(0, 26);
+  // players[1].deck = shuffled.slice(26, 52);
+  players[0].deck = [
+    { suit: 'clubs', rank: 9 },
+    { suit: 'clubs', rank: 8 },
+    { suit: 'clubs', rank: 7 },
+    { suit: 'clubs', rank: 6 },
+    { suit: 'clubs', rank: 5 },
+    { suit: 'hearts', rank: 9 },
+    { suit: 'clubs', rank: 9 },
+    { suit: 'clubs', rank: 'ace' },
+    { suit: 'clubs', rank: 2 },
+    { suit: 'clubs', rank: 3 },
+    { suit: 'clubs', rank: 4 },
+    { suit: 'clubs', rank: 8 },
+    { suit: 'clubs', rank: 'jack' }
+
+  ];
+  players[1].deck = [
+    { suit: 'spades', rank: 9 },
+    { suit: 'spades', rank: 8 },
+    { suit: 'spades', rank: 7 },
+    { suit: 'spades', rank: 6 },
+    { suit: 'spades', rank: 5 },
+    { suit: 'hearts', rank: 9 },
+    { suit: 'diamonds', rank: 9 },
+    { suit: 'spades', rank: 'ace' },
+    { suit: 'spades', rank: 2 },
+    { suit: 'spades', rank: 3 },
+    { suit: 'spades', rank: 4 },
+    { suit: 'spades', rank: 8 },
+    { suit: 'hearts', rank: 'queen' }
+  ];
 }
 
 // function genRandomNumber() {

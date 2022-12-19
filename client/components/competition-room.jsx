@@ -98,9 +98,6 @@ export default class CompetitionRoom extends React.Component {
           position = 'absolute';
           transform = 'rotate(2deg)';
         }
-        console.log(src);
-        console.log('counter', counter);
-        console.log('className', className);
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
       });
@@ -117,8 +114,7 @@ export default class CompetitionRoom extends React.Component {
         const { rank, suit } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
         const className = 'flipped-card opponent-flipped';
-        const zIndex = 1;
-        // zIndex = counter > 0 && counter + 2;
+        let zIndex = 1;
         let left = 0;
         let position;
         let transform;
@@ -126,6 +122,8 @@ export default class CompetitionRoom extends React.Component {
           left = '0%';
           position = 'absolute';
           transform = 'rotate(2deg)';
+          zIndex = counter + 1;
+          console.log(zIndex);
         }
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
@@ -167,7 +165,8 @@ export default class CompetitionRoom extends React.Component {
         console.log('copyOfState[clientFaceUp]', copyOfState[client + 'FaceUp']);
         copyOfState.lastToFlip = client;
         copyOfState[client + 'FlipsRemaining']--;
-        if (opponentFaceUp.length > 1) {
+        if (opponentFaceUp.length > stage) {
+          console.log('stage', stage);
           copyOfState.battlefield[client] = cardFlipped[0];
           copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
         }
