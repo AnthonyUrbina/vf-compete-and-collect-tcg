@@ -384,10 +384,15 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
 
+    let counter = 0;
     const pile = clientBattlePile.map(card => {
       const { rank, suit } = card;
       const src = `images/cards/${rank}_of_${suit}.png`;
-      return <img className='battle-cards' key={src} src={src}/>;
+      const zIndex = counter;
+      const className = counter > 0 ? 'flipped-card client-battle-top' : 'flipped-card';
+      const transform = counter > 0 ? 'rotate(2deg)' : '0';
+      counter++;
+      return <img className={className} key={src} src={src} style={{ zIndex, transform }}/>;
     });
 
     return pile;
@@ -400,10 +405,16 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
 
+    let counter = 0;
     const pile = opponentBattlePile.map(card => {
       const { rank, suit } = card;
       const src = `images/cards/${rank}_of_${suit}.png`;
-      return <img className='battle-cards' key={src} src={src} />;
+      const zIndex = counter;
+      const className = counter > 0 ? 'flipped-card opponent-battle-top' : 'flipped-card';
+      const transform = counter > 0 ? 'rotate(2deg)' : '0';
+
+      counter++;
+      return <img className={className} key={src} src={src} style={{ zIndex, transform }} />;
     });
 
     return pile;
@@ -415,7 +426,6 @@ export default class CompetitionRoom extends React.Component {
         <div ref={this.battleModal} className={this.announceBattle()}>
           <h1>WAR</h1>
         </div>
-        {this.showOpponentBattlePile()}
         <div className='row'>
           <div className='column-full'>
             <div className='center-horiz-vert'>
@@ -435,11 +445,17 @@ export default class CompetitionRoom extends React.Component {
               </div>
             </div>
             <div className='battlefield center'>
+              <div className="opponent-battle-pile">
+                {this.showOpponentBattlePile()}
+              </div>
               <div className='opponent-flipped-container flipped-card'>
                 {this.showOpponentCard()}
               </div>
               <div className='client-flipped-container flipped-card'>
                 {this.showClientCard()}
+              </div>
+              <div className="client-battle-pile">
+                {this.showClientBattlePile()}
               </div>
             </div>
             <div className='row center align-decks'>
@@ -464,7 +480,6 @@ export default class CompetitionRoom extends React.Component {
         </div>
         {this.showModal()}
         {/* {this.announceBattle()} */}
-        {this.showClientBattlePile()}
       </>
     );
   }

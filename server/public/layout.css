@@ -534,9 +534,28 @@ li {
   padding: 0;
 }
 
-.battle-cards {
-  width: 38px;
-  height: 55.5px;
+.client-battle-pile {
+  position: relative;
+  top: 15%;
+  display: flex;
+  align-items: baseline;
+}
+
+.opponent-battle-pile {
+  position: relative;
+  bottom: 15%;
+  display: flex;
+  align-items: baseline;
+}
+
+.client-battle-top {
+  position: absolute;
+  left: 0%;
+}
+
+.opponent-battle-top {
+  position: absolute;
+  right: 0;
 }
 
 @keyframes lds-spinner {
