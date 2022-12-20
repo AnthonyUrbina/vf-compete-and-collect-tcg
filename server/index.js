@@ -282,7 +282,8 @@ io.on('connection', socket => {
       [socket.nickname + 'BattlePile']: [],
       battle: { stage: 0 },
       showBattleModal: false,
-      battlefield: {}
+      battlefield: {},
+      faceUpQueue: []
 
     };
 

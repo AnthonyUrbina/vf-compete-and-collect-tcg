@@ -9,6 +9,8 @@ export default class CompetitionRoom extends React.Component {
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
     this.battleModal = React.createRef();
+    this.clientLastFlipped = React.createRef();
+    this.opponentLastFlipped = React.createRef();
   }
 
   componentDidMount() {
@@ -78,28 +80,42 @@ export default class CompetitionRoom extends React.Component {
   showClientCard() {
     const client = this.props.user.username;
     const clientFaceUp = this.state[client + 'FaceUp'];
-    const { lastToFlip } = this.state;
+    const { faceUpQueue } = this.state;
     if (clientFaceUp) {
+
       let counter = 0;
       const stack = clientFaceUp.map(card => {
-        const { suit, rank } = card;
-        const src = `images/cards/${rank}_of_${suit}.png`;
-        let className = 'flipped-card';
-        if (counter === 0) className = 'flipped-card';
-        if (lastToFlip === client) className = 'flipped-card client-on-top';
 
-        const zIndex = 1;
-        // zIndex = counter > 0 && counter + 2;
-        let left = 0;
-        let position;
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const className = 'flipped-card opponent-flipped';
+        const indexes = [];
+        for (let i = 0; i < faceUpQueue.length; i++) {
+          if (faceUpQueue[i] === client) {
+            indexes.push(i);
+          }
+        }
+        let zIndex;
+        console.log(card);
+        console.log(counter);
+        for (let i = 0; i < indexes.length; i++) {
+          if (counter === i) {
+            zIndex = indexes[i];
+            break;
+          }
+        }
+
+        const left = '0%';
+        const position = 'absolute';
         let transform;
-        if (counter > 0) {
-          left = '0%';
-          position = 'absolute';
+
+        if (counter % 2 !== 0) {
           transform = 'rotate(2deg)';
         }
+
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
+
       });
       return stack;
     }
@@ -108,25 +124,40 @@ export default class CompetitionRoom extends React.Component {
   showOpponentCard() {
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
+    const { faceUpQueue } = this.state;
     if (opponentFaceUp) {
+
       let counter = 0;
       const stack = opponentFaceUp.map(card => {
+
         const { rank, suit } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
         const className = 'flipped-card opponent-flipped';
-        let zIndex = 1;
-        let left = 0;
-        let position;
-        let transform;
-        if (counter > 0) {
-          left = '0%';
-          position = 'absolute';
-          transform = 'rotate(2deg)';
-          zIndex = counter + 1;
-          console.log(zIndex);
+        const indexes = [];
+        for (let i = 0; i < faceUpQueue.length; i++) {
+          if (faceUpQueue[i] === opponent) {
+            indexes.push(i);
+          }
         }
+        let zIndex;
+        for (let i = 0; i < indexes.length; i++) {
+          if (counter === i) {
+            zIndex = indexes[i];
+            break;
+          }
+        }
+
+        const left = '0%';
+        const position = 'absolute';
+        let transform;
+
+        if (counter % 2 !== 0) {
+          transform = 'rotate(2deg)';
+        }
+        // window.getComputedStyle(this.clientLastFlipped.current).getPropertyValue('z-index') + 1;
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
+
       })
       ;
       return stack;
@@ -150,7 +181,6 @@ export default class CompetitionRoom extends React.Component {
       const copyOfState = { ...this.state };
       copyOfState[client + 'Deck'] = copyOfClientDeck;
       // const clientFaceUp = copyOfState[client + 'FaceUp'];
-      // copyOfState.battlefield = {};
       // this should be serverside after winner is chosen
       copyOfState.roomId = parseRoute(window.location.hash).path;
 
@@ -164,6 +194,7 @@ export default class CompetitionRoom extends React.Component {
         copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
         console.log('copyOfState[clientFaceUp]', copyOfState[client + 'FaceUp']);
         copyOfState.lastToFlip = client;
+        copyOfState.faceUpQueue.push(client);
         copyOfState[client + 'FlipsRemaining']--;
         if (opponentFaceUp.length > stage) {
           console.log('stage', stage);
@@ -175,6 +206,7 @@ export default class CompetitionRoom extends React.Component {
       if (!clientFlipsRemaining) {
         copyOfState[client + 'FaceUp'] = cardFlipped;
         copyOfState.lastToFlip = client;
+        copyOfState.faceUpQueue.push(client);
       }
 
       if (opponentFaceUp && !stage) {
