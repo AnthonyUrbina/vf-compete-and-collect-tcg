@@ -384,15 +384,19 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
 
-    let counter = 0;
+    let counter = 1;
     const pile = clientBattlePile.map(card => {
       const { rank, suit } = card;
       const src = `images/cards/${rank}_of_${suit}.png`;
       const zIndex = counter;
-      const className = counter > 0 ? 'flipped-card client-battle-top' : 'flipped-card';
-      const transform = counter > 0 ? 'rotate(2deg)' : '0';
+      const className = counter > 1 ? 'deck-cards client-battle-top' : 'deck-cards';
+      const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
+        ? 'rotate(3deg)'
+        : (counter + 2) % 3 === 0
+            ? '0'
+            : (counter % 3) === 0 && 'rotate(-2deg)';
       counter++;
-      return <img className={className} key={src} src={src} style={{ zIndex, transform }}/>;
+      return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }}/>;
     });
 
     return pile;
@@ -405,16 +409,19 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
 
-    let counter = 0;
+    let counter = 1;
     const pile = opponentBattlePile.map(card => {
       const { rank, suit } = card;
       const src = `images/cards/${rank}_of_${suit}.png`;
       const zIndex = counter;
-      const className = counter > 0 ? 'flipped-card opponent-battle-top' : 'flipped-card';
-      const transform = counter > 0 ? 'rotate(2deg)' : '0';
-
+      const className = counter > 1 ? 'deck-cards opponent-battle-top' : 'deck-cards';
+      const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
+        ? 'rotate(3deg)'
+        : (counter + 2) % 3 === 0
+            ? '0'
+            : (counter % 3) === 0 ? 'rotate(-2deg)' : '0';
       counter++;
-      return <img className={className} key={src} src={src} style={{ zIndex, transform }} />;
+      return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }} />;
     });
 
     return pile;
