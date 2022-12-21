@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -96,8 +95,6 @@ export default class CompetitionRoom extends React.Component {
           }
         }
         let zIndex;
-        console.log(card);
-        console.log(counter);
         for (let i = 0; i < indexes.length; i++) {
           if (counter === i) {
             zIndex = indexes[i];
@@ -190,14 +187,11 @@ export default class CompetitionRoom extends React.Component {
       }
 
       if (clientFlipsRemaining === 1) {
-        console.log('cardFlipped', cardFlipped);
         copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
-        console.log('copyOfState[clientFaceUp]', copyOfState[client + 'FaceUp']);
         copyOfState.lastToFlip = client;
         copyOfState.faceUpQueue.push(client);
         copyOfState[client + 'FlipsRemaining']--;
         if (opponentFaceUp.length > stage) {
-          console.log('stage', stage);
           copyOfState.battlefield[client] = cardFlipped[0];
           copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
         }
@@ -366,7 +360,6 @@ export default class CompetitionRoom extends React.Component {
     if (!battle || !showBattleModal) return 'hidden';
     const { stage } = this.state.battle;
     setTimeout(() => {
-      console.log(this.battleModal.current);
       this.battleModal.current.className = 'hidden';
       this.setState({ showBattleModal: false });
     }, 1450);

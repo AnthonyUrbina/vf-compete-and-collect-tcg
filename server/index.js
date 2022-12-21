@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -392,7 +391,6 @@ function decideFaceoffWinner(state) {
     } else if (battlefield[key].rank === 'ace') {
       battlefield[key].rank = 14;
     }
-    console.log('card', battlefield[key]);
     if (battlefield[key].rank > bestRank) {
       bestRank = battlefield[key].rank;
       winner = key;
@@ -400,9 +398,7 @@ function decideFaceoffWinner(state) {
       tie = true;
     }
   }
-  console.log(bestRank);
-  console.log('winner', winner);
-  console.log('tie', tie);
+
   // console.assert(!winner, 'there is a winner!');
   // console.log(winner);
   tie ? handleFaceoffTie(state, players) : handleFaceoffWin(winner, state, players);
@@ -410,7 +406,6 @@ function decideFaceoffWinner(state) {
 }
 
 function handleFaceoffTie(state, players) {
-  console.log('handleFaceoffTie()');
   // console.log('handleFacoffTie is being called');
   // const { stage } = state.battle;
   const { gameId } = state;
