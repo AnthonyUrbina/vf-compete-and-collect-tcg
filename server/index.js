@@ -104,16 +104,31 @@ app.patch('/api/games/:gameId', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
-      const { roomId, battlefield } = state;
+      const { roomId, battlefield, battle } = state;
+      const players = getUsernames(roomId);
+
+      const { stage } = battle;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
+
+      for (const username in players) {
+        const playerDeck = state[players[username] + 'Deck'];
+        const playerWinPile = state[players[username] + 'WinPile'];
+        const player = players[username];
+        if (!playerDeck.length && playerWinPile.length) {
+          outOfCards(state, playerDeck, playerWinPile, player);
+        } else if (!playerDeck.length && !playerWinPile.length && !stage) {
+          const loser = players[username];
+          outOfCards(state, playerDeck, playerWinPile, player, loser);
+        }
+      }
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
-
-      if (Object.keys(battlefield).length === 2) {
-        setTimeout(decideFaceoffWinner, 500, state);
+      if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
+        setTimeout(decideWinner, 5000, state);
       }
+
     })
     .catch(err => next(err));
 });
@@ -257,7 +272,16 @@ io.on('connection', socket => {
       [challengerUsername + 'WinPile']: [],
       [socket.nickname + 'WinPile']: [],
       [challengerUsername + 'FaceUp']: null,
-      [socket.nickname + 'FaceUp']: null
+      [socket.nickname + 'FaceUp']: null,
+      [challengerUsername + 'FlipsRemaining']: 0,
+      [socket.nickname + 'FlipsRemaining']: 0,
+      [challengerUsername + 'BattlePile']: [],
+      [socket.nickname + 'BattlePile']: [],
+      battle: { stage: 0 },
+      showBattleModal: false,
+      battlefield: {},
+      faceUpQueue: []
+
     };
 
     const JSONstate = JSON.stringify(state);
@@ -302,11 +326,6 @@ function dealer(shuffled, players) {
   players[1].deck = shuffled.slice(26, 52);
 }
 
-function genRandomNumber() {
-  const randomNumber = Math.floor(Math.random() * 10);
-  return randomNumber;
-}
-
 function getUsernames(roomId) {
   const players = {
     player1: null,
@@ -318,11 +337,12 @@ function getUsernames(roomId) {
   return players;
 }
 
-function decideFaceoffWinner(state) {
+function decideWinner(state) {
   const { roomId, battlefield } = state;
   const players = getUsernames(roomId);
   let bestRank = 0;
   let winner;
+  let tie = false;
   for (const key in battlefield) {
     if (battlefield[key].rank === 'jack') {
       battlefield[key].rank = 11;
@@ -333,40 +353,87 @@ function decideFaceoffWinner(state) {
     } else if (battlefield[key].rank === 'ace') {
       battlefield[key].rank = 14;
     }
-
     if (battlefield[key].rank > bestRank) {
       bestRank = battlefield[key].rank;
       winner = key;
     } else if (battlefield[key].rank === bestRank) {
-      const randomNumber = genRandomNumber();
-      if (randomNumber > 5) {
-        winner = players.player1;
-      } else if (randomNumber < 5) {
-        winner = players.player2;
-      }
+      tie = true;
     }
   }
-  handleFaceoffWin(winner, state, players);
+
+  tie ? handleTie(state, players) : handleWin(winner, state, players);
+
 }
 
-function handleFaceoffWin(winner, state, players) {
-  if (!state[winner + 'WinPile']) {
-    state[winner + 'WinPile'] = [];
-  }
+function handleTie(state, players) {
+
+  const { gameId } = state;
+  const { player1, player2 } = players;
+
+  state.battlefield = {};
+  state.battle.stage++;
+  state.showBattleModal = true;
+  state[player1 + 'FlipsRemaining'] = 4;
+  state[player2 + 'FlipsRemaining'] = 4;
+
+  const sql = `
+    update "games"
+       set "state" = $2
+     where "gameId" = $1
+ returning "state"
+    `;
+
+  const params = [gameId, state];
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      const { roomId } = state;
+      if (!result.rows[0]) {
+        throw new ClientError(400, 'this gameId does not exist');
+      }
+      io.to(roomId).emit('battle-staged', state);
+    });
+
+}
+
+function handleWin(winner, state, players) {
   const winnerWinPile = state[winner + 'WinPile'];
   const { player1, player2 } = players;
   const { gameId } = state;
   const player1FaceUp = state[player1 + 'FaceUp'];
   const player2FaceUp = state[player2 + 'FaceUp'];
+  const player1BattlePile = state[player1 + 'BattlePile'];
+  const player2BattlePile = state[player2 + 'BattlePile'];
   const activeCards = [];
-  activeCards.push(player2FaceUp[0]);
+
+  player2FaceUp.map(card => activeCards.push(card)
+  );
+  player1FaceUp.map(card => activeCards.push(card)
+  );
+
   state[player2 + 'FaceUp'] = null;
-  activeCards.push(player1FaceUp[0]);
   state[player1 + 'FaceUp'] = null;
+  state[player1 + 'BattlePile'] = [];
+  state[player2 + 'BattlePile'] = [];
+  state.faceUpQueue = [];
+  state.battlefield = {};
 
   const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
+  let newWinnerDeck = [];
+  if (player1BattlePile && player2BattlePile) {
+    const battleCards = [];
 
-  const newWinnerDeck = winnerWinPile.concat(sortedWinings);
+    player2BattlePile.map(card => battleCards.push(card)
+    );
+    player1BattlePile.map(card => battleCards.push(card)
+    );
+    const sortedBattleCards = battleCards.sort((card1, card2) => card1.rank - card2.rank);
+    newWinnerDeck = winnerWinPile.concat(sortedWinings.concat(sortedBattleCards));
+    state.battle.stage = 0;
+  } else {
+    newWinnerDeck = winnerWinPile.concat(sortedWinings);
+  }
+
   state[winner + 'WinPile'] = newWinnerDeck;
 
   const sql = `

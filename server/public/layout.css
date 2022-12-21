@@ -267,11 +267,6 @@ li {
   height: 23.75vh;
 }
 
-.opponent-flipped {
-  position: relative;
-  z-index: 1;
-}
-
 .bundle {
   display: flex;
   flex-grow: 0.5;
@@ -319,7 +314,7 @@ li {
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 10;
   border-radius: 0.25rem;
 }
 
@@ -515,6 +510,50 @@ li {
   justify-content: space-evenly;
 }
 
+.battle-modal {
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  border-radius: 0.25rem;
+}
+
+.battle-modal > h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.client-battle-pile {
+  display: flex;
+  align-items: baseline;
+  position: relative;
+  top: 15%;
+}
+
+.opponent-battle-pile {
+  display: flex;
+  align-items: baseline;
+  position: relative;
+  bottom: 15%;
+}
+
+.client-battle-top {
+  position: absolute;
+  left: 0;
+}
+
+.opponent-battle-top {
+  position: absolute;
+  right: 0;
+}
+
+.flipped {
+  position: relative;
+  z-index: 1;
+}
+
 @keyframes lds-spinner {
   0% {
     opacity: 1;
@@ -532,6 +571,7 @@ li {
 
   .center-column {
     flex-direction: row;
+    align-items: flex-start;
   }
 
   .center-column.modal {
@@ -542,7 +582,7 @@ li {
     padding-top: 2.25rem;
   }
 
-  .header-spacing {
+  .header-spacing.auth {
     padding-top: 2rem;
   }
 }
@@ -552,7 +592,7 @@ li {
     max-width: 375px;
   }
 
-  .header-spacing {
+  .header-spacing.auth {
     padding-top: 2rem;
   }
 }

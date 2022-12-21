@@ -7,6 +7,9 @@ export default class CompetitionRoom extends React.Component {
     super(props);
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
+    this.battleModal = React.createRef();
+    this.clientLastFlipped = React.createRef();
+    this.opponentLastFlipped = React.createRef();
   }
 
   componentDidMount() {
@@ -50,6 +53,9 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('game-over', state => {
       this.setState(state);
     });
+    this.socket.on('battle-staged', state => {
+      this.setState(state);
+    });
   }
 
   componentWillUnmount() {
@@ -72,32 +78,73 @@ export default class CompetitionRoom extends React.Component {
   showClientCard() {
     const client = this.props.user.username;
     const clientFaceUp = this.state[client + 'FaceUp'];
+    const { faceUpQueue } = this.state;
     if (clientFaceUp) {
-      const suit = clientFaceUp[0].suit;
-      const rank = clientFaceUp[0].rank;
-      const src = `images/cards/${rank}_of_${suit}.png`;
-      let className = 'flipped-card';
-      if (this.state.lastToFlip === client) {
-        className = 'flipped-card client-on-top';
-      }
-      return (
-        <img src={src} alt={src} className={className} />
-      );
+      let counter = 0;
+      const stack = clientFaceUp.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const className = 'flipped-card';
+        const indexes = [];
+        const left = '0%';
+        const position = 'absolute';
+        const transform = counter % 2 !== 0 && 'rotate(2deg)';
+        let zIndex;
+        for (let i = 0; i < faceUpQueue.length; i++) {
+          if (faceUpQueue[i] === client) {
+            indexes.push(i);
+          }
+        }
+
+        for (let i = 0; i < indexes.length; i++) {
+          if (counter === i) {
+            zIndex = indexes[i];
+            break;
+          }
+        }
+
+        counter++;
+        return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
+      });
+      return stack;
     }
   }
 
   showOpponentCard() {
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
+    const { faceUpQueue } = this.state;
     if (opponentFaceUp) {
-      const suit = opponentFaceUp[0].suit;
-      const rank = opponentFaceUp[0].rank;
-      const src = `images/cards/${rank}_of_${suit}.png`;
-      const className = 'flipped-card opponent-flipped';
-      return (
-        <img src={src} alt={src} className={className} />
-      );
+      let counter = 0;
+      const stack = opponentFaceUp.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const className = 'flipped-card';
+        const indexes = [];
+        const left = '0%';
+        const position = 'absolute';
+        const transform = counter % 2 !== 0 && 'rotate(2deg)';
+        let zIndex;
+        for (let i = 0; i < faceUpQueue.length; i++) {
+          if (faceUpQueue[i] === opponent) {
+            indexes.push(i);
+          }
+        }
+
+        for (let i = 0; i < indexes.length; i++) {
+          if (counter === i) {
+            zIndex = indexes[i];
+            break;
+          }
+        }
+
+        counter++;
+        return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
+      })
+      ;
+      return stack;
     }
+
   }
 
   flipCard() {
@@ -105,37 +152,57 @@ export default class CompetitionRoom extends React.Component {
     const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
-    if (clientFaceUp) {
-      return;
+    const { showBattleModal } = this.state;
+    const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
+    if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
+      const { gameId, battle } = this.state;
+      const { stage } = battle;
+      const clientDeck = this.state[client + 'Deck'];
+      const copyOfClientDeck = [...clientDeck];
+      const cardFlipped = copyOfClientDeck.splice(0, 1);
+      const copyOfState = { ...this.state };
+      copyOfState[client + 'Deck'] = copyOfClientDeck;
+      copyOfState.roomId = parseRoute(window.location.hash).path;
+
+      if (clientFlipsRemaining > 1) {
+        copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
+        copyOfState[client + 'FlipsRemaining']--;
+      }
+
+      if (clientFlipsRemaining === 1) {
+        copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+        copyOfState.faceUpQueue.push(client);
+        copyOfState[client + 'FlipsRemaining']--;
+        if (opponentFaceUp.length > stage) {
+          copyOfState.battlefield[client] = cardFlipped[0];
+          copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
+        }
+      }
+
+      if (!clientFlipsRemaining) {
+        copyOfState[client + 'FaceUp'] = cardFlipped;
+        copyOfState.faceUpQueue.push(client);
+      }
+
+      if (opponentFaceUp && !stage) {
+        copyOfState.battlefield[client] = cardFlipped[0];
+        copyOfState.battlefield[opponent] = opponentFaceUp[0];
+      }
+
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      const req = {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify(copyOfState)
+      };
+      fetch(`/api/games/${gameId}`, req)
+        .then(res => res.json())
+        .then(data => this.setState(data));
+
     }
-    const { gameId } = this.state;
-    const clientDeck = this.state[client + 'Deck'];
-    const copyOfClientDeck = [...clientDeck];
-    const cardFlipped = copyOfClientDeck.splice(0, 1);
-    const copyOfState = { ...this.state };
-    copyOfState[client + 'Deck'] = copyOfClientDeck;
-    copyOfState[client + 'FaceUp'] = cardFlipped;
-    copyOfState.lastToFlip = client;
-    copyOfState.battlefield = {};
-    copyOfState.roomId = parseRoute(window.location.hash).path;
-
-    if (opponentFaceUp) {
-      copyOfState.battlefield[client] = cardFlipped[0];
-      copyOfState.battlefield[opponent] = opponentFaceUp[0];
-    }
-
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-
-    const req = {
-      method: 'PATCH',
-      headers,
-      body: JSON.stringify(copyOfState)
-    };
-    fetch(`/api/games/${gameId}`, req)
-      .then(res => res.json())
-      .then(data => this.setState(data));
   }
 
   showOpponentWinningCards() {
@@ -242,7 +309,7 @@ export default class CompetitionRoom extends React.Component {
   showModal() {
     const { loser } = this.state;
     return loser && (
-      <div className='winnder-modal'>
+      <div className='winner-modal'>
         <h1 className='winner-modal-title'>WINNER</h1>
         <div className='row center'>
           <img className='trophy' src='images/trophy.png' alt='trophy' />
@@ -267,9 +334,77 @@ export default class CompetitionRoom extends React.Component {
     return fetchingData ? 'spinner-container center-horiz-vert' : 'spinner-container hidden';
   }
 
+  announceBattle() {
+    const { battle, showBattleModal } = this.state;
+    if (!battle || !showBattleModal) return 'hidden';
+    const { stage } = this.state.battle;
+    setTimeout(() => {
+      this.battleModal.current.className = 'hidden';
+      this.setState({ showBattleModal: false });
+    }, 1450);
+    if (stage) {
+      return 'battle-modal';
+    } else {
+      return 'hidden';
+    }
+  }
+
+  showClientBattlePile() {
+    const client = this.props.user.username;
+    const clientBattlePile = this.state[client + 'BattlePile'];
+    if (!clientBattlePile || clientBattlePile.length === 0) {
+      return <img className='flipped-card hide-icon' src="images/backofcard.png" alt="" />;
+    } else {
+      let counter = 1;
+      const pile = clientBattlePile.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const zIndex = counter;
+        const className = counter > 1 ? 'flipped-card client-battle-top' : 'flipped-card';
+        const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
+          ? 'rotate(3deg)'
+          : (counter + 2) % 3 === 0
+              ? '0'
+              : (counter % 3) === 0 && 'rotate(-2deg)';
+        counter++;
+        return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }}/>;
+      });
+
+      return pile;
+    }
+
+  }
+
+  showOpponentBattlePile() {
+    const opponent = this.getOpponentUsername();
+    const opponentBattlePile = this.state[opponent + 'BattlePile'];
+    if (!opponentBattlePile || opponentBattlePile.length === 0) {
+      return <img className='flipped-card hide-icon' src="images/backofcard.png" alt="" />;
+    } else {
+      let counter = 1;
+      const pile = opponentBattlePile.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const zIndex = counter;
+        const className = counter > 1 ? 'flipped-card opponent-battle-top' : 'flipped-card';
+        const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
+          ? 'rotate(3deg)'
+          : (counter + 2) % 3 === 0
+              ? '0'
+              : (counter % 3) === 0 ? 'rotate(-2deg)' : '0';
+        counter++;
+        return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }} />;
+      });
+      return pile;
+    }
+  }
+
   render() {
     return (
       <>
+        <div ref={this.battleModal} className={this.announceBattle()}>
+          <h1>WAR</h1>
+        </div>
         <div className='row'>
           <div className='column-full'>
             <div className='center-horiz-vert'>
@@ -289,11 +424,17 @@ export default class CompetitionRoom extends React.Component {
               </div>
             </div>
             <div className='battlefield center'>
+              <div className="opponent-battle-pile">
+                {this.showOpponentBattlePile()}
+              </div>
               <div className='opponent-flipped-container flipped-card'>
                 {this.showOpponentCard()}
               </div>
               <div className='client-flipped-container flipped-card'>
                 {this.showClientCard()}
+              </div>
+              <div className="client-battle-pile">
+                {this.showClientBattlePile()}
               </div>
             </div>
             <div className='row center align-decks'>
