@@ -263,17 +263,8 @@ li {
   height: 111px;
 }
 
-.flipped-card.battle {
-  position: absolute;
-}
-
 .battlefield-row {
   height: 23.75vh;
-}
-
-.opponent-flipped {
-  position: relative;
-  z-index: 1;
 }
 
 .bundle {
@@ -323,7 +314,7 @@ li {
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 10;
   border-radius: 0.25rem;
 }
 
@@ -535,22 +526,22 @@ li {
 }
 
 .client-battle-pile {
-  position: relative;
-  top: 15%;
   display: flex;
   align-items: baseline;
+  position: relative;
+  top: 15%;
 }
 
 .opponent-battle-pile {
-  position: relative;
-  bottom: 15%;
   display: flex;
   align-items: baseline;
+  position: relative;
+  bottom: 15%;
 }
 
 .client-battle-top {
   position: absolute;
-  left: 0%;
+  left: 0;
 }
 
 .opponent-battle-top {
@@ -575,6 +566,7 @@ li {
 
   .center-column {
     flex-direction: row;
+    align-items: flex-start;
   }
 
   .center-column.modal {
