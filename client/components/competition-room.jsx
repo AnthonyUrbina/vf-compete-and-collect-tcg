@@ -55,7 +55,6 @@ export default class CompetitionRoom extends React.Component {
     });
     this.socket.on('battle-staged', state => {
       this.setState(state);
-      // { this.announceBattle(); }
     });
   }
 
@@ -151,7 +150,6 @@ export default class CompetitionRoom extends React.Component {
         if (counter % 2 !== 0) {
           transform = 'rotate(2deg)';
         }
-        // window.getComputedStyle(this.clientLastFlipped.current).getPropertyValue('z-index') + 1;
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
 
@@ -167,7 +165,7 @@ export default class CompetitionRoom extends React.Component {
     const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
-    const { battle, showBattleModal } = this.state;
+    const { showBattleModal } = this.state;
     const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
     if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
       const { gameId, battle } = this.state;
@@ -177,8 +175,6 @@ export default class CompetitionRoom extends React.Component {
       const cardFlipped = copyOfClientDeck.splice(0, 1);
       const copyOfState = { ...this.state };
       copyOfState[client + 'Deck'] = copyOfClientDeck;
-      // const clientFaceUp = copyOfState[client + 'FaceUp'];
-      // this should be serverside after winner is chosen
       copyOfState.roomId = parseRoute(window.location.hash).path;
 
       if (clientFlipsRemaining > 1) {
@@ -221,8 +217,6 @@ export default class CompetitionRoom extends React.Component {
         .then(res => res.json())
         .then(data => this.setState(data));
 
-    } else if (battle) {
-      // const { stage } = battle;
     }
   }
 
@@ -479,7 +473,6 @@ export default class CompetitionRoom extends React.Component {
           <div className='lds-spinner'><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /><div /></div>;
         </div>
         {this.showModal()}
-        {/* {this.announceBattle()} */}
       </>
     );
   }

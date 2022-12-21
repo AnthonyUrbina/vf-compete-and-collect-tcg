@@ -106,9 +106,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       const { state } = result.rows[0];
       const { roomId, battlefield, battle } = state;
       const players = getUsernames(roomId);
-      // const { player1, player2 } = players;
-      // const player1FlipsRemaining = state[player1 + 'FlipsRemaining'];
-      // const player2FlipsRemaining = state[player2 + 'FlipsRemaining'];
+
       const { stage } = battle;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
@@ -324,45 +322,9 @@ function getDeck(rank, suit) {
 }
 
 function dealer(shuffled, players) {
-  // players[0].deck = shuffled.slice(0, 26);
-  // players[1].deck = shuffled.slice(26, 52);
-  players[0].deck = [
-    { suit: 'clubs', rank: 9 },
-    { suit: 'clubs', rank: 8 },
-    { suit: 'clubs', rank: 7 },
-    { suit: 'clubs', rank: 6 },
-    { suit: 'clubs', rank: 5 },
-    { suit: 'hearts', rank: 9 },
-    { suit: 'clubs', rank: 9 },
-    { suit: 'clubs', rank: 'ace' },
-    { suit: 'clubs', rank: 2 },
-    { suit: 'clubs', rank: 3 },
-    { suit: 'clubs', rank: 4 },
-    { suit: 'clubs', rank: 8 },
-    { suit: 'clubs', rank: 'jack' }
-
-  ];
-  players[1].deck = [
-    { suit: 'spades', rank: 9 },
-    { suit: 'spades', rank: 8 },
-    { suit: 'spades', rank: 7 },
-    { suit: 'spades', rank: 6 },
-    { suit: 'spades', rank: 5 },
-    { suit: 'hearts', rank: 9 },
-    { suit: 'diamonds', rank: 9 },
-    { suit: 'spades', rank: 'ace' },
-    { suit: 'spades', rank: 2 },
-    { suit: 'spades', rank: 3 },
-    { suit: 'spades', rank: 4 },
-    { suit: 'spades', rank: 8 },
-    { suit: 'hearts', rank: 'queen' }
-  ];
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 52);
 }
-
-// function genRandomNumber() {
-//   const randomNumber = Math.floor(Math.random() * 10);
-//   return randomNumber;
-// }
 
 function getUsernames(roomId) {
   const players = {
@@ -399,15 +361,12 @@ function decideFaceoffWinner(state) {
     }
   }
 
-  // console.assert(!winner, 'there is a winner!');
-  // console.log(winner);
   tie ? handleFaceoffTie(state, players) : handleFaceoffWin(winner, state, players);
 
 }
 
 function handleFaceoffTie(state, players) {
-  // console.log('handleFacoffTie is being called');
-  // const { stage } = state.battle;
+
   const { gameId } = state;
   const { player1, player2 } = players;
 
@@ -438,10 +397,6 @@ function handleFaceoffTie(state, players) {
 }
 
 function handleFaceoffWin(winner, state, players) {
-  // winpiles should be created upon initial state creation
-  // if (!state[winner + 'WinPile']) {
-  //   state[winner + 'WinPile'] = [];
-  // }
   const winnerWinPile = state[winner + 'WinPile'];
   const { player1, player2 } = players;
   const { gameId } = state;
