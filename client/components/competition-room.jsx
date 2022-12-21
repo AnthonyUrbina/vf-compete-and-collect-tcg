@@ -80,20 +80,22 @@ export default class CompetitionRoom extends React.Component {
     const clientFaceUp = this.state[client + 'FaceUp'];
     const { faceUpQueue } = this.state;
     if (clientFaceUp) {
-
       let counter = 0;
       const stack = clientFaceUp.map(card => {
-
         const { rank, suit } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
         const className = 'flipped-card';
         const indexes = [];
+        const left = '0%';
+        const position = 'absolute';
+        const transform = counter % 2 !== 0 && 'rotate(2deg)';
+        let zIndex;
         for (let i = 0; i < faceUpQueue.length; i++) {
           if (faceUpQueue[i] === client) {
             indexes.push(i);
           }
         }
-        let zIndex;
+
         for (let i = 0; i < indexes.length; i++) {
           if (counter === i) {
             zIndex = indexes[i];
@@ -101,17 +103,8 @@ export default class CompetitionRoom extends React.Component {
           }
         }
 
-        const left = '0%';
-        const position = 'absolute';
-        let transform;
-
-        if (counter % 2 !== 0) {
-          transform = 'rotate(2deg)';
-        }
-
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
-
       });
       return stack;
     }
@@ -122,20 +115,22 @@ export default class CompetitionRoom extends React.Component {
     const opponentFaceUp = this.state[opponent + 'FaceUp'];
     const { faceUpQueue } = this.state;
     if (opponentFaceUp) {
-
       let counter = 0;
       const stack = opponentFaceUp.map(card => {
-
         const { rank, suit } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
         const className = 'flipped-card';
         const indexes = [];
+        const left = '0%';
+        const position = 'absolute';
+        const transform = counter % 2 !== 0 && 'rotate(2deg)';
+        let zIndex;
         for (let i = 0; i < faceUpQueue.length; i++) {
           if (faceUpQueue[i] === opponent) {
             indexes.push(i);
           }
         }
-        let zIndex;
+
         for (let i = 0; i < indexes.length; i++) {
           if (counter === i) {
             zIndex = indexes[i];
@@ -143,16 +138,8 @@ export default class CompetitionRoom extends React.Component {
           }
         }
 
-        const left = '0%';
-        const position = 'absolute';
-        let transform;
-
-        if (counter % 2 !== 0) {
-          transform = 'rotate(2deg)';
-        }
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
-
       })
       ;
       return stack;
