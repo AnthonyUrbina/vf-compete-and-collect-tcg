@@ -86,7 +86,7 @@ export default class CompetitionRoom extends React.Component {
 
         const { rank, suit } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
-        const className = 'flipped-card opponent-flipped';
+        const className = 'flipped-card';
         const indexes = [];
         for (let i = 0; i < faceUpQueue.length; i++) {
           if (faceUpQueue[i] === client) {
@@ -128,7 +128,7 @@ export default class CompetitionRoom extends React.Component {
 
         const { rank, suit } = card;
         const src = `images/cards/${rank}_of_${suit}.png`;
-        const className = 'flipped-card opponent-flipped';
+        const className = 'flipped-card';
         const indexes = [];
         for (let i = 0; i < faceUpQueue.length; i++) {
           if (faceUpQueue[i] === opponent) {

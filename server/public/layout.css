@@ -549,6 +549,11 @@ li {
   right: 0;
 }
 
+.flipped {
+  position: relative;
+  z-index: 1;
+}
+
 @keyframes lds-spinner {
   0% {
     opacity: 1;

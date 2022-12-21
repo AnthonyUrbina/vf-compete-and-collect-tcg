@@ -415,6 +415,7 @@ function handleFaceoffWin(winner, state, players) {
   state[player1 + 'FaceUp'] = null;
   state[player1 + 'BattlePile'] = [];
   state[player2 + 'BattlePile'] = [];
+  state.faceUpQueue = [];
   state.battlefield = {};
 
   const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
