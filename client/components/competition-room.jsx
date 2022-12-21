@@ -184,7 +184,6 @@ export default class CompetitionRoom extends React.Component {
 
       if (clientFlipsRemaining === 1) {
         copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
-        copyOfState.lastToFlip = client;
         copyOfState.faceUpQueue.push(client);
         copyOfState[client + 'FlipsRemaining']--;
         if (opponentFaceUp.length > stage) {
@@ -195,7 +194,6 @@ export default class CompetitionRoom extends React.Component {
 
       if (!clientFlipsRemaining) {
         copyOfState[client + 'FaceUp'] = cardFlipped;
-        copyOfState.lastToFlip = client;
         copyOfState.faceUpQueue.push(client);
       }
 
