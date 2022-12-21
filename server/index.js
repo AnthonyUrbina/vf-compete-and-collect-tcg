@@ -126,7 +126,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
       if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
-        setTimeout(decideFaceoffWinner, 500, state);
+        setTimeout(decideWinner, 5000, state);
       }
 
     })
@@ -337,7 +337,7 @@ function getUsernames(roomId) {
   return players;
 }
 
-function decideFaceoffWinner(state) {
+function decideWinner(state) {
   const { roomId, battlefield } = state;
   const players = getUsernames(roomId);
   let bestRank = 0;
@@ -361,11 +361,11 @@ function decideFaceoffWinner(state) {
     }
   }
 
-  tie ? handleFaceoffTie(state, players) : handleFaceoffWin(winner, state, players);
+  tie ? handleTie(state, players) : handleWin(winner, state, players);
 
 }
 
-function handleFaceoffTie(state, players) {
+function handleTie(state, players) {
 
   const { gameId } = state;
   const { player1, player2 } = players;
@@ -396,7 +396,7 @@ function handleFaceoffTie(state, players) {
 
 }
 
-function handleFaceoffWin(winner, state, players) {
+function handleWin(winner, state, players) {
   const winnerWinPile = state[winner + 'WinPile'];
   const { player1, player2 } = players;
   const { gameId } = state;
