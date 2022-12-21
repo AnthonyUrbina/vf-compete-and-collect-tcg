@@ -380,51 +380,51 @@ export default class CompetitionRoom extends React.Component {
   showClientBattlePile() {
     const client = this.props.user.username;
     const clientBattlePile = this.state[client + 'BattlePile'];
-    if (!clientBattlePile) {
-      return;
+    if (!clientBattlePile || clientBattlePile.length === 0) {
+      return <img className='flipped-card hide-icon' src="images/backofcard.png" alt="" />;
+    } else {
+      let counter = 1;
+      const pile = clientBattlePile.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const zIndex = counter;
+        const className = counter > 1 ? 'flipped-card client-battle-top' : 'flipped-card';
+        const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
+          ? 'rotate(3deg)'
+          : (counter + 2) % 3 === 0
+              ? '0'
+              : (counter % 3) === 0 && 'rotate(-2deg)';
+        counter++;
+        return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }}/>;
+      });
+
+      return pile;
     }
 
-    let counter = 1;
-    const pile = clientBattlePile.map(card => {
-      const { rank, suit } = card;
-      const src = `images/cards/${rank}_of_${suit}.png`;
-      const zIndex = counter;
-      const className = counter > 1 ? 'deck-cards client-battle-top' : 'deck-cards';
-      const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
-        ? 'rotate(3deg)'
-        : (counter + 2) % 3 === 0
-            ? '0'
-            : (counter % 3) === 0 && 'rotate(-2deg)';
-      counter++;
-      return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }}/>;
-    });
-
-    return pile;
   }
 
   showOpponentBattlePile() {
     const opponent = this.getOpponentUsername();
     const opponentBattlePile = this.state[opponent + 'BattlePile'];
-    if (!opponentBattlePile) {
-      return;
+    if (!opponentBattlePile || opponentBattlePile.length === 0) {
+      return <img className='flipped-card hide-icon' src="images/backofcard.png" alt="" />;
+    } else {
+      let counter = 1;
+      const pile = opponentBattlePile.map(card => {
+        const { rank, suit } = card;
+        const src = `images/cards/${rank}_of_${suit}.png`;
+        const zIndex = counter;
+        const className = counter > 1 ? 'flipped-card opponent-battle-top' : 'flipped-card';
+        const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
+          ? 'rotate(3deg)'
+          : (counter + 2) % 3 === 0
+              ? '0'
+              : (counter % 3) === 0 ? 'rotate(-2deg)' : '0';
+        counter++;
+        return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }} />;
+      });
+      return pile;
     }
-
-    let counter = 1;
-    const pile = opponentBattlePile.map(card => {
-      const { rank, suit } = card;
-      const src = `images/cards/${rank}_of_${suit}.png`;
-      const zIndex = counter;
-      const className = counter > 1 ? 'deck-cards opponent-battle-top' : 'deck-cards';
-      const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
-        ? 'rotate(3deg)'
-        : (counter + 2) % 3 === 0
-            ? '0'
-            : (counter % 3) === 0 ? 'rotate(-2deg)' : '0';
-      counter++;
-      return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }} />;
-    });
-
-    return pile;
   }
 
   render() {
