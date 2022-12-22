@@ -72,12 +72,6 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
     npm install
     ```
 
-1. Import the example database to PostgreSQL.
-
-    ```shell
-    npm run db:import
-    ```
-
 1. Make a copy of the .env.example file. Name your copy `.env`.
 
     ```shell
@@ -90,6 +84,30 @@ Try the application live at [https://warcardgame.xyz](https://warcardgame.xyz)
     TOKEN_SECRET=changeMe
     DATABASE_URL=postgres://dev:dev@localhost/changeMe?sslmode=disable
     ```
+
+1. Start PostgreSQL.
+
+```shell
+sudo service postgresql start
+```
+
+1. Create a database.
+
+```shell
+createdb name-of-database
+```
+
+1. Update the DATABASE_URL in your .env file. Switch 'changeMe' to the name-of-database created
+
+```shell
+DATABASE_URL=postgres://dev:dev@localhost/changeMe?sslmode=disable
+```
+
+1. Import the example database to PostgreSQL.
+
+```shell
+npm run db:import
+```
 
 1. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
 
