@@ -66,7 +66,7 @@ export default class Navbar extends React.Component {
             <a><i ref={this.homeButton} id='home-button' className={this.chooseHomeButtonClass()} onClick={this.handleClick}/></a>
           </div>
           <div className="column-half header-">
-            <h1 className='home-header-color'>WAR</h1>
+            <h1 className='home-header-color'>Lobby</h1>
           </div>
           <div className="column-one-fourth">
             <a><i className="fa-solid fa-right-from-bracket" onClick={this.handleClick}/></a>

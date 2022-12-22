@@ -160,7 +160,7 @@ export default class Lobby extends React.Component {
     const modalTitle = challengerModalisActive
       ? 'Challenge Sent'
       : opponentModalisActive
-        ? "You've been Challenged"
+        ? "You've Been Challenged"
         : 'hidden';
     return modalTitle;
   }

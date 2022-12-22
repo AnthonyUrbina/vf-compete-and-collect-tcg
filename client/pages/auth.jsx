@@ -12,12 +12,13 @@ export default class AuthPage extends React.Component {
       <>
         <div className="row center">
           <div className='header-spacing auth'>
-            <h1>WAR</h1>
+            <h1>
+              Compete &amp; Collect</h1>
           </div>
         </div>
         <div className="row center-column">
-          <div className="">
-            <img src="images/ace.png" alt="ace" />
+          <div>
+            <img src="images/vf-logo.png" alt="ace" />
           </div>
           <div className="form-spacing">
             <AuthForm action={path} handleSignIn={this.context.handleSignIn} />
