@@ -126,7 +126,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
       if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
-        setTimeout(decideWinner, 5000, state);
+        setTimeout(decideWinner, 500, state);
       }
 
     })
@@ -304,7 +304,7 @@ io.on('connection', socket => {
   });
 });
 
-// const rank = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
+// const score = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
 // const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function dealer(shuffled, players) {
@@ -326,23 +326,23 @@ function getUsernames(roomId) {
 function decideWinner(state) {
   const { roomId, battlefield } = state;
   const players = getUsernames(roomId);
-  let bestRank = 0;
+  let bestScore = 0;
   let winner;
   let tie = false;
   for (const key in battlefield) {
-    if (battlefield[key].rank === 'jack') {
-      battlefield[key].rank = 11;
-    } else if (battlefield[key].rank === 'queen') {
-      battlefield[key].rank = 12;
-    } else if (battlefield[key].rank === 'king') {
-      battlefield[key].rank = 13;
-    } else if (battlefield[key].rank === 'ace') {
-      battlefield[key].rank = 14;
+    if (battlefield[key].score === 'jack') {
+      battlefield[key].score = 11;
+    } else if (battlefield[key].score === 'queen') {
+      battlefield[key].score = 12;
+    } else if (battlefield[key].score === 'king') {
+      battlefield[key].score = 13;
+    } else if (battlefield[key].score === 'ace') {
+      battlefield[key].score = 14;
     }
-    if (battlefield[key].rank > bestRank) {
-      bestRank = battlefield[key].rank;
+    if (battlefield[key].score > bestScore) {
+      bestScore = battlefield[key].score;
       winner = key;
-    } else if (battlefield[key].rank === bestRank) {
+    } else if (battlefield[key].score === bestScore) {
       tie = true;
     }
   }
@@ -404,7 +404,7 @@ function handleWin(winner, state, players) {
   state.faceUpQueue = [];
   state.battlefield = {};
 
-  const sortedWinings = activeCards.sort((card1, card2) => card1.rank - card2.rank);
+  const sortedWinings = activeCards.sort((card1, card2) => card1.score - card2.score);
   let newWinnerDeck = [];
   if (player1BattlePile && player2BattlePile) {
     const battleCards = [];
@@ -413,7 +413,7 @@ function handleWin(winner, state, players) {
     );
     player1BattlePile.map(card => battleCards.push(card)
     );
-    const sortedBattleCards = battleCards.sort((card1, card2) => card1.rank - card2.rank);
+    const sortedBattleCards = battleCards.sort((card1, card2) => card1.score - card2.score);
     newWinnerDeck = winnerWinPile.concat(sortedWinings.concat(sortedBattleCards));
     state.battle.stage = 0;
   } else {
@@ -585,7 +585,7 @@ function getDeck() {
     { name: 'offense-oriented-orangutan', score: 65, aura: 21, skill: 21, stamina: 23 },
     { name: 'og-ox', score: 59, aura: 19, skill: 18, stamina: 22 },
     { name: 'organized-ostrich', score: 67, aura: 17, skill: 20, stamina: 23 },
-    { name: 'passionate-parrot', score: 68, aura: 23, skill: 22, stamina: 23 },
+    { name: 'passionate-parot', score: 68, aura: 23, skill: 22, stamina: 23 },
     { name: 'patient-panda', score: 74, aura: 24, skill: 25, stamina: 25 },
     { name: 'pea-salad', score: 51, aura: 17, skill: 17, stamina: 17 },
     { name: 'peaceful-pelican', score: 58, aura: 20, skill: 17, stamina: 21 },
