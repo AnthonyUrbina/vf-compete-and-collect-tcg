@@ -126,7 +126,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
       if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
-        setTimeout(decideWinner, 500, state);
+        setTimeout(decideWinner, 850, state);
       }
 
     })
@@ -570,7 +570,7 @@ function getDeck() {
     { name: 'last-glass-standing', score: 57, aura: 16, skill: 18, stamina: 23 },
     { name: 'level-headed-lizard', score: 57, aura: 18, skill: 19, stamina: 20 },
     { name: 'like-a-sponge', score: 53, aura: 20, skill: 17, stamina: 16 },
-    { name: 'likeable-leapord', score: 59, aura: 17, skill: 22, stamina: 20 },
+    { name: 'likeable-leopard', score: 59, aura: 17, skill: 22, stamina: 20 },
     { name: 'lit-lamb', score: 65, aura: 24, skill: 20, stamina: 21 },
     { name: 'logical-lion', score: 69, aura: 23, skill: 23, stamina: 23 },
     { name: 'loyal-lobster', score: 64, aura: 22, skill: 19, stamina: 23 },
@@ -584,7 +584,7 @@ function getDeck() {
     { name: 'nifty-narwhal', score: 72, aura: 24, skill: 24, stamina: 24 },
     { name: 'offense-oriented-orangutan', score: 65, aura: 21, skill: 21, stamina: 23 },
     { name: 'og-ox', score: 59, aura: 19, skill: 18, stamina: 22 },
-    { name: 'organized-ostrich', score: 67, aura: 17, skill: 20, stamina: 23 },
+    { name: 'organized-ostrich', score: 60, aura: 17, skill: 20, stamina: 23 },
     { name: 'passionate-parot', score: 68, aura: 23, skill: 22, stamina: 23 },
     { name: 'patient-panda', score: 74, aura: 24, skill: 25, stamina: 25 },
     { name: 'pea-salad', score: 51, aura: 17, skill: 17, stamina: 17 },
