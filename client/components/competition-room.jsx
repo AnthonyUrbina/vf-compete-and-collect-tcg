@@ -409,7 +409,7 @@ export default class CompetitionRoom extends React.Component {
           <div className='column-full'>
             <div className='center-horiz-vert'>
               <div className='column-half'>
-                <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />
+                <img className='player-avatar-img-size' src='images/avatars/notorious-ninja.png' alt='player1' />
               </div>
               <div className='column-half'>
                 <p className='player-names-size'>{this.getOpponentUsername()}</p>
@@ -448,7 +448,7 @@ export default class CompetitionRoom extends React.Component {
               </div>
             </div>
             <div className='center-horiz-vert'>
-              <img className='player-avatar-img-size' src='images/player2.png' alt='player1' />
+              <img className='player-avatar-img-size' src='images/avatars/competitive-clown.png' alt='player1' />
               <p className='player-names-size'>You</p>
             </div>
           </div>

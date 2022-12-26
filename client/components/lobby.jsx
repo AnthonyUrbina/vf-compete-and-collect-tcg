@@ -192,7 +192,7 @@ export default class Lobby extends React.Component {
       <>
         <div className='row center'>
           <div className='center-horiz-vert'>
-            <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />
+            <img className='player-avatar-img-size' src='images/avatars/notorious-ninja.png' alt='player1' />
             <p className='player-names-size'>Bill</p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default class Lobby extends React.Component {
         </div>
         <div className='row center'>
           <div className='center-horiz-vert player-2-stretch'>
-            <img className='player-avatar-img-size' src='images/player2.png' alt='player1' />
+            <img className='player-avatar-img-size' src='images/avatars/competitive-clown.png' alt='player1' />
             <p className='player-names-size'>You</p>
           </div>
         </div>

@@ -103,15 +103,8 @@ li {
 }
 
 .player-avatar-img-size {
-  /* height: 55px;
-  width: 64px; */
-  height: 3.45rem;
-  width: 4rem;
-  margin-right: 1rem;
-}
-
-.player-names-size {
-  margin-left: 1rem;
+  height: 5rem;
+  width: 5.25rem;
 }
 
 .player-deck {
