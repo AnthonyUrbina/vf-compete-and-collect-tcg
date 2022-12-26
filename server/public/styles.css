@@ -198,3 +198,8 @@ h3 {
 .battle-modal h1 {
   animation: text-size 0.5s ease;
 }
+
+.deck-cards,
+.flipped-card {
+  border-radius: 0.25rem;
+}
