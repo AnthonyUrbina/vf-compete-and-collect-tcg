@@ -12,7 +12,6 @@ export default class AuthForm extends React.Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDemoUsernameClick = this.handleDemoUsernameClick.bind(this);
     this.errorMessage = React.createRef();
   }
 
@@ -102,19 +101,6 @@ export default class AuthForm extends React.Component {
     return <p>{altQuestion} <a href={altHref}>{altAnchor}</a></p>;
   }
 
-  handleDemoUsernameClick() {
-    this.setState({ username: 'Demo', password: 'password123' });
-  }
-
-  showDemoButton() {
-    const path = this.props.action;
-    if (path === 'sign-up') {
-      return;
-    }
-    return path === 'sign-in' &&
-    <button className='form-button' onClick={this.handleDemoUsernameClick}>Demo Account</button>;
-  }
-
   render() {
     return (
       <>
@@ -124,7 +110,6 @@ export default class AuthForm extends React.Component {
           {this.showErrorMessage()}
           <button className='name-avatar-spacing form-button demo-button'>{this.showButtonContent()}</button>
         </form>
-        {this.showDemoButton()}
         {this.chooseAlts()}
       </>
     );

@@ -493,13 +493,6 @@ server.listen(process.env.PORT, () => {
   process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
 });
 
-// eslint-disable-next-line no-unused-vars
-
-// function genRandomNumber() {
-//   const randomNumber = Math.floor(Math.random() * deck.length);
-//   return randomNumber;
-// }
-
 function getDeck() {
   const deck = [
     { name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },

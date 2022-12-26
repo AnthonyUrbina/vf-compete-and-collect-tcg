@@ -199,11 +199,11 @@ export default class Lobby extends React.Component {
         <div className='row center'>
           <div>
             <div className='player-deck'>
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-1' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-2' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-3' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-4' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-5' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-1' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-2' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-3' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-4' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-5' />
             </div>
           </div>
         </div>
