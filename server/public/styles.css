@@ -154,17 +154,17 @@ h3 {
 }
 
 .winner-modal-text {
-  color: white;
+  color: inherit;
   font-weight: lighter;
 }
 
 .winner-modal-title {
-  color: #ffd700;
+  color: #f00;
   font-size: 48px;
 }
 
 .winner-modal {
-  background-color: #f00;
+  background-color: #fffaf0;
 }
 
 .input-error-message {

@@ -301,22 +301,22 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
     const client = this.props.user.username;
-    return client === loser ? 'images/player1.png' : 'images/player2.png';
+    return client === loser ? 'images/avatars/notorious-ninja.png' : 'images/cards/competitive-clown.png';
   }
 
   showModal() {
     const { loser } = this.state;
     return loser && (
       <div className='winner-modal'>
-        <h1 className='winner-modal-title'>WINNER</h1>
+        <h1 className='winner-modal-title'>WINNER!</h1>
         <div className='row center'>
-          <img className='trophy' src='images/trophy.jpg' alt='trophy' />
+          <img className='trophy' src='images/trophy.png' alt='trophy' />
           <div>
             <img className='winner-avatar' src={this.pickWinnerAvatar()} alt='winner-avatar' />
             <p className='winner-modal-text'>{this.pickWinnerText()}</p>
             <a href='#' className='challenger-modal-button winner-modal-button'>Main Menu</a>
           </div>
-          <img className='trophy' src='images/trophy.jpg' alt='trophy' />
+          <img className='trophy' src='images/trophy.png' alt='trophy' />
         </div>
       </div>
     );
