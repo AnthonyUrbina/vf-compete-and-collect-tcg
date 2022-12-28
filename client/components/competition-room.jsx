@@ -301,7 +301,7 @@ export default class CompetitionRoom extends React.Component {
       return;
     }
     const client = this.props.user.username;
-    return client === loser ? 'images/avatars/notorious-ninja.png' : 'images/cards/competitive-clown.png';
+    return client === loser ? 'images/avatars/notorious-ninja.png' : 'images/avatars/competitive-clown.png';
   }
 
   showModal() {
@@ -399,6 +399,22 @@ export default class CompetitionRoom extends React.Component {
     }
   }
 
+  getClientRemainingCards() {
+    const client = this.props.user.username;
+    const clientDeck = this.state[client + 'Deck'];
+    const clientWinPile = this.state[client + 'WinPile'];
+    if (!clientDeck) return 'loading...';
+    return clientDeck.length + clientWinPile.length;
+  }
+
+  getOpponentRemainingCards() {
+    const opponent = this.getOpponentUsername();
+    const opponentDeck = this.state[opponent + 'Deck'];
+    const opponentWinPile = this.state[opponent + 'WinPile'];
+    if (!opponentDeck) return 'loading...';
+    return opponentDeck.length + opponentWinPile.length;
+  }
+
   render() {
     return (
       <>
@@ -415,6 +431,7 @@ export default class CompetitionRoom extends React.Component {
                 <p className='player-names-size'>{this.getOpponentUsername()}</p>
               </div>
             </div>
+            <p className='score-text'>{`Cards Remaining: ${this.getOpponentRemainingCards()}`}</p>
             <div className='row center align-decks'>
               <div className='side-deck flipped-card'>
                 {this.showOpponentWinningCards()}
@@ -447,6 +464,7 @@ export default class CompetitionRoom extends React.Component {
                 </div>
               </div>
             </div>
+            <p className='score-text'>{`Cards Remaining: ${this.getClientRemainingCards()}`}</p>
             <div className='center-horiz-vert'>
               <img className='player-avatar-img-size' src='images/avatars/competitive-clown.png' alt='player1' />
               <p className='player-names-size'>You</p>

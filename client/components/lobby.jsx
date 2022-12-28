@@ -75,7 +75,7 @@ export default class Lobby extends React.Component {
     const playerAppearance = usernames.map(username =>
       <li key={username} className='flex-column-center'>
         <button onClick={this.handleClick} className='war-multiplayer-modal-li-button'>
-          <img data-username={username} className='player-avatar-img-size modal-img-spacing' src="images/player1.png" alt="" />
+          <img data-username={username} className='player-avatar-img-size modal-img-spacing' src="images/avatars/notorious-ninja.png" alt="" />
           <p data-username={username} className='modal-player-text'>{username}</p>
         </button>
       </li>);
@@ -167,7 +167,6 @@ export default class Lobby extends React.Component {
 
   chooseChallengeModalText() {
     const { challengerModalisActive, isSendingChallengeTo, isReceivingChallengeFrom } = this.state;
-
     const modalText = challengerModalisActive
       ? <p className='challenger-modal-text'>You have challenged {isSendingChallengeTo} to a game.<br />
         Waiting for their response...
@@ -231,7 +230,7 @@ export default class Lobby extends React.Component {
           <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
           {this.chooseChallengeModalText()}
           <div className='center-column modal'>
-            <img className='player-avatar-img-size challenger-modal-img' src='images/player1.png'/>
+            <img className='player-avatar-img-size challenger-modal-img' src='images/avatars/notorious-ninja.png'/>
             {this.chooseChallengeModalButtons()}
           </div>
         </div>

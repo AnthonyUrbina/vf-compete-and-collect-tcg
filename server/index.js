@@ -106,20 +106,30 @@ app.patch('/api/games/:gameId', (req, res, next) => {
       const { state } = result.rows[0];
       const { roomId, battlefield, battle } = state;
       const players = getUsernames(roomId);
-
       const { stage } = battle;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
 
       for (const username in players) {
-        const playerDeck = state[players[username] + 'Deck'];
-        const playerWinPile = state[players[username] + 'WinPile'];
         const player = players[username];
+        const playerDeck = state[player + 'Deck'];
+        const playerWinPile = state[player + 'WinPile'];
+        const playerFlipsRemaining = state[player + 'FlipsRemaining'];
+        const loser = player;
+        // console.log('player', player);
+        // console.log('flips remaining', playerFlipsRemaining);
+        // console.log('battlefield', battlefield);
+        // console.log('stage', stage);
+        // console.log('playerWinPile', playerWinPile);
+        // console.log('playerDeck', playerDeck);
         if (!playerDeck.length && playerWinPile.length) {
           outOfCards(state, playerDeck, playerWinPile, player);
-        } else if (!playerDeck.length && !playerWinPile.length && !stage) {
-          const loser = players[username];
+        } else if (!playerDeck.length && !playerWinPile.length && !stage && !Object.keys(battlefield).length) {
+          outOfCards(state, playerDeck, playerWinPile, player, loser);
+          // console.log('first');
+        } else if (!playerDeck.length && !playerWinPile.length && playerFlipsRemaining && !Object.keys(battlefield).length) {
+          // console.log('yo');
           outOfCards(state, playerDeck, playerWinPile, player, loser);
         }
       }
@@ -308,8 +318,22 @@ io.on('connection', socket => {
 // const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 26);
-  players[1].deck = shuffled.slice(26, 52);
+  // players[0].deck = shuffled.slice(0, 4);
+  // players[1].deck = shuffled.slice(26, 30);
+  players[0].deck = [{ name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
+    { name: 'ambitious-angel', score: 68, aura: 23, skill: 21, stamina: 24 },
+    { name: 'amiable-anchovy', score: 52, aura: 20, skill: 19, stamina: 13 },
+    { name: 'arbitraging-admiral', score: 73, aura: 24, skill: 25, stamina: 24 },
+    { name: 'bad-ass-bulldog', score: 53, aura: 17, skill: 15, stamina: 21 }];
+
+  players[1].deck = [
+    { name: 'amiable-anchovy', score: 52, aura: 20, skill: 19, stamina: 13 },
+
+    { name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
+    { name: 'bad-ass-bulldog', score: 53, aura: 17, skill: 15, stamina: 21 },
+
+    { name: 'ambitious-angel', score: 68, aura: 23, skill: 21, stamina: 24 }
+  ];
 }
 
 function getUsernames(roomId) {
@@ -499,7 +523,7 @@ function getDeck() {
     { name: 'ambitious-angel', score: 68, aura: 23, skill: 21, stamina: 24 },
     { name: 'amiable-anchovy', score: 52, aura: 20, skill: 19, stamina: 13 },
     { name: 'arbitraging-admiral', score: 73, aura: 24, skill: 25, stamina: 24 },
-    { name: 'bad-ass-bulldog', score: 52, aura: 17, skill: 15, stamina: 21 },
+    { name: 'bad-ass-bulldog', score: 53, aura: 17, skill: 15, stamina: 21 },
     { name: 'bad-intentions', score: 58, aura: 17, skill: 22, stamina: 19 },
     { name: 'balanced-beatle', score: 60, aura: 20, skill: 20, stamina: 20 },
     { name: 'balanced-beatle', score: 60, aura: 20, skill: 20, stamina: 20 },
@@ -519,7 +543,7 @@ function getDeck() {
     { name: 'considerate-cowboy', score: 69, aura: 23, skill: 23, stamina: 23 },
     { name: 'consistent-cougar', score: 58, aura: 17, skill: 17, stamina: 24 },
     { name: 'content-condor', score: 64, aura: 20, skill: 22, stamina: 22 },
-    { name: 'corageous-cockatoo', score: 53, aura: 17, skill: 20, stamina: 16 },
+    { name: 'courageous-cockatoo', score: 53, aura: 17, skill: 20, stamina: 16 },
     { name: 'curious-crane', score: 66, aura: 23, skill: 21, stamina: 22 },
     { name: 'daring-dragonfly', score: 55, aura: 20, skill: 15, stamina: 20 },
     { name: 'determined-dolphin', score: 69, aura: 21, skill: 24, stamina: 24 },

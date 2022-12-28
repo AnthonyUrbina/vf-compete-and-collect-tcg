@@ -203,3 +203,9 @@ h3 {
 .flipped-card {
   border-radius: 0.25rem;
 }
+
+.score-text {
+  font-size: 0.65rem;
+  color: white;
+  margin: 0;
+}
