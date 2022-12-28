@@ -125,11 +125,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
         // console.log('playerDeck', playerDeck);
         if (!playerDeck.length && playerWinPile.length) {
           outOfCards(state, playerDeck, playerWinPile, player);
-        } else if (!playerDeck.length && !playerWinPile.length && !stage && !Object.keys(battlefield).length) {
-          outOfCards(state, playerDeck, playerWinPile, player, loser);
-          // console.log('first');
         } else if (!playerDeck.length && !playerWinPile.length && playerFlipsRemaining && !Object.keys(battlefield).length) {
-          // console.log('yo');
           outOfCards(state, playerDeck, playerWinPile, player, loser);
         }
       }
@@ -318,22 +314,8 @@ io.on('connection', socket => {
 // const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function dealer(shuffled, players) {
-  // players[0].deck = shuffled.slice(0, 4);
-  // players[1].deck = shuffled.slice(26, 30);
-  players[0].deck = [{ name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
-    { name: 'ambitious-angel', score: 68, aura: 23, skill: 21, stamina: 24 },
-    { name: 'amiable-anchovy', score: 52, aura: 20, skill: 19, stamina: 13 },
-    { name: 'arbitraging-admiral', score: 73, aura: 24, skill: 25, stamina: 24 },
-    { name: 'bad-ass-bulldog', score: 53, aura: 17, skill: 15, stamina: 21 }];
-
-  players[1].deck = [
-    { name: 'amiable-anchovy', score: 52, aura: 20, skill: 19, stamina: 13 },
-
-    { name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
-    { name: 'bad-ass-bulldog', score: 53, aura: 17, skill: 15, stamina: 21 },
-
-    { name: 'ambitious-angel', score: 68, aura: 23, skill: 21, stamina: 24 }
-  ];
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 53);
 }
 
 function getUsernames(roomId) {
@@ -526,7 +508,6 @@ function getDeck() {
     { name: 'bad-ass-bulldog', score: 53, aura: 17, skill: 15, stamina: 21 },
     { name: 'bad-intentions', score: 58, aura: 17, skill: 22, stamina: 19 },
     { name: 'balanced-beatle', score: 60, aura: 20, skill: 20, stamina: 20 },
-    { name: 'balanced-beatle', score: 60, aura: 20, skill: 20, stamina: 20 },
     { name: 'be-the-bigger-person', score: 67, aura: 24, skill: 21, stamina: 22 },
     { name: 'befuddled-burglar', score: 73, aura: 25, skill: 25, stamina: 24 },
     { name: 'boisterous-beaver', score: 57, aura: 20, skill: 16, stamina: 21 },
@@ -534,7 +515,7 @@ function getDeck() {
     { name: 'boss-bobcat', score: 68, aura: 22, skill: 24, stamina: 22 },
     { name: 'bubbly-buzzard', score: 51, aura: 18, skill: 16, stamina: 17 },
     { name: 'bullish-bull', score: 69, aura: 24, skill: 21, stamina: 24 },
-    { name: 'capable-caterpillar', score: 67, aura: 18, skill: 18, stamina: 19 },
+    { name: 'capable-caterpillar', score: 55, aura: 18, skill: 18, stamina: 19 },
     { name: 'caring-camel', score: 56, aura: 19, skill: 16, stamina: 21 },
     { name: 'chill-chinchilla', score: 60, aura: 19, skill: 20, stamina: 21 },
     { name: 'common-sense-cow', score: 62, aura: 20, skill: 22, stamina: 20 },
@@ -579,8 +560,8 @@ function getDeck() {
     { name: 'innovative-impala', score: 65, aura: 21, skill: 22, stamina: 22 },
     { name: 'jolly-jack-o', score: 50, aura: 18, skill: 16, stamina: 16 },
     { name: 'joyous-jellyfish', score: 58, aura: 21, skill: 19, stamina: 18 },
-    { name: 'juicy-jaguar', score: 67, aura: 19, skill: 20, stamina: 21 },
-    { name: 'just-jackal', score: 67, aura: 15, skill: 18, stamina: 17 },
+    { name: 'juicy-jaguar', score: 58, aura: 19, skill: 20, stamina: 21 },
+    { name: 'just-jackal', score: 50, aura: 15, skill: 18, stamina: 17 },
     { name: 'karma-kiwi', score: 68, aura: 22, skill: 22, stamina: 24 },
     { name: 'kind-kudu', score: 67, aura: 22, skill: 23, stamina: 22 },
     { name: 'kind-warrior', score: 71, aura: 24, skill: 24, stamina: 23 },
@@ -592,7 +573,7 @@ function getDeck() {
     { name: 'logical-lion', score: 69, aura: 23, skill: 23, stamina: 23 },
     { name: 'loyal-lobster', score: 64, aura: 22, skill: 19, stamina: 23 },
     { name: 'macho-manta-ray', score: 65, aura: 22, skill: 22, stamina: 21 },
-    { name: 'magnanimous-maltese', score: 67, aura: 18, skill: 14, stamina: 18 },
+    { name: 'magnanimous-maltese', score: 50, aura: 18, skill: 14, stamina: 18 },
     { name: 'methodical-mammoth', score: 67, aura: 21, skill: 22, stamina: 24 },
     { name: 'meticulous-magpie', score: 59, aura: 19, skill: 19, stamina: 21 },
     { name: 'modest-moose', score: 59, aura: 17, skill: 19, stamina: 23 },
@@ -640,7 +621,7 @@ function getDeck() {
     { name: 'well-connected-werewolf', score: 63, aura: 22, skill: 21, stamina: 20 },
     { name: 'who-was-born-in-1997', score: 57, aura: 19, skill: 19, stamina: 19 },
     { name: 'wild-wallaby', score: 52, aura: 19, skill: 18, stamina: 15 },
-    { name: 'yolo-yak', score: 67, aura: 24, skill: 21, stamina: 22 },
+    { name: 'yolo-yak', score: 62, aura: 24, skill: 21, stamina: 22 },
     { name: 'zealous-zombie', score: 69, aura: 22, skill: 23, stamina: 24 }
   ];
   return deck;
