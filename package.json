@@ -12,6 +12,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@socket.io/admin-ui": "^0.5.1",
     "argon2": "^0.29.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

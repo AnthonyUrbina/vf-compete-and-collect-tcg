@@ -32,6 +32,15 @@ export default class CompetitionRoom extends React.Component {
         state.gameId = gameId;
         state.fetchingData = false;
         this.setState(state);
+      })
+      .catch(err => {
+        console.error('err message', err.toString());
+        if (err.toString().includes("The operation couldn't be completed. Socket.io is not connected")) {
+          // eslint-disable-next-line no-console
+          console.log('oppponent retry from ' + user.username, opponent);
+          this.socket.emit('invite-accepted-retry', opponent);
+        }
+
       });
     if (user) {
       this.socket = io('/', {

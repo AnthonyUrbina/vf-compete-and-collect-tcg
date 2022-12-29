@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 
@@ -28,6 +29,7 @@ export default class Lobby extends React.Component {
 
     this.socket.on('online-players', onlinePlayers => {
       delete onlinePlayers[this.socket.id];
+      // console.log(onlinePlayers);
       this.setState({ onlinePlayers });
     });
 
@@ -95,6 +97,8 @@ export default class Lobby extends React.Component {
     if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
       const opponentUsername = event.target.dataset.username;
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
+      // console.log('opponentUsername:', opponentUsername);
+      console.log('opponentSocketId:', opponentSocketId);
       this.socket.emit('invite-sent', opponentSocketId);
       this.setState({
         onlinePlayersModalisActive: false,
@@ -104,12 +108,14 @@ export default class Lobby extends React.Component {
     }
 
     if (event.target.matches('.challenger-modal-button')) {
+      console.log('ayooo');
       const opponentSocketId = this.getOpponentSocketId(isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     }
 
     if (event.target.matches('.accept-button')) {
+      console.log('invite-accepted client inviteInfo:', inviteInfo);
       this.socket.emit('invite-accepted', inviteInfo);
       this.setState({ opponentModalisActive: false });
       window.location.hash = roomId;
@@ -137,12 +143,14 @@ export default class Lobby extends React.Component {
   }
 
   getOpponentSocketId(opponentUsername) {
-    let socketId = null;
     const { onlinePlayers } = this.state;
     for (const key in onlinePlayers) {
-      socketId = onlinePlayers[key] === opponentUsername && key;
+      console.log(onlinePlayers);
+      console.log('opponentUsername', opponentUsername);
+      console.log('getOpponentSocketId onlinePlayers[key]', onlinePlayers[key]);
+      console.log('key', key);
+      if (onlinePlayers[key] === opponentUsername) return key;
     }
-    return socketId;
   }
 
   chooseChallengerModalClass() {

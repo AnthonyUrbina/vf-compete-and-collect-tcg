@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -13,7 +14,16 @@ const shuffle = require('lodash.shuffle');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-const io = new Server(server);
+const { instrument } = require('@socket.io/admin-ui');
+
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:3000', 'https://admin.socket.io'],
+    credentials: true
+  }
+});
+
+instrument(io, { auth: false });
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -21,7 +31,6 @@ const db = new pg.Pool({
     rejectUnauthorized: false
   }
 });
-
 if (process.env.NODE_ENV === 'development') {
   app.use(require('./dev-middleware')(publicPath));
 }
@@ -224,6 +233,7 @@ io.on('connection', socket => {
   socket.on('invite-sent', opponentSocketId => {
     const challengerSocketId = socket.id;
     const challengerId = socket.userId;
+
     let challengerUsername;
     let opponentUsername;
 
@@ -263,6 +273,7 @@ io.on('connection', socket => {
 
   socket.on('invite-accepted', inviteInfo => {
     const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
+    console.log('invite-accepted server inviteInfo:', inviteInfo);
     const deck = getDeck();
     const shuffled = shuffle(deck);
     const players = [
@@ -305,6 +316,78 @@ io.on('connection', socket => {
       })
       .catch(err => console.error(err));
   });
+
+  socket.on('invite-accepted-retry', opponent => {
+    console.log('opponent retry', opponent);
+    const challengerUsername = opponent;
+    const challengerSocketId = getSocketId(challengerUsername);
+    let challengerId;
+
+    const sql = `
+    select "userId"
+      from "users"
+     where "username" = $1
+  `;
+
+    const params = [challengerUsername];
+    db.query(sql, params)
+      .then(result => {
+        if (!result.rows[0]) {
+          throw new ClientError(400, 'this user does not exist');
+        }
+        challengerId = result.rows[0].userId;
+        let inviteInfo = { challengerUsername, challengerSocketId, challengerId };
+        // eslint-disable-next-line no-console
+        console.log('1st inviteInfo retry', inviteInfo);
+        const deck = getDeck();
+        const shuffled = shuffle(deck);
+        const players = [
+          { name: socket.nickname, deck: [] },
+          { name: challengerUsername, deck: [] }
+        ];
+
+        dealer(shuffled, players);
+
+        const state = {
+          [challengerUsername + 'Deck']: players[0].deck,
+          [socket.nickname + 'Deck']: players[1].deck,
+          [challengerUsername + 'WinPile']: [],
+          [socket.nickname + 'WinPile']: [],
+          [challengerUsername + 'FaceUp']: null,
+          [socket.nickname + 'FaceUp']: null,
+          [challengerUsername + 'FlipsRemaining']: 0,
+          [socket.nickname + 'FlipsRemaining']: 0,
+          [challengerUsername + 'BattlePile']: [],
+          [socket.nickname + 'BattlePile']: [],
+          battle: { stage: 0 },
+          showBattleModal: false,
+          battlefield: {},
+          faceUpQueue: []
+
+        };
+
+        const JSONstate = JSON.stringify(state);
+
+        const sql = `
+      insert into "games" ("challenger", "opponent", "state", "isActive")
+           values ($1, $2, $3, 'true')
+        returning *;
+    `;
+
+        const params = [challengerId, socket.userId, JSONstate];
+        db.query(sql, params)
+          .then(result => {
+            console.log('2nd inviteInfo retry', inviteInfo);
+            inviteInfo = { challengerUsername, challengerSocketId, challengerId };
+            console.log('3rd inviteInfo retry', inviteInfo);
+
+            socket.to(challengerSocketId).emit('opponent-joined', inviteInfo);
+          })
+          .catch(err => console.error(err));
+      })
+      .catch(err => console.error(err));
+  });
+
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');
   });
@@ -315,7 +398,7 @@ io.on('connection', socket => {
 
 function dealer(shuffled, players) {
   players[0].deck = shuffled.slice(0, 26);
-  players[1].deck = shuffled.slice(26, 53);
+  players[1].deck = shuffled.slice(26, 52);
 }
 
 function getUsernames(roomId) {
@@ -625,4 +708,11 @@ function getDeck() {
     { name: 'zealous-zombie', score: 69, aura: 22, skill: 23, stamina: 24 }
   ];
   return deck;
+}
+
+function getSocketId(username) {
+  for (const key in onlinePlayers) {
+
+    if (onlinePlayers[key] === username) return key;
+  }
 }
