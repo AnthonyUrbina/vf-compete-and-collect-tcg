@@ -110,7 +110,6 @@ export default class CompetitionRoom extends React.Component {
     if (clientFaceUp) {
       let counter = 0;
       const stack = clientFaceUp.map(card => {
-        // const { rank, suit } = card;
         const { name } = card;
         const src = `images/cards/${name}.jpg`;
         const className = 'flipped-card';
@@ -146,7 +145,6 @@ export default class CompetitionRoom extends React.Component {
     if (opponentFaceUp) {
       let counter = 0;
       const stack = opponentFaceUp.map(card => {
-        // const { rank, suit } = card;
         const { name } = card;
         const src = `images/cards/${name}.jpg`;
         const className = 'flipped-card';
@@ -383,7 +381,6 @@ export default class CompetitionRoom extends React.Component {
     } else {
       let counter = 1;
       const pile = clientBattlePile.map(card => {
-        // const { rank, suit } = card;
         const { name } = card;
         const src = `images/cards/${name}.jpg`;
         const zIndex = counter;
@@ -410,7 +407,6 @@ export default class CompetitionRoom extends React.Component {
     } else {
       let counter = 1;
       const pile = opponentBattlePile.map(card => {
-        // const { rank, suit } = card;
         const { name } = card;
         const src = `images/cards/${name}.jpg`;
         const zIndex = counter;
