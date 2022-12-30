@@ -13,15 +13,14 @@ const shuffle = require('lodash.shuffle');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-
 const io = new Server(server);
-
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
+
 if (process.env.NODE_ENV === 'development') {
   app.use(require('./dev-middleware')(publicPath));
 }

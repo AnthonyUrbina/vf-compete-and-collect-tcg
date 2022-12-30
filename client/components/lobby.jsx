@@ -1,5 +1,6 @@
 import React from 'react';
 import { io } from 'socket.io-client';
+import AppContext from '../lib/app-context';
 
 export default class Lobby extends React.Component {
   constructor(props) {
@@ -53,6 +54,9 @@ export default class Lobby extends React.Component {
 
     this.socket.on('opponent-joined', inviteInfo => {
       const { roomId } = inviteInfo;
+      const { liftOpponent } = this.context;
+      const opponent = this.state.isSendingChallengeTo;
+      liftOpponent(opponent);
       this.setState({ challengerModalisActive: false });
       window.location.hash = roomId;
     });
@@ -112,6 +116,9 @@ export default class Lobby extends React.Component {
     }
 
     if (event.target.matches('.accept-button')) {
+      const { liftOpponent } = this.context;
+      const opponent = this.state.isReceivingChallengeFrom;
+      liftOpponent(opponent);
       this.socket.emit('invite-accepted', inviteInfo);
       this.setState({ opponentModalisActive: false });
       window.location.hash = roomId;
@@ -238,3 +245,5 @@ export default class Lobby extends React.Component {
     );
   }
 }
+
+Lobby.contextType = AppContext;

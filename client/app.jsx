@@ -12,10 +12,12 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       user: null,
-      route: parseRoute(window.location.hash)
+      route: parseRoute(window.location.hash),
+      opponent: null
     };
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
+    this.liftOpponent = this.liftOpponent.bind(this);
   }
 
   componentDidMount() {
@@ -79,11 +81,16 @@ export default class App extends React.Component {
     }
   }
 
+  liftOpponent(opponent) {
+    this.setState({ opponent });
+  }
+
   render() {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
     const handleSignOut = this.handleSignOut;
-    const context = { handleSignIn, handleSignOut, user, route };
+    const liftOpponent = this.liftOpponent;
+    const context = { handleSignIn, handleSignOut, liftOpponent, user, route };
     return (
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>

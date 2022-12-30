@@ -5,7 +5,10 @@ import parseRoute from '../lib/parse-route';
 export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { fetchingData: null };
+    this.state = {
+      fetchingData: null,
+      error: null
+    };
     this.flipCard = this.flipCard.bind(this);
     this.battleModal = React.createRef();
   }
@@ -32,10 +35,9 @@ export default class CompetitionRoom extends React.Component {
           state.fetchingData = false;
           this.setState(state);
         }
-
       })
       .catch(err => {
-        console.error(err);
+        console.error(err.message);
         if (opponent !== 'undefined') {
           this.socket.emit('invite-accepted-retry', opponent);
 
@@ -53,9 +55,10 @@ export default class CompetitionRoom extends React.Component {
               state.gameId = gameId;
               state.fetchingData = false;
               this.setState(state);
-            });
+              window.location.reload();
+            })
+            .catch(err => console.error(err));
         }
-        window.location.reload();
       });
 
     if (user) {
@@ -166,8 +169,7 @@ export default class CompetitionRoom extends React.Component {
 
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
-      })
-      ;
+      });
       return stack;
     }
 
@@ -234,9 +236,7 @@ export default class CompetitionRoom extends React.Component {
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
     const opponentWinPile = this.state[opponent + 'WinPile'];
-    if (!opponentWinPile) {
-      return;
-    }
+    if (!opponentWinPile) return;
     if (opponentWinPile.length !== 0) {
       const lastCardScore = opponentWinPile[opponentWinPile.length - 1].name;
       const secondToLastCardScore = opponentWinPile[opponentWinPile.length - 2].name;
@@ -254,9 +254,7 @@ export default class CompetitionRoom extends React.Component {
   showClientWinningCards() {
     const client = this.props.user.username;
     const clientWinPile = this.state[client + 'WinPile'];
-    if (!clientWinPile) {
-      return;
-    }
+    if (!clientWinPile) return;
     if (clientWinPile.length !== 0) {
       const lastCardScore = clientWinPile[clientWinPile.length - 1].name;
       const secondToLastCardScore = clientWinPile[clientWinPile.length - 2].name;
@@ -275,9 +273,7 @@ export default class CompetitionRoom extends React.Component {
     const opponent = this.getOpponentUsername();
     const opponentDeck = this.state[opponent + 'Deck'];
     if (opponentDeck) {
-      if (!opponentDeck.length) {
-        return;
-      }
+      if (!opponentDeck.length) return;
     }
     return (
       <div className='player-deck match-deck'>
@@ -294,9 +290,7 @@ export default class CompetitionRoom extends React.Component {
     const client = this.props.user.username;
     const clientDeck = this.state[client + 'Deck'];
     if (clientDeck) {
-      if (!clientDeck.length) {
-        return;
-      }
+      if (!clientDeck.length) return;
     }
     return (
       <button onClick={this.flipCard} className='player2-button'>
@@ -311,9 +305,7 @@ export default class CompetitionRoom extends React.Component {
 
   pickWinnerText() {
     const { loser } = this.state;
-    if (!loser) {
-      return;
-    }
+    if (!loser) return;
     const opponent = this.getOpponentUsername();
     const client = this.props.user.username;
     return client === loser ? opponent : client;
@@ -321,11 +313,11 @@ export default class CompetitionRoom extends React.Component {
 
   pickWinnerAvatar() {
     const { loser } = this.state;
-    if (!loser) {
-      return;
-    }
+    if (!loser) return;
     const client = this.props.user.username;
-    return client === loser ? 'images/avatars/notorious-ninja.png' : 'images/avatars/competitive-clown.png';
+    return client === loser
+      ? 'images/avatars/notorious-ninja.png'
+      : 'images/avatars/competitive-clown.png';
   }
 
   showModal() {
@@ -436,6 +428,13 @@ export default class CompetitionRoom extends React.Component {
     if (!opponentDeck) return 'loading...';
     return opponentDeck.length + opponentWinPile.length;
   }
+
+  // showErrorModal() {
+  //   const {error} = this.state
+  //   if (error) {
+
+  //   }
+  // }
 
   render() {
     return (
