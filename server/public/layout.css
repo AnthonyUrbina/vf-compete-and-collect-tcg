@@ -104,8 +104,6 @@ li {
 }
 
 .player-avatar-img-size {
-  /* height: 5rem;
-  width: 5.25rem; */
   height: 4rem;
   width: 4rem;
 }
@@ -168,7 +166,7 @@ li {
 }
 
 .modal-player-text {
-  margin: 0.25rem;
+  margin: 0;
 }
 
 .overlay {
@@ -307,7 +305,7 @@ li {
 
 .winner-modal {
   text-align: center;
-  height: 190px;
+  height: 205px;
   width: 300px;
   position: fixed;
   top: 47%;
@@ -553,12 +551,12 @@ li {
   z-index: 1;
 }
 
-/* .opponent-flipped {
-  transform: rotate(180deg);
-} */
-
 .player-names-size {
   margin: 1.5rem 0;
+}
+
+.score-text {
+  margin: 0;
 }
 
 @keyframes lds-spinner {

@@ -60,7 +60,7 @@ export default class Navbar extends React.Component {
 
   chooseTitle() {
     const { path } = this.context.route;
-    return path.includes('-') ? 'WAR' : 'LOBBY';
+    return path.includes('-') ? 'War' : 'Lobby';
   }
 
   showOverlay() {
