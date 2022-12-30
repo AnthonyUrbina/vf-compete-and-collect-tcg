@@ -8,8 +8,6 @@ export default class CompetitionRoom extends React.Component {
     this.state = { fetchingData: null };
     this.flipCard = this.flipCard.bind(this);
     this.battleModal = React.createRef();
-    this.clientLastFlipped = React.createRef();
-    this.opponentLastFlipped = React.createRef();
   }
 
   componentDidMount() {

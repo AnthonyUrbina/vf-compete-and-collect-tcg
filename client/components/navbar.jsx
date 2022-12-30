@@ -63,6 +63,11 @@ export default class Navbar extends React.Component {
     return path.includes('-') ? 'WAR' : 'LOBBY';
   }
 
+  showOverlay() {
+    const { returnHomeModalShowing, signOutModalShowing } = this.state;
+    return returnHomeModalShowing || signOutModalShowing ? 'overlay' : 'overlay hidden';
+  }
+
   render() {
     return (
       <>
@@ -78,6 +83,7 @@ export default class Navbar extends React.Component {
           </div>
         </div>
         {this.showModal()}
+        <div className={this.showOverlay()} />
       </>
     );
   }

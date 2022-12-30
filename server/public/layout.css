@@ -178,6 +178,7 @@ li {
   bottom: 0;
   right: 0;
   pointer-events: none;
+  z-index: 98;
 }
 
 .modal-box {
@@ -188,8 +189,8 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
   border-radius: 0.25rem;
+  z-index: 99;
 }
 
 .modal-img-spacing {
@@ -213,7 +214,7 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -239,7 +240,7 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -312,7 +313,7 @@ li {
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -481,7 +482,7 @@ li {
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -514,8 +515,8 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
   border-radius: 0.25rem;
+  z-index: 98;
 }
 
 .battle-modal > h1 {
