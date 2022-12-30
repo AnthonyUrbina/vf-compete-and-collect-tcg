@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 
@@ -105,14 +104,12 @@ export default class Lobby extends React.Component {
     }
 
     if (event.target.matches('.challenger-modal-button')) {
-      console.log('ayooo');
       const opponentSocketId = this.getOpponentSocketId(isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     }
 
     if (event.target.matches('.accept-button')) {
-      console.log('invite-accepted client inviteInfo:', inviteInfo);
       this.socket.emit('invite-accepted', inviteInfo);
       this.setState({ opponentModalisActive: false });
       window.location.hash = roomId;

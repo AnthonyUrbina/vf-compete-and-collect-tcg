@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -30,7 +29,6 @@ export default class CompetitionRoom extends React.Component {
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];
-        console.log('result[0]', result[0]);
         if (state) {
           state.gameId = gameId;
           state.fetchingData = false;
@@ -39,15 +37,13 @@ export default class CompetitionRoom extends React.Component {
 
       })
       .catch(err => {
-        console.error('err message', err.toString());
-        if (opponent && opponent !== 'undefined') {
-          console.log('oppponent retry from ' + user.username, opponent);
+        console.error(err);
+        if (opponent !== 'undefined') {
           this.socket.emit('invite-accepted-retry', opponent);
 
           const headers = {
             'X-Access-Token': token
           };
-          console.log('opponent:', opponent);
           fetch(`/api/games/retrieve/${opponent}`,
             {
               method: 'GET',
@@ -55,7 +51,6 @@ export default class CompetitionRoom extends React.Component {
             })
             .then(res => res.json())
             .then(result => {
-              console.log('result:', result);
               const { state, gameId } = result[0];
               state.gameId = gameId;
               state.fetchingData = false;
@@ -64,14 +59,13 @@ export default class CompetitionRoom extends React.Component {
         }
         window.location.reload();
       });
+
     if (user) {
       this.socket = io('/', {
         auth: { token },
         query: { roomId }
       });
     }
-
-    this.socket.on('error', err => console.log(err));
 
     this.socket.on('flip-card', state => {
       this.setState(state);

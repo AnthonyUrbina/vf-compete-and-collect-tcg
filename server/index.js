@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -126,12 +125,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
         const playerWinPile = state[player + 'WinPile'];
         const playerFlipsRemaining = state[player + 'FlipsRemaining'];
         const loser = player;
-        // console.log('player', player);
-        // console.log('flips remaining', playerFlipsRemaining);
-        // console.log('battlefield', battlefield);
-        // console.log('stage', stage);
-        // console.log('playerWinPile', playerWinPile);
-        // console.log('playerDeck', playerDeck);
+
         if (!playerDeck.length && playerWinPile.length) {
           outOfCards(state, playerDeck, playerWinPile, player);
         } else if (!playerDeck.length && !playerWinPile.length && playerFlipsRemaining && !Object.keys(battlefield).length) {
@@ -152,7 +146,6 @@ app.use(authorizationMiddleware);
 
 app.get('/api/games/retrieve/:opponent', (req, res, next) => {
   const { opponent } = req.params;
-  console.log('opponent get request', opponent);
   const token = req.headers['x-access-token'];
 
   const payload = jwt.verify(token, process.env.TOKEN_SECRET);
@@ -275,9 +268,7 @@ io.on('connection', socket => {
   socket.on('connect_error', err => console.error(err));
 
   socket.on('invite-accepted', inviteInfo => {
-    console.log('invite accepted being called.. should it be?');
     const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
-    console.log('invite-accepted server inviteInfo:', inviteInfo);
     const deck = getDeck();
     const shuffled = shuffle(deck);
     const players = [
@@ -322,7 +313,6 @@ io.on('connection', socket => {
   });
 
   socket.on('invite-accepted-retry', opponent => {
-    console.log('opponent retry', opponent);
     const challengerUsername = opponent;
     const challengerSocketId = getSocketId(challengerUsername);
     let challengerId;
@@ -341,10 +331,7 @@ io.on('connection', socket => {
         }
         challengerId = result.rows[0].userId;
         const roomId = [challengerUsername, socket.nickname].sort().join('-');
-
-        let inviteInfo = { challengerUsername, challengerSocketId, challengerId, roomId };
-        // eslint-disable-next-line no-console
-        console.log('1st inviteInfo retry', inviteInfo);
+        const inviteInfo = { challengerUsername, challengerSocketId, challengerId, roomId };
         const deck = getDeck();
         const shuffled = shuffle(deck);
         const players = [
@@ -383,10 +370,6 @@ io.on('connection', socket => {
         const params = [challengerId, socket.userId, JSONstate];
         db.query(sql, params)
           .then(result => {
-            console.log('2nd inviteInfo retry', inviteInfo);
-            inviteInfo = { challengerUsername, challengerSocketId, challengerId, roomId };
-            console.log('3rd inviteInfo retry', inviteInfo);
-
             socket.to(challengerSocketId).emit('opponent-joined', inviteInfo);
           })
           .catch(err => console.error(err));
