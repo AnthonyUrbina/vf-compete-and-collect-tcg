@@ -6,6 +6,7 @@ import Home from './pages/home';
 import jwtDecode from 'jwt-decode';
 import Game from './pages/game';
 import Navbar from './components/navbar';
+import NotFound from './pages/not-found';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -45,7 +46,9 @@ export default class App extends React.Component {
 
   choosePage() {
     const { path } = this.state.route;
-    const { user } = this.state;
+    const { user, opponent } = this.state;
+    const client = user && user.username;
+    const expectedPath = [client, opponent].sort().join('-');
     if (path === '') {
       return (
         <>
@@ -55,7 +58,7 @@ export default class App extends React.Component {
       );
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
-    } else if (user) {
+    } else if (path === expectedPath) {
       return (
         <>
           <Navbar />
@@ -63,6 +66,7 @@ export default class App extends React.Component {
         </>
       );
     }
+    return <NotFound/>;
   }
 
   chooseContainerColor() {
