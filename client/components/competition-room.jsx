@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -29,18 +30,39 @@ export default class CompetitionRoom extends React.Component {
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];
-        state.gameId = gameId;
-        state.fetchingData = false;
-        this.setState(state);
+        console.log('result[0]', result[0]);
+        if (state) {
+          state.gameId = gameId;
+          state.fetchingData = false;
+          this.setState(state);
+        }
+
       })
       .catch(err => {
         console.error('err message', err.toString());
-        if (err.toString().includes("The operation couldn't be completed. Socket.io is not connected")) {
-          // eslint-disable-next-line no-console
+        if (opponent && opponent !== 'undefined') {
           console.log('oppponent retry from ' + user.username, opponent);
           this.socket.emit('invite-accepted-retry', opponent);
-        }
 
+          const headers = {
+            'X-Access-Token': token
+          };
+          console.log('opponent:', opponent);
+          fetch(`/api/games/retrieve/${opponent}`,
+            {
+              method: 'GET',
+              headers
+            })
+            .then(res => res.json())
+            .then(result => {
+              console.log('result:', result);
+              const { state, gameId } = result[0];
+              state.gameId = gameId;
+              state.fetchingData = false;
+              this.setState(state);
+            });
+        }
+        window.location.reload();
       });
     if (user) {
       this.socket = io('/', {
@@ -48,6 +70,9 @@ export default class CompetitionRoom extends React.Component {
         query: { roomId }
       });
     }
+
+    this.socket.on('error', err => console.log(err));
+
     this.socket.on('flip-card', state => {
       this.setState(state);
     });

@@ -152,6 +152,7 @@ app.use(authorizationMiddleware);
 
 app.get('/api/games/retrieve/:opponent', (req, res, next) => {
   const { opponent } = req.params;
+  console.log('opponent get request', opponent);
   const token = req.headers['x-access-token'];
 
   const payload = jwt.verify(token, process.env.TOKEN_SECRET);
@@ -271,7 +272,10 @@ io.on('connection', socket => {
     socket.to(opponentSocketId).emit('challenger-canceled', `invite from ${challengerUsername} has been canceled`);
   });
 
+  socket.on('connect_error', err => console.error(err));
+
   socket.on('invite-accepted', inviteInfo => {
+    console.log('invite accepted being called.. should it be?');
     const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
     console.log('invite-accepted server inviteInfo:', inviteInfo);
     const deck = getDeck();
@@ -336,7 +340,9 @@ io.on('connection', socket => {
           throw new ClientError(400, 'this user does not exist');
         }
         challengerId = result.rows[0].userId;
-        let inviteInfo = { challengerUsername, challengerSocketId, challengerId };
+        const roomId = [challengerUsername, socket.nickname].sort().join('-');
+
+        let inviteInfo = { challengerUsername, challengerSocketId, challengerId, roomId };
         // eslint-disable-next-line no-console
         console.log('1st inviteInfo retry', inviteInfo);
         const deck = getDeck();
@@ -378,7 +384,7 @@ io.on('connection', socket => {
         db.query(sql, params)
           .then(result => {
             console.log('2nd inviteInfo retry', inviteInfo);
-            inviteInfo = { challengerUsername, challengerSocketId, challengerId };
+            inviteInfo = { challengerUsername, challengerSocketId, challengerId, roomId };
             console.log('3rd inviteInfo retry', inviteInfo);
 
             socket.to(challengerSocketId).emit('opponent-joined', inviteInfo);
