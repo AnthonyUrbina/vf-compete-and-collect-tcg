@@ -47,15 +47,16 @@ export default class Lobby extends React.Component {
         inviteInfo
       });
     });
-
     this.socket.on('opponent-declined', () => {
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     });
+
     this.socket.on('opponent-joined', inviteInfo => {
       const { roomId } = inviteInfo;
       this.setState({ challengerModalisActive: false });
       window.location.hash = roomId;
     });
+
     this.socket.on('challenger-canceled', () => {
       this.setState({ opponentModalisActive: false, isReceivingChallengeFrom: null, roomId: null });
     });
@@ -92,6 +93,7 @@ export default class Lobby extends React.Component {
         this.setState({ onlinePlayersModalisActive: false });
       }
     }
+
     if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
       const opponentUsername = event.target.dataset.username;
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
@@ -129,7 +131,6 @@ export default class Lobby extends React.Component {
 
   chooseOverlayClass() {
     const { onlinePlayersModalisActive, challengerModalisActive, opponentModalisActive } = this.state;
-
     const className = onlinePlayersModalisActive || challengerModalisActive || opponentModalisActive
       ? 'overlay'
       : 'hidden';
