@@ -13,16 +13,8 @@ const shuffle = require('lodash.shuffle');
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-const { instrument } = require('@socket.io/admin-ui');
 
-const io = new Server(server, {
-  cors: {
-    origin: ['http://localhost:3000', 'https://admin.socket.io'],
-    credentials: true
-  }
-});
-
-instrument(io, { auth: false });
+const io = new Server(server);
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -381,9 +373,6 @@ io.on('connection', socket => {
     socket.to(roomId).emit('opponent-declined');
   });
 });
-
-// const score = ['ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'jack', 'queen', 'king'];
-// const suit = ['clubs', 'diamonds', 'hearts', 'spades'];
 
 function dealer(shuffled, players) {
   players[0].deck = shuffled.slice(0, 26);
