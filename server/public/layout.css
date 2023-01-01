@@ -183,7 +183,12 @@ li {
   text-align: center;
   width: 356px;
   height: 468px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 99;
+  border-radius: 0.25rem;
 }
 
 .modal-img-spacing {
@@ -552,6 +557,23 @@ li {
 
 .score-text {
   margin: 0;
+}
+
+.not-found-text > h3,
+.not-found-text > h1 {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 0.75rem;
+}
+
+.not-found-text {
+  text-align: center;
+  align-self: center;
+  height: calc(100vh - 49px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes lds-spinner {

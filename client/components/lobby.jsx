@@ -9,6 +9,7 @@ export default class Lobby extends React.Component {
       onlinePlayers: null,
       onlinePlayersModalisActive: false,
       challengerModalisActive: false,
+      declinedModalisActive: false,
       opponentModalisActive: false,
       isSendingChallengeTo: null,
       isReceivingChallengeFrom: null,
@@ -49,7 +50,7 @@ export default class Lobby extends React.Component {
       });
     });
     this.socket.on('opponent-declined', () => {
-      this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
+      this.setState({ challengerModalisActive: false, declinedModalisActive: true });
     });
 
     this.socket.on('opponent-joined', inviteInfo => {
@@ -109,7 +110,7 @@ export default class Lobby extends React.Component {
       });
     }
 
-    if (event.target.matches('.challenger-modal-button')) {
+    if (event.target.matches('.cancel-button')) {
       const opponentSocketId = this.getOpponentSocketId(isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
@@ -125,6 +126,8 @@ export default class Lobby extends React.Component {
     } else if (event.target.matches('.decline-button')) {
       this.socket.emit('invite-declined', roomId);
       this.setState({ roomId: null, isReceivingChallengeFrom: null, opponentModalisActive: false });
+    } else if (event.target.matches('.close-button')) {
+      this.setState({ declinedModalisActive: false, isSendingChallengeTo: null });
     }
   }
 
@@ -137,8 +140,8 @@ export default class Lobby extends React.Component {
   }
 
   chooseOverlayClass() {
-    const { onlinePlayersModalisActive, challengerModalisActive, opponentModalisActive } = this.state;
-    const className = onlinePlayersModalisActive || challengerModalisActive || opponentModalisActive
+    const { onlinePlayersModalisActive, challengerModalisActive, opponentModalisActive, declinedModalisActive } = this.state;
+    const className = onlinePlayersModalisActive || challengerModalisActive || opponentModalisActive || declinedModalisActive
       ? 'overlay'
       : 'hidden';
     return className;
@@ -152,7 +155,10 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengerModalClass() {
-    const { challengerModalisActive, opponentModalisActive } = this.state;
+    const { challengerModalisActive, opponentModalisActive, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return 'challenger-modal-box';
+    }
     const className = challengerModalisActive
       ? 'challenger-modal-box'
       : opponentModalisActive
@@ -162,7 +168,10 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengeModalTitle() {
-    const { challengerModalisActive, opponentModalisActive } = this.state;
+    const { challengerModalisActive, opponentModalisActive, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return 'Challenge Declined';
+    }
     const modalTitle = challengerModalisActive
       ? 'Challenge Sent'
       : opponentModalisActive
@@ -172,7 +181,12 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengeModalText() {
-    const { challengerModalisActive, isSendingChallengeTo, isReceivingChallengeFrom } = this.state;
+    const { challengerModalisActive, isSendingChallengeTo, isReceivingChallengeFrom, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return <p className='challenger-modal-text'>Sorry, {isSendingChallengeTo} declined your challenge.<br />
+        Probably scared of you.
+      </p >;
+    }
     const modalText = challengerModalisActive
       ? <p className='challenger-modal-text'>You have challenged {isSendingChallengeTo} to a game.<br />
         Waiting for their response...
@@ -182,9 +196,12 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengeModalButtons() {
-    const { challengerModalisActive } = this.state;
+    const { challengerModalisActive, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return <button onClick={this.handleClick} className='challenger-modal-button close-button'>Close</button>;
+    }
     const modalButtons = challengerModalisActive
-      ? <button onClick={this.handleClick} className='challenger-modal-button'>Cancel</button>
+      ? <button onClick={this.handleClick} className='challenger-modal-button cancel-button'>Cancel</button>
       : <div className='opponent-modal-button-box'>
         <button onClick={this.handleClick} className='challenger-modal-button accept-button'>Accept</button>
         <button onClick={this.handleClick} className='challenger-modal-button decline-button'>Decline</button>
@@ -226,7 +243,7 @@ export default class Lobby extends React.Component {
           <h3>Online Players</h3>
           <p className='modal-text'>
             These are the players currently online. Click<br />
-            on them to challenge them to a game of war!
+            on them to challenge them to a game of War!
           </p>
           <ul className='center'>
             {this.showOnlinePlayers()}

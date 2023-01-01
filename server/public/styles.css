@@ -207,20 +207,7 @@ h3 {
   color: white;
 }
 
-.not-found-text > h1,
-h3 {
+.not-found-text > h3,
+.not-found-text > h1 {
   color: white;
-  margin: 0;
-  padding: 0;
-  padding-bottom: 0.75rem;
-}
-
-.not-found-text {
-  text-align: center;
-  align-self: center;
-  height: calc(100vh - 49px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
