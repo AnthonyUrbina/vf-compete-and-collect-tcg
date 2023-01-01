@@ -183,11 +183,6 @@ li {
   text-align: center;
   width: 356px;
   height: 468px;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 0.25rem;
   z-index: 99;
 }
 

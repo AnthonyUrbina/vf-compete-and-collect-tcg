@@ -66,7 +66,10 @@ export default class App extends React.Component {
         </>
       );
     }
-    return <NotFound/>;
+    return <>
+      <Navbar/>
+      <NotFound />
+    </>;
   }
 
   chooseContainerColor() {
