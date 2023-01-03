@@ -260,14 +260,7 @@ io.on('connection', socket => {
 
   socket.on('invite-accepted', inviteInfo => {
     const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
-    const deck = getDeck();
-    const shuffled = shuffle(deck);
-    const players = [
-      { name: socket.nickname, deck: [] },
-      { name: challengerUsername, deck: [] }
-    ];
-
-    dealer(shuffled, players);
+    const players = createGame(challengerUsername, socket.nickname);
 
     const state = {
       [challengerUsername + 'Deck']: players[0].deck,
@@ -323,14 +316,7 @@ io.on('connection', socket => {
         challengerId = result.rows[0].userId;
         const roomId = [challengerUsername, socket.nickname].sort().join('-');
         const inviteInfo = { challengerUsername, challengerSocketId, challengerId, roomId };
-        const deck = getDeck();
-        const shuffled = shuffle(deck);
-        const players = [
-          { name: socket.nickname, deck: [] },
-          { name: challengerUsername, deck: [] }
-        ];
-
-        dealer(shuffled, players);
+        const players = createGame(challengerUsername, socket.nickname);
 
         const state = {
           [challengerUsername + 'Deck']: players[0].deck,
@@ -555,10 +541,6 @@ function outOfCards(state, playerDeck, playerWinPile, player, loser) {
   }
 }
 
-server.listen(process.env.PORT, () => {
-  process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
-});
-
 function getDeck() {
   const deck = [
     { name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
@@ -693,3 +675,18 @@ function getSocketId(username) {
     if (onlinePlayers[key] === username) return key;
   }
 }
+
+function createGame(opponent, challenger) {
+  const deck = getDeck();
+  const shuffled = shuffle(deck);
+  const players = [
+    { name: opponent, deck: [] },
+    { name: challenger, deck: [] }
+  ];
+  dealer(shuffled, players);
+  return players;
+}
+
+server.listen(process.env.PORT, () => {
+  process.stdout.write(`\n\napp listening on port ${process.env.PORT}\n\n`);
+});

@@ -17,7 +17,6 @@ export default class App extends React.Component {
     };
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
-    this.liftOpponent = this.liftOpponent.bind(this);
   }
 
   componentDidMount() {
