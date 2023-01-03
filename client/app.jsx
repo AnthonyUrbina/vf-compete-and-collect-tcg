@@ -13,8 +13,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       user: null,
-      route: parseRoute(window.location.hash),
-      routes: null
+      route: parseRoute(window.location.hash)
     };
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
@@ -40,6 +39,7 @@ export default class App extends React.Component {
 
   handleSignOut() {
     window.localStorage.removeItem('war-jwt');
+    window.localStorage.removeItem('war-game-routes');
     window.location.hash = '';
     this.setState({ user: null });
   }
@@ -101,16 +101,11 @@ export default class App extends React.Component {
     }
   }
 
-  liftOpponent(opponent) {
-    this.setState({ opponent });
-  }
-
   render() {
     const { user, route } = this.state;
     const handleSignIn = this.handleSignIn;
     const handleSignOut = this.handleSignOut;
-    const liftOpponent = this.liftOpponent;
-    const context = { handleSignIn, handleSignOut, liftOpponent, user, route };
+    const context = { handleSignIn, handleSignOut, user, route };
     return (
       <AppContext.Provider value={context}>
         <div className={this.chooseBackgroundColor()}>

@@ -55,9 +55,6 @@ export default class Lobby extends React.Component {
 
     this.socket.on('opponent-joined', inviteInfo => {
       const { roomId } = inviteInfo;
-      const { liftOpponent } = this.context;
-      const opponent = this.state.isSendingChallengeTo;
-      liftOpponent(opponent);
       let routes = window.localStorage.getItem('war-game-routes');
       if (routes) {
         routes = JSON.parse(routes);
@@ -127,9 +124,6 @@ export default class Lobby extends React.Component {
     }
 
     if (event.target.matches('.accept-button')) {
-      const { liftOpponent } = this.context;
-      const opponent = this.state.isReceivingChallengeFrom;
-      liftOpponent(opponent);
       let routes = window.localStorage.getItem('war-game-routes');
       if (routes) {
         routes = JSON.parse(routes);
