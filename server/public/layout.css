@@ -67,12 +67,13 @@ li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100vh - 66.94px);
+  height: calc(100vh - 44.8px);
   flex-basis: 100%;
 }
 
 .home-header-color {
   padding-top: 0;
+  margin-top: 0.75rem;
 }
 
 .form-button {
@@ -103,13 +104,8 @@ li {
 }
 
 .player-avatar-img-size {
-  height: 55px;
-  width: 64px;
-  margin-right: 1rem;
-}
-
-.player-names-size {
-  margin-left: 1rem;
+  height: 4rem;
+  width: 4rem;
 }
 
 .player-deck {
@@ -129,14 +125,14 @@ li {
 
 .deck-2 {
   position: absolute;
-  bottom: 0.35rem;
+  bottom: 0.4rem;
   right: 0.2rem;
 }
 
 .deck-3 {
   position: absolute;
   right: 0.4rem;
-  bottom: 0.45rem;
+  bottom: 0.5rem;
 }
 
 .deck-4 {
@@ -170,7 +166,7 @@ li {
 }
 
 .modal-player-text {
-  margin: 0.25rem;
+  margin: 0;
 }
 
 .overlay {
@@ -180,6 +176,7 @@ li {
   bottom: 0;
   right: 0;
   pointer-events: none;
+  z-index: 98;
 }
 
 .modal-box {
@@ -190,7 +187,7 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -215,7 +212,7 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -241,7 +238,7 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -308,13 +305,13 @@ li {
 
 .winner-modal {
   text-align: center;
-  width: 375px;
-  height: 193px;
+  height: 205px;
+  width: 300px;
   position: fixed;
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -330,12 +327,12 @@ li {
 .trophy {
   width: 44px;
   height: 36px;
-  margin-top: 0.75rem;
+  margin-top: 1.75rem;
 }
 
 .winner-avatar {
-  width: 78px;
-  height: 65.24px;
+  height: 5.5rem;
+  width: 5.75rem;
   margin-left: 0.75rem;
   margin-right: 0.75rem;
 }
@@ -483,7 +480,7 @@ li {
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 99;
   border-radius: 0.25rem;
 }
 
@@ -516,8 +513,8 @@ li {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
   border-radius: 0.25rem;
+  z-index: 98;
 }
 
 .battle-modal > h1 {
@@ -554,6 +551,31 @@ li {
   z-index: 1;
 }
 
+.player-names-size {
+  margin: 1.5rem 0;
+}
+
+.score-text {
+  margin: 0;
+}
+
+.not-found-text > h3,
+.not-found-text > h1 {
+  margin: 0;
+  padding: 0;
+  padding-bottom: 0.75rem;
+}
+
+.not-found-text {
+  text-align: center;
+  align-self: center;
+  height: calc(100vh - 49px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 @keyframes lds-spinner {
   0% {
     opacity: 1;
@@ -571,7 +593,6 @@ li {
 
   .center-column {
     flex-direction: row;
-    align-items: flex-start;
   }
 
   .center-column.modal {

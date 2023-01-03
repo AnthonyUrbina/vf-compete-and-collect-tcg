@@ -1,5 +1,6 @@
 import React from 'react';
 import { io } from 'socket.io-client';
+import AppContext from '../lib/app-context';
 
 export default class Lobby extends React.Component {
   constructor(props) {
@@ -8,6 +9,7 @@ export default class Lobby extends React.Component {
       onlinePlayers: null,
       onlinePlayersModalisActive: false,
       challengerModalisActive: false,
+      declinedModalisActive: false,
       opponentModalisActive: false,
       isSendingChallengeTo: null,
       isReceivingChallengeFrom: null,
@@ -47,15 +49,26 @@ export default class Lobby extends React.Component {
         inviteInfo
       });
     });
-
     this.socket.on('opponent-declined', () => {
-      this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
+      this.setState({ challengerModalisActive: false, declinedModalisActive: true });
     });
+
     this.socket.on('opponent-joined', inviteInfo => {
       const { roomId } = inviteInfo;
+      let routes = window.localStorage.getItem('war-game-routes');
+      if (routes) {
+        routes = JSON.parse(routes);
+        routes.push(roomId);
+        routes = JSON.stringify(routes);
+        window.localStorage.setItem('war-game-routes', routes);
+      } else {
+        const jsonRoomId = JSON.stringify([roomId]);
+        window.localStorage.setItem('war-game-routes', jsonRoomId);
+      }
       this.setState({ challengerModalisActive: false });
       window.location.hash = roomId;
     });
+
     this.socket.on('challenger-canceled', () => {
       this.setState({ opponentModalisActive: false, isReceivingChallengeFrom: null, roomId: null });
     });
@@ -75,7 +88,7 @@ export default class Lobby extends React.Component {
     const playerAppearance = usernames.map(username =>
       <li key={username} className='flex-column-center'>
         <button onClick={this.handleClick} className='war-multiplayer-modal-li-button'>
-          <img data-username={username} className='player-avatar-img-size modal-img-spacing' src="images/player1.png" alt="" />
+          <img data-username={username} className='player-avatar-img-size modal-img-spacing' src="images/avatars/notorious-ninja.png" alt="" />
           <p data-username={username} className='modal-player-text'>{username}</p>
         </button>
       </li>);
@@ -92,6 +105,7 @@ export default class Lobby extends React.Component {
         this.setState({ onlinePlayersModalisActive: false });
       }
     }
+
     if (event.currentTarget.matches('.war-multiplayer-modal-li-button')) {
       const opponentUsername = event.target.dataset.username;
       const opponentSocketId = this.getOpponentSocketId(opponentUsername);
@@ -103,19 +117,31 @@ export default class Lobby extends React.Component {
       });
     }
 
-    if (event.target.matches('.challenger-modal-button')) {
+    if (event.target.matches('.cancel-button')) {
       const opponentSocketId = this.getOpponentSocketId(isSendingChallengeTo);
       this.socket.emit('invite-canceled', opponentSocketId);
       this.setState({ isSendingChallengeTo: null, challengerModalisActive: false });
     }
 
     if (event.target.matches('.accept-button')) {
+      let routes = window.localStorage.getItem('war-game-routes');
+      if (routes) {
+        routes = JSON.parse(routes);
+        routes.push(roomId);
+        routes = JSON.stringify(routes);
+        window.localStorage.setItem('war-game-routes', routes);
+      } else {
+        const jsonRoomId = JSON.stringify([roomId]);
+        window.localStorage.setItem('war-game-routes', jsonRoomId);
+      }
       this.socket.emit('invite-accepted', inviteInfo);
       this.setState({ opponentModalisActive: false });
       window.location.hash = roomId;
     } else if (event.target.matches('.decline-button')) {
       this.socket.emit('invite-declined', roomId);
       this.setState({ roomId: null, isReceivingChallengeFrom: null, opponentModalisActive: false });
+    } else if (event.target.matches('.close-button')) {
+      this.setState({ declinedModalisActive: false, isSendingChallengeTo: null });
     }
   }
 
@@ -128,25 +154,25 @@ export default class Lobby extends React.Component {
   }
 
   chooseOverlayClass() {
-    const { onlinePlayersModalisActive, challengerModalisActive, opponentModalisActive } = this.state;
-
-    const className = onlinePlayersModalisActive || challengerModalisActive || opponentModalisActive
+    const { onlinePlayersModalisActive, challengerModalisActive, opponentModalisActive, declinedModalisActive } = this.state;
+    const className = onlinePlayersModalisActive || challengerModalisActive || opponentModalisActive || declinedModalisActive
       ? 'overlay'
       : 'hidden';
     return className;
   }
 
   getOpponentSocketId(opponentUsername) {
-    let socketId = null;
     const { onlinePlayers } = this.state;
     for (const key in onlinePlayers) {
-      socketId = onlinePlayers[key] === opponentUsername && key;
+      if (onlinePlayers[key] === opponentUsername) return key;
     }
-    return socketId;
   }
 
   chooseChallengerModalClass() {
-    const { challengerModalisActive, opponentModalisActive } = this.state;
+    const { challengerModalisActive, opponentModalisActive, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return 'challenger-modal-box';
+    }
     const className = challengerModalisActive
       ? 'challenger-modal-box'
       : opponentModalisActive
@@ -156,18 +182,25 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengeModalTitle() {
-    const { challengerModalisActive, opponentModalisActive } = this.state;
+    const { challengerModalisActive, opponentModalisActive, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return 'Challenge Declined';
+    }
     const modalTitle = challengerModalisActive
       ? 'Challenge Sent'
       : opponentModalisActive
-        ? "You've been Challenged"
+        ? "You've Been Challenged"
         : 'hidden';
     return modalTitle;
   }
 
   chooseChallengeModalText() {
-    const { challengerModalisActive, isSendingChallengeTo, isReceivingChallengeFrom } = this.state;
-
+    const { challengerModalisActive, isSendingChallengeTo, isReceivingChallengeFrom, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return <p className='challenger-modal-text'>Sorry, {isSendingChallengeTo} declined your challenge.<br />
+        Probably scared of you.
+      </p >;
+    }
     const modalText = challengerModalisActive
       ? <p className='challenger-modal-text'>You have challenged {isSendingChallengeTo} to a game.<br />
         Waiting for their response...
@@ -177,9 +210,12 @@ export default class Lobby extends React.Component {
   }
 
   chooseChallengeModalButtons() {
-    const { challengerModalisActive } = this.state;
+    const { challengerModalisActive, declinedModalisActive } = this.state;
+    if (declinedModalisActive) {
+      return <button onClick={this.handleClick} className='challenger-modal-button close-button'>Close</button>;
+    }
     const modalButtons = challengerModalisActive
-      ? <button onClick={this.handleClick} className='challenger-modal-button'>Cancel</button>
+      ? <button onClick={this.handleClick} className='challenger-modal-button cancel-button'>Cancel</button>
       : <div className='opponent-modal-button-box'>
         <button onClick={this.handleClick} className='challenger-modal-button accept-button'>Accept</button>
         <button onClick={this.handleClick} className='challenger-modal-button decline-button'>Decline</button>
@@ -192,18 +228,18 @@ export default class Lobby extends React.Component {
       <>
         <div className='row center'>
           <div className='center-horiz-vert'>
-            <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />
+            <img className='player-avatar-img-size' src='images/avatars/notorious-ninja.png' alt='player1' />
             <p className='player-names-size'>Bill</p>
           </div>
         </div>
         <div className='row center'>
           <div>
             <div className='player-deck'>
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-1' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-2' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-3' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-4' />
-              <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-5' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-1' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-2' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-3' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-4' />
+              <img src='images/cards/face-down.jpg' alt='backofcard' className='deck-cards deck-5' />
             </div>
           </div>
         </div>
@@ -212,7 +248,7 @@ export default class Lobby extends React.Component {
         </div>
         <div className='row center'>
           <div className='center-horiz-vert player-2-stretch'>
-            <img className='player-avatar-img-size' src='images/player2.png' alt='player1' />
+            <img className='player-avatar-img-size' src='images/avatars/competitive-clown.png' alt='player1' />
             <p className='player-names-size'>You</p>
           </div>
         </div>
@@ -221,7 +257,7 @@ export default class Lobby extends React.Component {
           <h3>Online Players</h3>
           <p className='modal-text'>
             These are the players currently online. Click<br />
-            on them to challenge them to a game of war!
+            on them to challenge them to a game of War!
           </p>
           <ul className='center'>
             {this.showOnlinePlayers()}
@@ -231,7 +267,7 @@ export default class Lobby extends React.Component {
           <h3 className='challenger-modal-title'>{this.chooseChallengeModalTitle()}</h3>
           {this.chooseChallengeModalText()}
           <div className='center-column modal'>
-            <img className='player-avatar-img-size challenger-modal-img' src='images/player1.png'/>
+            <img className='player-avatar-img-size challenger-modal-img' src='images/avatars/notorious-ninja.png'/>
             {this.chooseChallengeModalButtons()}
           </div>
         </div>
@@ -240,3 +276,5 @@ export default class Lobby extends React.Component {
     );
   }
 }
+
+Lobby.contextType = AppContext;

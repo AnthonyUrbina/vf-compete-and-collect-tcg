@@ -4,7 +4,7 @@ body {
 }
 
 p {
-  font-family: Inter, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 12px;
 }
 
@@ -22,9 +22,8 @@ form {
 h1 {
   text-align: center;
   color: #00a000;
-  font-family: Slackey, sans-serif;
-  font-size: 64px;
-  text-shadow: 1px 4px 2px rgb(0 0 0 / 25%);
+  font-family: "Open Sans", sans-serif;
+  font-size: 44px;
 }
 
 a {
@@ -153,17 +152,17 @@ h3 {
 }
 
 .winner-modal-text {
-  color: white;
+  color: inherit;
   font-weight: lighter;
 }
 
 .winner-modal-title {
-  color: #ffd700;
+  color: #f00;
   font-size: 48px;
 }
 
 .winner-modal {
-  background-color: #f00;
+  background-color: #fffaf0;
 }
 
 .input-error-message {
@@ -196,4 +195,19 @@ h3 {
 
 .battle-modal h1 {
   animation: text-size 0.5s ease;
+}
+
+.deck-cards,
+.flipped-card {
+  border-radius: 0.25rem;
+}
+
+.score-text {
+  font-size: 0.65rem;
+  color: white;
+}
+
+.not-found-text > h3,
+.not-found-text > h1 {
+  color: white;
 }

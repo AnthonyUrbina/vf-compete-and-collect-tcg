@@ -58,6 +58,16 @@ export default class Navbar extends React.Component {
     return path ? 'fa-solid fa-house' : 'fa-solid fa-house hide-icon';
   }
 
+  chooseTitle() {
+    const { path } = this.context.route;
+    return path.includes('-') ? 'War' : 'Lobby';
+  }
+
+  showOverlay() {
+    const { returnHomeModalShowing, signOutModalShowing } = this.state;
+    return returnHomeModalShowing || signOutModalShowing ? 'overlay' : 'overlay hidden';
+  }
+
   render() {
     return (
       <>
@@ -66,13 +76,14 @@ export default class Navbar extends React.Component {
             <a><i ref={this.homeButton} id='home-button' className={this.chooseHomeButtonClass()} onClick={this.handleClick}/></a>
           </div>
           <div className="column-half header-">
-            <h1 className='home-header-color'>WAR</h1>
+            <h1 className='home-header-color'>{this.chooseTitle()}</h1>
           </div>
           <div className="column-one-fourth">
             <a><i className="fa-solid fa-right-from-bracket" onClick={this.handleClick}/></a>
           </div>
         </div>
         {this.showModal()}
+        <div className={this.showOverlay()} />
       </>
     );
   }

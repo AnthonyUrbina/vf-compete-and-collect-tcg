@@ -6,6 +6,7 @@ import Home from './pages/home';
 import jwtDecode from 'jwt-decode';
 import Game from './pages/game';
 import Navbar from './components/navbar';
+import NotFound from './pages/not-found';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -37,6 +38,7 @@ export default class App extends React.Component {
 
   handleSignOut() {
     window.localStorage.removeItem('war-jwt');
+    window.localStorage.removeItem('war-game-routes');
     window.location.hash = '';
     this.setState({ user: null });
   }
@@ -44,6 +46,7 @@ export default class App extends React.Component {
   choosePage() {
     const { path } = this.state.route;
     const { user } = this.state;
+    const routes = window.localStorage.getItem('war-game-routes');
     if (path === '') {
       return (
         <>
@@ -53,7 +56,7 @@ export default class App extends React.Component {
       );
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
-    } else if (user) {
+    } else if (routes && routes.includes(path) && user) {
       return (
         <>
           <Navbar />
@@ -61,6 +64,24 @@ export default class App extends React.Component {
         </>
       );
     }
+    return (
+      <>
+        <Navbar/>
+        <NotFound />
+      </>
+    );
+  }
+
+  getOpponentUsername(roomId, user) {
+    let opponent;
+    const { username } = user;
+    const splitUsernames = roomId.split('-');
+    for (let i = 0; i < splitUsernames.length; i++) {
+      if (splitUsernames[i] !== username) {
+        opponent = splitUsernames[i];
+      }
+    }
+    return opponent;
   }
 
   chooseContainerColor() {

@@ -5,11 +5,12 @@ import parseRoute from '../lib/parse-route';
 export default class CompetitionRoom extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { fetchingData: null };
+    this.state = {
+      fetchingData: null,
+      error: null
+    };
     this.flipCard = this.flipCard.bind(this);
     this.battleModal = React.createRef();
-    this.clientLastFlipped = React.createRef();
-    this.opponentLastFlipped = React.createRef();
   }
 
   componentDidMount() {
@@ -29,16 +30,44 @@ export default class CompetitionRoom extends React.Component {
       .then(res => res.json())
       .then(result => {
         const { state, gameId } = result[0];
-        state.gameId = gameId;
-        state.fetchingData = false;
-        this.setState(state);
+        if (state) {
+          state.gameId = gameId;
+          state.fetchingData = false;
+          this.setState(state);
+        }
+      })
+      .catch(err => {
+        console.error(err.message);
+        if (opponent && opponent !== 'undefined') {
+          this.socket.emit('invite-accepted-retry', opponent);
+
+          const headers = {
+            'X-Access-Token': token
+          };
+          fetch(`/api/games/retrieve/${opponent}`,
+            {
+              method: 'GET',
+              headers
+            })
+            .then(res => res.json())
+            .then(result => {
+              const { state, gameId } = result[0];
+              state.gameId = gameId;
+              state.fetchingData = false;
+              this.setState(state);
+            })
+            .catch(err => console.error(err));
+        }
+        window.location.reload();
       });
+
     if (user) {
       this.socket = io('/', {
         auth: { token },
         query: { roomId }
       });
     }
+
     this.socket.on('flip-card', state => {
       this.setState(state);
     });
@@ -82,8 +111,8 @@ export default class CompetitionRoom extends React.Component {
     if (clientFaceUp) {
       let counter = 0;
       const stack = clientFaceUp.map(card => {
-        const { rank, suit } = card;
-        const src = `images/cards/${rank}_of_${suit}.png`;
+        const { name } = card;
+        const src = `images/cards/${name}.jpg`;
         const className = 'flipped-card';
         const indexes = [];
         const left = '0%';
@@ -117,8 +146,8 @@ export default class CompetitionRoom extends React.Component {
     if (opponentFaceUp) {
       let counter = 0;
       const stack = opponentFaceUp.map(card => {
-        const { rank, suit } = card;
-        const src = `images/cards/${rank}_of_${suit}.png`;
+        const { name } = card;
+        const src = `images/cards/${name}.jpg`;
         const className = 'flipped-card';
         const indexes = [];
         const left = '0%';
@@ -140,8 +169,7 @@ export default class CompetitionRoom extends React.Component {
 
         counter++;
         return <img style={{ zIndex, position, left, transform }} key={src} src={src} alt={src} className={className} />;
-      })
-      ;
+      });
       return stack;
     }
 
@@ -208,16 +236,12 @@ export default class CompetitionRoom extends React.Component {
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
     const opponentWinPile = this.state[opponent + 'WinPile'];
-    if (!opponentWinPile) {
-      return;
-    }
+    if (!opponentWinPile) return;
     if (opponentWinPile.length !== 0) {
-      const lastCardRank = opponentWinPile[opponentWinPile.length - 1].rank;
-      const lastCardSuit = opponentWinPile[opponentWinPile.length - 1].suit;
-      const secondToLastCardRank = opponentWinPile[opponentWinPile.length - 2].rank;
-      const secondToLastCardSuit = opponentWinPile[opponentWinPile.length - 2].suit;
-      const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
-      const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
+      const lastCardScore = opponentWinPile[opponentWinPile.length - 1].name;
+      const secondToLastCardScore = opponentWinPile[opponentWinPile.length - 2].name;
+      const srcBottom = `images/cards/${secondToLastCardScore}.jpg`;
+      const srcTop = `images/cards/${lastCardScore}.jpg`;
       return (
         <>
           <img src={srcTop} alt={srcTop} className='flipped-card top' />
@@ -230,16 +254,12 @@ export default class CompetitionRoom extends React.Component {
   showClientWinningCards() {
     const client = this.props.user.username;
     const clientWinPile = this.state[client + 'WinPile'];
-    if (!clientWinPile) {
-      return;
-    }
+    if (!clientWinPile) return;
     if (clientWinPile.length !== 0) {
-      const lastCardRank = clientWinPile[clientWinPile.length - 1].rank;
-      const lastCardSuit = clientWinPile[clientWinPile.length - 1].suit;
-      const secondToLastCardRank = clientWinPile[clientWinPile.length - 2].rank;
-      const secondToLastCardSuit = clientWinPile[clientWinPile.length - 2].suit;
-      const srcBottom = `images/cards/${secondToLastCardRank}_of_${secondToLastCardSuit}.png`;
-      const srcTop = `images/cards/${lastCardRank}_of_${lastCardSuit}.png`;
+      const lastCardScore = clientWinPile[clientWinPile.length - 1].name;
+      const secondToLastCardScore = clientWinPile[clientWinPile.length - 2].name;
+      const srcBottom = `images/cards/${secondToLastCardScore}.jpg`;
+      const srcTop = `images/cards/${lastCardScore}.jpg`;
       return (
         <>
           <img src={srcTop} alt={srcTop} className='flipped-card top' />
@@ -253,17 +273,15 @@ export default class CompetitionRoom extends React.Component {
     const opponent = this.getOpponentUsername();
     const opponentDeck = this.state[opponent + 'Deck'];
     if (opponentDeck) {
-      if (!opponentDeck.length) {
-        return;
-      }
+      if (!opponentDeck.length) return;
     }
     return (
       <div className='player-deck match-deck'>
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-1' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-2' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-3' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-4' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-5' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-1' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-2' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-3' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-4' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-5' />
       </div>
     );
   }
@@ -272,26 +290,22 @@ export default class CompetitionRoom extends React.Component {
     const client = this.props.user.username;
     const clientDeck = this.state[client + 'Deck'];
     if (clientDeck) {
-      if (!clientDeck.length) {
-        return;
-      }
+      if (!clientDeck.length) return;
     }
     return (
       <button onClick={this.flipCard} className='player2-button'>
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-1' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-2' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-3' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-4' />
-        <img src='images/backofcard.png' alt='backofcard' className='deck-cards deck-5' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-1' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-2' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-3' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-4' />
+        <img src='images/cards/face-down.jpg' alt='cards/face-down' className='deck-cards deck-5' />
       </button>
     );
   }
 
   pickWinnerText() {
     const { loser } = this.state;
-    if (!loser) {
-      return;
-    }
+    if (!loser) return;
     const opponent = this.getOpponentUsername();
     const client = this.props.user.username;
     return client === loser ? opponent : client;
@@ -299,18 +313,18 @@ export default class CompetitionRoom extends React.Component {
 
   pickWinnerAvatar() {
     const { loser } = this.state;
-    if (!loser) {
-      return;
-    }
+    if (!loser) return;
     const client = this.props.user.username;
-    return client === loser ? 'images/player1.png' : 'images/player2.png';
+    return client === loser
+      ? 'images/avatars/notorious-ninja.png'
+      : 'images/avatars/competitive-clown.png';
   }
 
   showModal() {
     const { loser } = this.state;
     return loser && (
       <div className='winner-modal'>
-        <h1 className='winner-modal-title'>WINNER</h1>
+        <h1 className='winner-modal-title'>WINNER!</h1>
         <div className='row center'>
           <img className='trophy' src='images/trophy.png' alt='trophy' />
           <div>
@@ -353,12 +367,12 @@ export default class CompetitionRoom extends React.Component {
     const client = this.props.user.username;
     const clientBattlePile = this.state[client + 'BattlePile'];
     if (!clientBattlePile || clientBattlePile.length === 0) {
-      return <img className='flipped-card hide-icon' src="images/backofcard.png" alt="" />;
+      return <img className='flipped-card hide-icon' src="images/cards/face-down.jpg" alt="" />;
     } else {
       let counter = 1;
       const pile = clientBattlePile.map(card => {
-        const { rank, suit } = card;
-        const src = `images/cards/${rank}_of_${suit}.png`;
+        const { name } = card;
+        const src = `images/cards/${name}.jpg`;
         const zIndex = counter;
         const className = counter > 1 ? 'flipped-card client-battle-top' : 'flipped-card';
         const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
@@ -367,7 +381,7 @@ export default class CompetitionRoom extends React.Component {
               ? '0'
               : (counter % 3) === 0 && 'rotate(-2deg)';
         counter++;
-        return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }}/>;
+        return <img className={className} key={src} src='images/cards/face-down.jpg' style={{ zIndex, transform }}/>;
       });
 
       return pile;
@@ -379,12 +393,12 @@ export default class CompetitionRoom extends React.Component {
     const opponent = this.getOpponentUsername();
     const opponentBattlePile = this.state[opponent + 'BattlePile'];
     if (!opponentBattlePile || opponentBattlePile.length === 0) {
-      return <img className='flipped-card hide-icon' src="images/backofcard.png" alt="" />;
+      return <img className='flipped-card hide-icon' src="images/cards/face-down.jpg" alt="" />;
     } else {
       let counter = 1;
       const pile = opponentBattlePile.map(card => {
-        const { rank, suit } = card;
-        const src = `images/cards/${rank}_of_${suit}.png`;
+        const { name } = card;
+        const src = `images/cards/${name}.jpg`;
         const zIndex = counter;
         const className = counter > 1 ? 'flipped-card opponent-battle-top' : 'flipped-card';
         const transform = (counter % 2) === 0 && (counter + 2) % 3 !== 0
@@ -393,10 +407,26 @@ export default class CompetitionRoom extends React.Component {
               ? '0'
               : (counter % 3) === 0 ? 'rotate(-2deg)' : '0';
         counter++;
-        return <img className={className} key={src} src='images/backofcard.png' style={{ zIndex, transform }} />;
+        return <img className={className} key={src} src='images/cards/face-down.jpg' style={{ zIndex, transform }} />;
       });
       return pile;
     }
+  }
+
+  getClientRemainingCards() {
+    const client = this.props.user.username;
+    const clientDeck = this.state[client + 'Deck'];
+    const clientWinPile = this.state[client + 'WinPile'];
+    if (!clientDeck) return 'loading...';
+    return clientDeck.length + clientWinPile.length;
+  }
+
+  getOpponentRemainingCards() {
+    const opponent = this.getOpponentUsername();
+    const opponentDeck = this.state[opponent + 'Deck'];
+    const opponentWinPile = this.state[opponent + 'WinPile'];
+    if (!opponentDeck) return 'loading...';
+    return opponentDeck.length + opponentWinPile.length;
   }
 
   render() {
@@ -409,12 +439,13 @@ export default class CompetitionRoom extends React.Component {
           <div className='column-full'>
             <div className='center-horiz-vert'>
               <div className='column-half'>
-                <img className='player-avatar-img-size' src='images/player1.png' alt='player1' />
+                <img className='player-avatar-img-size' src='images/avatars/notorious-ninja.png' alt='player1' />
               </div>
               <div className='column-half'>
                 <p className='player-names-size'>{this.getOpponentUsername()}</p>
               </div>
             </div>
+            <p className='score-text'>{`Cards Remaining: ${this.getOpponentRemainingCards()}`}</p>
             <div className='row center align-decks'>
               <div className='side-deck flipped-card'>
                 {this.showOpponentWinningCards()}
@@ -447,8 +478,9 @@ export default class CompetitionRoom extends React.Component {
                 </div>
               </div>
             </div>
+            <p className='score-text'>{`Cards Remaining: ${this.getClientRemainingCards()}`}</p>
             <div className='center-horiz-vert'>
-              <img className='player-avatar-img-size' src='images/player2.png' alt='player1' />
+              <img className='player-avatar-img-size' src='images/avatars/competitive-clown.png' alt='player1' />
               <p className='player-names-size'>You</p>
             </div>
           </div>
