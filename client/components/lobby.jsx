@@ -58,6 +58,16 @@ export default class Lobby extends React.Component {
       const { liftOpponent } = this.context;
       const opponent = this.state.isSendingChallengeTo;
       liftOpponent(opponent);
+      let routes = window.localStorage.getItem('war-game-routes');
+      if (routes) {
+        routes = JSON.parse(routes);
+        routes.push(roomId);
+        routes = JSON.stringify(routes);
+        window.localStorage.setItem('war-game-routes', routes);
+      } else {
+        const jsonRoomId = JSON.stringify([roomId]);
+        window.localStorage.setItem('war-game-routes', jsonRoomId);
+      }
       this.setState({ challengerModalisActive: false });
       window.location.hash = roomId;
     });
@@ -120,6 +130,16 @@ export default class Lobby extends React.Component {
       const { liftOpponent } = this.context;
       const opponent = this.state.isReceivingChallengeFrom;
       liftOpponent(opponent);
+      let routes = window.localStorage.getItem('war-game-routes');
+      if (routes) {
+        routes = JSON.parse(routes);
+        routes.push(roomId);
+        routes = JSON.stringify(routes);
+        window.localStorage.setItem('war-game-routes', routes);
+      } else {
+        const jsonRoomId = JSON.stringify([roomId]);
+        window.localStorage.setItem('war-game-routes', jsonRoomId);
+      }
       this.socket.emit('invite-accepted', inviteInfo);
       this.setState({ opponentModalisActive: false });
       window.location.hash = roomId;

@@ -38,7 +38,7 @@ export default class CompetitionRoom extends React.Component {
       })
       .catch(err => {
         console.error(err.message);
-        if (opponent !== 'undefined') {
+        if (opponent && opponent !== 'undefined') {
           this.socket.emit('invite-accepted-retry', opponent);
 
           const headers = {
@@ -55,10 +55,10 @@ export default class CompetitionRoom extends React.Component {
               state.gameId = gameId;
               state.fetchingData = false;
               this.setState(state);
-              window.location.reload();
             })
             .catch(err => console.error(err));
         }
+        window.location.reload();
       });
 
     if (user) {
@@ -428,13 +428,6 @@ export default class CompetitionRoom extends React.Component {
     if (!opponentDeck) return 'loading...';
     return opponentDeck.length + opponentWinPile.length;
   }
-
-  // showErrorModal() {
-  //   const {error} = this.state
-  //   if (error) {
-
-  //   }
-  // }
 
   render() {
     return (

@@ -14,7 +14,7 @@ export default class App extends React.Component {
     this.state = {
       user: null,
       route: parseRoute(window.location.hash),
-      opponent: null
+      routes: null
     };
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
@@ -46,9 +46,8 @@ export default class App extends React.Component {
 
   choosePage() {
     const { path } = this.state.route;
-    const { user, opponent } = this.state;
-    const client = user && user.username;
-    const expectedPath = [client, opponent].sort().join('-');
+    const { user } = this.state;
+    const routes = window.localStorage.getItem('war-game-routes');
     if (path === '') {
       return (
         <>
@@ -58,7 +57,7 @@ export default class App extends React.Component {
       );
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
-    } else if (path === expectedPath) {
+    } else if (routes && routes.includes(path) && user) {
       return (
         <>
           <Navbar />
@@ -66,10 +65,24 @@ export default class App extends React.Component {
         </>
       );
     }
-    return <>
-      <Navbar/>
-      <NotFound />
-    </>;
+    return (
+      <>
+        <Navbar/>
+        <NotFound />
+      </>
+    );
+  }
+
+  getOpponentUsername(roomId, user) {
+    let opponent;
+    const { username } = user;
+    const splitUsernames = roomId.split('-');
+    for (let i = 0; i < splitUsernames.length; i++) {
+      if (splitUsernames[i] !== username) {
+        opponent = splitUsernames[i];
+      }
+    }
+    return opponent;
   }
 
   chooseContainerColor() {
