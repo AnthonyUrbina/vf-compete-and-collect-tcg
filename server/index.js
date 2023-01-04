@@ -102,33 +102,16 @@ app.patch('/api/games/:gameId', (req, res, next) => {
   const params = [gameId, state];
   db.query(sql, params)
     .then(result => {
-      const { state } = result.rows[0];
-      const { roomId, battlefield, battle } = state;
-      const players = getUsernames(roomId);
-      const { stage } = battle;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
-
-      for (const username in players) {
-        const player = players[username];
-        const playerDeck = state[player + 'Deck'];
-        const playerWinPile = state[player + 'WinPile'];
-        const playerFlipsRemaining = state[player + 'FlipsRemaining'];
-        const loser = player;
-
-        if (!playerDeck.length && playerWinPile.length) {
-          outOfCards(state, playerDeck, playerWinPile, player);
-        } else if (!playerDeck.length && !playerWinPile.length && playerFlipsRemaining && !Object.keys(battlefield).length) {
-          outOfCards(state, playerDeck, playerWinPile, player, loser);
-        }
-      }
+      const { state } = result.rows[0];
+      const { roomId, battlefield } = state;
+      const players = getUsernames(roomId);
+      monitorDecks(players, state);
       io.to(roomId).emit('flip-card', state);
       res.status(200).json(state);
-      if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
-        setTimeout(decideWinner, 850, state);
-      }
-
+      monitorBattlefield(battlefield, state);
     })
     .catch(err => next(err));
 });
@@ -685,6 +668,31 @@ function createGame(opponent, challenger) {
   ];
   dealer(shuffled, players);
   return players;
+}
+
+function monitorDecks(players, state) {
+  const { battlefield } = state;
+  for (const username in players) {
+    const player = players[username];
+    const playerDeck = state[player + 'Deck'];
+    const playerWinPile = state[player + 'WinPile'];
+    const playerFlipsRemaining = state[player + 'FlipsRemaining'];
+    const loser = player;
+
+    if (!playerDeck.length && playerWinPile.length) {
+      outOfCards(state, playerDeck, playerWinPile, player);
+    } else if (!playerDeck.length && !playerWinPile.length && playerFlipsRemaining && !Object.keys(battlefield).length) {
+      outOfCards(state, playerDeck, playerWinPile, player, loser);
+    }
+  }
+}
+
+function monitorBattlefield(battlefield, state) {
+  const { battle } = state;
+  const { stage } = battle;
+  if (Object.keys(battlefield).length === 2 || (stage && Object.keys(battlefield).length === 2)) {
+    setTimeout(decideWinner, 850, state);
+  }
 }
 
 server.listen(process.env.PORT, () => {

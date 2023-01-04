@@ -175,63 +175,67 @@ export default class CompetitionRoom extends React.Component {
 
   }
 
-  flipCard() {
-    const client = this.props.user.username;
-    const clientFaceUp = this.state[client + 'FaceUp'];
-    const opponent = this.getOpponentUsername();
-    const opponentFaceUp = this.state[opponent + 'FaceUp'];
-    const { showBattleModal } = this.state;
-    const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
-    if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
-      const { gameId, battle } = this.state;
-      const { stage } = battle;
-      const clientDeck = this.state[client + 'Deck'];
-      const copyOfClientDeck = [...clientDeck];
-      const cardFlipped = copyOfClientDeck.splice(0, 1);
-      const copyOfState = { ...this.state };
-      copyOfState[client + 'Deck'] = copyOfClientDeck;
-      copyOfState.roomId = parseRoute(window.location.hash).path;
+  // flipCard() {
+  //   const client = this.props.user.username;
+  //   const clientFaceUp = this.state[client + 'FaceUp'];
+  //   const opponent = this.getOpponentUsername();
+  //   const opponentFaceUp = this.state[opponent + 'FaceUp'];
+  //   const { showBattleModal } = this.state;
+  //   const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
+  //   if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
+  //     const { gameId, battle } = this.state;
+  //     const { stage } = battle;
+  //     const clientDeck = this.state[client + 'Deck'];
+  //     const copyOfClientDeck = [...clientDeck];
+  //     const cardFlipped = copyOfClientDeck.splice(0, 1);
+  //     const copyOfState = { ...this.state };
+  //     copyOfState[client + 'Deck'] = copyOfClientDeck;
+  //     copyOfState.roomId = parseRoute(window.location.hash).path;
 
-      if (clientFlipsRemaining > 1) {
-        copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
-        copyOfState[client + 'FlipsRemaining']--;
-      }
+  //     if (clientFlipsRemaining > 1) {
+  //       copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
+  //       copyOfState[client + 'FlipsRemaining']--;
+  //     }
 
-      if (clientFlipsRemaining === 1) {
-        copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
-        copyOfState.faceUpQueue.push(client);
-        copyOfState[client + 'FlipsRemaining']--;
-        if (opponentFaceUp.length > stage) {
-          copyOfState.battlefield[client] = cardFlipped[0];
-          copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
-        }
-      }
+  //     if (clientFlipsRemaining === 1) {
+  //       copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+  //       copyOfState.faceUpQueue.push(client);
+  //       copyOfState[client + 'FlipsRemaining']--;
+  //       if (opponentFaceUp.length > stage) {
+  //         copyOfState.battlefield[client] = cardFlipped[0];
+  //         copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
+  //       }
+  //     }
 
-      if (!clientFlipsRemaining) {
-        copyOfState[client + 'FaceUp'] = cardFlipped;
-        copyOfState.faceUpQueue.push(client);
-      }
+  //     if (!clientFlipsRemaining) {
+  //       copyOfState[client + 'FaceUp'] = cardFlipped;
+  //       copyOfState.faceUpQueue.push(client);
+  //     }
 
-      if (opponentFaceUp && !stage) {
-        copyOfState.battlefield[client] = cardFlipped[0];
-        copyOfState.battlefield[opponent] = opponentFaceUp[0];
-      }
+  //     if (opponentFaceUp && !stage) {
+  //       copyOfState.battlefield[client] = cardFlipped[0];
+  //       copyOfState.battlefield[opponent] = opponentFaceUp[0];
+  //     }
 
-      const headers = {
-        'Content-Type': 'application/json'
-      };
+  //     const headers = {
+  //       'Content-Type': 'application/json'
+  //     };
 
-      const req = {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify(copyOfState)
-      };
-      fetch(`/api/games/${gameId}`, req)
-        .then(res => res.json())
-        .then(data => this.setState(data));
+  //     const req = {
+  //       method: 'PATCH',
+  //       headers,
+  //       body: JSON.stringify(copyOfState)
+  //     };
+  //     fetch(`/api/games/${gameId}`, req)
+  //       .then(res => res.json())
+  //       .then(data => this.setState(data));
 
-    }
-  }
+  //   }
+  // }
+
+  // flipCard() {
+  //   this.socket.
+  // }
 
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
