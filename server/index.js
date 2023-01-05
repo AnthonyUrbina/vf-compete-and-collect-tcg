@@ -88,35 +88,7 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 
 });
 
-// app.patch('/api/games/:gameId', (req, res, next) => {
-//   const { gameId } = req.params;
-//   const state = req.body;
-
-//   const sql = `
-//     update "games"
-//        set "state" = $2
-//      where "gameId" = $1
-//  returning "state"
-//   `;
-
-//   const params = [gameId, state];
-//   db.query(sql, params)
-//     .then(result => {
-//       if (!result.rows[0]) {
-//         throw new ClientError(400, 'this gameId does not exist');
-//       }
-//       const { state } = result.rows[0];
-//       const { roomId, battlefield } = state;
-//       const players = getUsernames(roomId);
-//       monitorDecks(players, state);
-//       res.status(200).json(state);
-//       io.to(roomId).emit('flip-card', state);
-//       monitorBattlefield(battlefield, state);
-//     })
-//     .catch(err => next(err));
-// });
-
-app.patch('/api/games/:gameId/:client', (req, res, next) => {
+app.patch('/api/games/:gameId', (req, res, next) => {
   const { gameId } = req.params;
   const state = req.body;
 
@@ -140,6 +112,25 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
       res.status(200).json(state);
       io.to(roomId).emit('flip-card', state);
       monitorBattlefield(battlefield, state);
+    })
+    .catch(err => next(err));
+});
+
+app.patch('/api/games/:gameId/:client', (req, res, next) => {
+  // const { gameId, client } = req.params;
+  const { gameId } = req.params;
+
+  const sql = `
+    select "state"
+      from "games"
+     where "gameId" = $1
+  `;
+
+  const params = [gameId];
+  db.query(sql, params)
+    .then(result => {
+      const { state } = result.rows[0];
+      res.status(200).json(state);
     })
     .catch(err => next(err));
 });
