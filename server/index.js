@@ -117,8 +117,7 @@ app.patch('/api/games/:gameId', (req, res, next) => {
 });
 
 app.patch('/api/games/:gameId/:client', (req, res, next) => {
-  // const { gameId, client } = req.params;
-  const { gameId } = req.params;
+  const { gameId, client } = req.params;
 
   const sql = `
     select "state"
@@ -130,6 +129,9 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
+      const clientFaceUp = client + 'FaceUp';
+      const clientDeck = client + 'Deck';
+      state[clientFaceUp] = state[clientDeck].splice(0, 1);
       res.status(200).json(state);
     })
     .catch(err => next(err));
