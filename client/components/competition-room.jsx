@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -228,14 +229,34 @@ export default class CompetitionRoom extends React.Component {
   //     };
   //     fetch(`/api/games/${gameId}`, req)
   //       .then(res => res.json())
-  //       .then(data => this.setState(data));
+  //       .then(data => console.log('wooo'));
 
   //   }
   // }
 
-  // flipCard() {
-  //   this.socket.
-  // }
+  flipCard() {
+    const client = this.props.user.username;
+    const clientFaceUp = this.state[client + 'FaceUp'];
+    if (clientFaceUp) return;
+    const { gameId } = this.state;
+    this.predictCardFlip(client);
+    const req = {
+      method: 'PATCH'
+    };
+
+    fetch(`/api/games/${gameId}/${client}`, req)
+      .then(res => res.json())
+      .then(data => console.log('wooo'));
+  }
+
+  predictCardFlip(client) {
+    const copyOfState = { ...this.state };
+    const clientDeck = this.state[client + 'Deck'];
+    const copyOfClientDeck = [...clientDeck];
+    const cardFlipped = copyOfClientDeck.splice(0, 1);
+    copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+    this.setState(copyOfState);
+  }
 
   showOpponentWinningCards() {
     const opponent = this.getOpponentUsername();
