@@ -86,6 +86,9 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('battle-staged', state => {
       this.setState(state);
     });
+    this.socket.on('update-state', updatedState => {
+      this.setState(updatedState);
+    });
   }
 
   componentWillUnmount() {
@@ -246,7 +249,7 @@ export default class CompetitionRoom extends React.Component {
 
     fetch(`/api/games/${gameId}/${client}`, req)
       .then(res => res.json())
-      .then(data => console.log('wooo'));
+      .then(data => console.log(data));
   }
 
   predictCardFlip(client) {
@@ -254,7 +257,14 @@ export default class CompetitionRoom extends React.Component {
     const clientDeck = this.state[client + 'Deck'];
     const copyOfClientDeck = [...clientDeck];
     const cardFlipped = copyOfClientDeck.splice(0, 1);
-    copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+    copyOfState.roomId = parseRoute(window.location.hash).path;
+    console.log('clientDeck:', clientDeck);
+    console.log('copyOfClientDeck:', copyOfClientDeck);
+    console.log(cardFlipped);
+    console.log('client:', client);
+    console.log('state:', this.state);
+    console.log('copyOfState:', copyOfState[client + 'FaceUp']);
+    copyOfState[client + 'FaceUp'] = cardFlipped;
     this.setState(copyOfState);
   }
 

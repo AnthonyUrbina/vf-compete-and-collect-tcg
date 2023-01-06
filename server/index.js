@@ -133,6 +133,29 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
       const clientDeck = client + 'Deck';
       state[clientFaceUp] = state[clientDeck].splice(0, 1);
       res.status(200).json(state);
+
+      const sql = `
+    update "games"
+       set "state" = $2
+     where "gameId" = $1
+ returning "state"
+  `;
+      const params = [gameId, state];
+      db.query(sql, params)
+        .then(result => {
+          const { state } = result.rows[0];
+          const { roomId } = state;
+          const players = getUsernames(roomId);
+          const { player1, player2 } = players;
+          const player1FaceUp = player1 + 'FaceUp';
+          const player2FaceUp = player2 + 'FaceUp';
+          const updatedState = state;
+          if (state[player1FaceUp] && state[player2FaceUp]) {
+            io.to(roomId).emit('update-state', updatedState);
+            setTimeout(decideWinner, 850, state);
+          }
+        });
+
     })
     .catch(err => next(err));
 });
@@ -265,6 +288,7 @@ io.on('connection', socket => {
   socket.on('invite-accepted', inviteInfo => {
     const { challengerUsername, challengerSocketId, challengerId } = inviteInfo;
     const players = createGame(challengerUsername, socket.nickname);
+    const roomId = [challengerUsername, socket.nickname].sort().join('-');
 
     const state = {
       [challengerUsername + 'Deck']: players[0].deck,
@@ -280,8 +304,8 @@ io.on('connection', socket => {
       battle: { stage: 0 },
       showBattleModal: false,
       battlefield: {},
-      faceUpQueue: []
-
+      faceUpQueue: [],
+      roomId
     };
 
     const JSONstate = JSON.stringify(state);
@@ -336,8 +360,8 @@ io.on('connection', socket => {
           battle: { stage: 0 },
           showBattleModal: false,
           battlefield: {},
-          faceUpQueue: []
-
+          faceUpQueue: [],
+          roomId
         };
 
         const JSONstate = JSON.stringify(state);
@@ -386,15 +410,6 @@ function decideWinner(state) {
   let winner;
   let tie = false;
   for (const key in battlefield) {
-    if (battlefield[key].score === 'jack') {
-      battlefield[key].score = 11;
-    } else if (battlefield[key].score === 'queen') {
-      battlefield[key].score = 12;
-    } else if (battlefield[key].score === 'king') {
-      battlefield[key].score = 13;
-    } else if (battlefield[key].score === 'ace') {
-      battlefield[key].score = 14;
-    }
     if (battlefield[key].score > bestScore) {
       bestScore = battlefield[key].score;
       winner = key;
