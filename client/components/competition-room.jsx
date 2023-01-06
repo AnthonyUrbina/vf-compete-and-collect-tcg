@@ -89,6 +89,12 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('update-state', updatedState => {
       this.setState(updatedState);
     });
+
+    this.socket.on('flip', (cardFlipped, client) => {
+      const copyOfState = { ...this.state };
+      copyOfState[client + 'FaceUp'] = cardFlipped;
+      this.setState(copyOfState);
+    });
   }
 
   componentWillUnmount() {

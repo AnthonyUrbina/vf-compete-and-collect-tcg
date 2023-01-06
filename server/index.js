@@ -129,9 +129,12 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
+      const { roomId } = state;
       const clientFaceUp = client + 'FaceUp';
       const clientDeck = client + 'Deck';
-      state[clientFaceUp] = state[clientDeck].splice(0, 1);
+      const cardFlipped = state[clientDeck].splice(0, 1);
+      state[clientFaceUp] = cardFlipped;
+      io.to(roomId).emit('flip', cardFlipped, client);
       res.status(200).json(state);
 
       const sql = `
@@ -152,6 +155,9 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
           const updatedState = state;
           if (state[player1FaceUp] && state[player2FaceUp]) {
             io.to(roomId).emit('update-state', updatedState);
+            state.battlefield[player1] = state[player1FaceUp][0];
+            state.battlefield[player2] = state[player2FaceUp][0];
+            state.gameId = gameId;
             setTimeout(decideWinner, 850, state);
           }
         });
@@ -417,9 +423,7 @@ function decideWinner(state) {
       tie = true;
     }
   }
-
   tie ? handleTie(state, players) : handleWin(winner, state, players);
-
 }
 
 function handleTie(state, players) {
@@ -503,11 +507,11 @@ function handleWin(winner, state, players) {
   const params = [gameId, state];
   db.query(sql, params)
     .then(result => {
-      const { state } = result.rows[0];
-      const { roomId } = state;
       if (!result.rows[0]) {
         throw new ClientError(400, 'this gameId does not exist');
       }
+      const { state } = result.rows[0];
+      const { roomId } = state;
       io.to(roomId).emit('winner-decided', state);
       for (const username in players) {
         const playerDeck = state[players[username] + 'Deck'];
