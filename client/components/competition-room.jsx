@@ -185,13 +185,13 @@ export default class CompetitionRoom extends React.Component {
 
   }
 
-  // flipCard() {
-  //   const client = this.props.user.username;
-  //   const clientFaceUp = this.state[client + 'FaceUp'];
-  //   const opponent = this.getOpponentUsername();
-  //   const opponentFaceUp = this.state[opponent + 'FaceUp'];
-  //   const { showBattleModal } = this.state;
-  //   const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
+  // // flipCard() {
+  // //   const client = this.props.user.username;
+  // //   const clientFaceUp = this.state[client + 'FaceUp'];
+  // //   const opponent = this.getOpponentUsername();
+  // //   const opponentFaceUp = this.state[opponent + 'FaceUp'];
+  // //   const { showBattleModal } = this.state;
+  // //   const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
   //   if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
   //     const { gameId, battle } = this.state;
   //     const { stage } = battle;
@@ -202,11 +202,18 @@ export default class CompetitionRoom extends React.Component {
   //     copyOfState[client + 'Deck'] = copyOfClientDeck;
   //     copyOfState.roomId = parseRoute(window.location.hash).path;
 
+  //     // if client has more than 1 flip remaining, push all flips to battlepile
+  //     // decrease flipsRemaining for each flip
+  //     // players get 4 flips remaining on serverside when a tie is detected
   //     if (clientFlipsRemaining > 1) {
   //       copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
   //       copyOfState[client + 'FlipsRemaining']--;
   //     }
-
+  //     // if clientFlipsRemaining is 1, push the flip to FaceUp
+  //     // push client to the faceUpQueue array
+  //     // decrease flips remaining by 1
+  //     // if opponentFaceUp length is greater than stage number (if stage is 1 and opponent has placed their second card that means they are waiting for client to place)
+  //     // push client card flipped and last card from opponentFaceUp to battlefield
   //     if (clientFlipsRemaining === 1) {
   //       copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
   //       copyOfState.faceUpQueue.push(client);
@@ -216,62 +223,47 @@ export default class CompetitionRoom extends React.Component {
   //         copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
   //       }
   //     }
-
+  //     // if clientFlips remaining is null (means there is no war)
+  //     // simply push cardFlipped to client FaceUp
   //     if (!clientFlipsRemaining) {
   //       copyOfState[client + 'FaceUp'] = cardFlipped;
   //       copyOfState.faceUpQueue.push(client);
   //     }
-
+  //     // if opponent has card faceUp and stage is null (there is no battle)
+  //     // push client flipped and opponent face up to battlefield
   //     if (opponentFaceUp && !stage) {
   //       copyOfState.battlefield[client] = cardFlipped[0];
   //       copyOfState.battlefield[opponent] = opponentFaceUp[0];
   //     }
+  // //     const headers = {
+  // //       'Content-Type': 'application/json'
+  // //     };
 
-  //     const headers = {
-  //       'Content-Type': 'application/json'
-  //     };
+  // //     const req = {
+  // //       method: 'PATCH',
+  // //       headers,
+  // //       body: JSON.stringify(copyOfState)
+  // //     };
+  // //     fetch(`/api/games/${gameId}`, req)
+  // //       .then(res => res.json())
+  // //       .then(data => console.log('wooo'));
 
-  //     const req = {
-  //       method: 'PATCH',
-  //       headers,
-  //       body: JSON.stringify(copyOfState)
-  //     };
-  //     fetch(`/api/games/${gameId}`, req)
-  //       .then(res => res.json())
-  //       .then(data => console.log('wooo'));
-
-  //   }
-  // }
+  // //   }
+  // // }
 
   flipCard() {
     const client = this.props.user.username;
     const clientFaceUp = this.state[client + 'FaceUp'];
+    const opponent = this.getOpponentUsername();
     if (clientFaceUp) return;
     const { gameId } = this.state;
-    this.predictCardFlip(client);
     const req = {
       method: 'PATCH'
     };
 
-    fetch(`/api/games/${gameId}/${client}`, req)
-      .then(res => res.json())
-      .then(data => console.log(data));
-  }
-
-  predictCardFlip(client) {
-    const copyOfState = { ...this.state };
-    const clientDeck = this.state[client + 'Deck'];
-    const copyOfClientDeck = [...clientDeck];
-    const cardFlipped = copyOfClientDeck.splice(0, 1);
-    copyOfState.roomId = parseRoute(window.location.hash).path;
-    console.log('clientDeck:', clientDeck);
-    console.log('copyOfClientDeck:', copyOfClientDeck);
-    console.log(cardFlipped);
-    console.log('client:', client);
-    console.log('state:', this.state);
-    console.log('copyOfState:', copyOfState[client + 'FaceUp']);
-    copyOfState[client + 'FaceUp'] = cardFlipped;
-    this.setState(copyOfState);
+    fetch(`/api/games/${gameId}/${client}/${opponent}`, req)
+      .then(res => console.log('hi'))
+      .then(data => console.log('hi'));
   }
 
   showOpponentWinningCards() {

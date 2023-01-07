@@ -116,8 +116,8 @@ app.patch('/api/games/:gameId', (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.patch('/api/games/:gameId/:client', (req, res, next) => {
-  const { gameId, client } = req.params;
+app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
+  const { gameId, client, opponent } = req.params;
 
   const sql = `
     select "state"
@@ -129,13 +129,28 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
-      const { roomId } = state;
+      const { roomId, stage } = state;
       const clientFaceUp = client + 'FaceUp';
       const clientDeck = client + 'Deck';
+      const clientFlipsRemaining = state[client + 'FlipsRemaining'];
       const cardFlipped = state[clientDeck].splice(0, 1);
+      const opponentFaceUp = state[opponent + 'FaceUp'];
+
       state[clientFaceUp] = cardFlipped;
+      // if clientFlips remaining is null (means there is no war)
+      // simply push cardFlipped to client FaceUp
+      if (!clientFlipsRemaining) {
+        state[client + 'FaceUp'] = cardFlipped;
+        state.faceUpQueue.push(client);
+      }
+      // if opponent has card faceUp and stage is null (there is no battle)
+      // push client flipped and opponent face up to battlefield
+      if (opponentFaceUp && !stage) {
+        state.battlefield[client] = cardFlipped[0];
+        state.battlefield[opponent] = opponentFaceUp[0];
+      }
       io.to(roomId).emit('flip', cardFlipped, client);
-      res.status(200).json(state);
+      res.status(200).send();
 
       const sql = `
     update "games"
@@ -159,9 +174,10 @@ app.patch('/api/games/:gameId/:client', (req, res, next) => {
             state.battlefield[player2] = state[player2FaceUp][0];
             state.gameId = gameId;
             setTimeout(decideWinner, 850, state);
+            res.status(200).send();
           }
-        });
-
+        })
+        .catch(err => next(err));
     })
     .catch(err => next(err));
 });
