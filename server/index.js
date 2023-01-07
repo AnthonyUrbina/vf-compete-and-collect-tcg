@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -129,14 +130,55 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
   db.query(sql, params)
     .then(result => {
       const { state } = result.rows[0];
-      const { roomId, stage } = state;
-      const clientFaceUp = client + 'FaceUp';
+      const { roomId, battle } = state;
+      const { stage } = battle;
+      const clientFaceUp = state[client + 'FaceUp'];
       const clientDeck = client + 'Deck';
       const clientFlipsRemaining = state[client + 'FlipsRemaining'];
-      const cardFlipped = state[clientDeck].splice(0, 1);
       const opponentFaceUp = state[opponent + 'FaceUp'];
+      console.log(state);
+      if (clientFaceUp && !clientFlipsRemaining) throw new ClientError(400, 'you aint got no flips');
+      const cardFlipped = state[clientDeck].splice(0, 1);
+      state[client + 'FaceUp'] = cardFlipped;
+      console.log('clientFlipsRemaining', clientFlipsRemaining);
+      console.log('opponentFaceUp', opponentFaceUp);
+      console.log('cardFlipped', cardFlipped);
+      console.log('battle', battle);
 
-      state[clientFaceUp] = cardFlipped;
+      // if client has more than 1 flip remaining, push all flips to battlepile
+      // decrease flipsRemaining for each flip
+      // players get 4 flips remaining on serverside when a tie is detected
+      if (clientFlipsRemaining > 1) {
+        state[client + 'BattlePile'].push(cardFlipped[0]);
+        state[client + 'FlipsRemaining']--;
+      }
+      // if clientFlipsRemaining is 1, push the flip to FaceUp
+      // push client to the faceUpQueue array
+      // decrease flips remaining by 1
+      // if opponentFaceUp length is greater than stage number (if stage is 1 and opponent has placed their second card that means they are waiting for client to place)
+      // push client card flipped and last card from opponentFaceUp to battlefield
+      if (clientFlipsRemaining === 1) {
+        state[client + 'FaceUp'].push(cardFlipped[0]);
+        state.faceUpQueue.push(client);
+        state[client + 'FlipsRemaining']--;
+        if (opponentFaceUp.length > stage) {
+          state.battlefield[client] = cardFlipped[0];
+          state.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
+        }
+      }
+      // if clientFlips remaining is null (means there is no war)
+      // simply push cardFlipped to client FaceUp
+      if (!clientFlipsRemaining) {
+        state[client + 'FaceUp'] = cardFlipped;
+        state.faceUpQueue.push(client);
+      }
+      // if opponent has card faceUp and stage is null (there is no battle)
+      // push client flipped and opponent face up to battlefield
+      if (opponentFaceUp && !stage) {
+        state.battlefield[client] = cardFlipped[0];
+        state.battlefield[opponent] = opponentFaceUp[0];
+      }
+
       // if clientFlips remaining is null (means there is no war)
       // simply push cardFlipped to client FaceUp
       if (!clientFlipsRemaining) {
@@ -162,20 +204,24 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
       db.query(sql, params)
         .then(result => {
           const { state } = result.rows[0];
-          const { roomId } = state;
+          const { roomId, battlefield } = state;
           const players = getUsernames(roomId);
-          const { player1, player2 } = players;
-          const player1FaceUp = player1 + 'FaceUp';
-          const player2FaceUp = player2 + 'FaceUp';
-          const updatedState = state;
-          if (state[player1FaceUp] && state[player2FaceUp]) {
-            io.to(roomId).emit('update-state', updatedState);
-            state.battlefield[player1] = state[player1FaceUp][0];
-            state.battlefield[player2] = state[player2FaceUp][0];
-            state.gameId = gameId;
-            setTimeout(decideWinner, 850, state);
-            res.status(200).send();
-          }
+          // const { player1, player2 } = players;
+          // const player1FaceUp = player1 + 'FaceUp';
+          // const player2FaceUp = player2 + 'FaceUp';
+          // const updatedState = state;
+          state.gameId = gameId;
+          monitorDecks(players, state);
+          res.status(200).send();
+          monitorBattlefield(battlefield, state);
+          // if (state[player1FaceUp] && state[player2FaceUp]) {
+          //   io.to(roomId).emit('update-state', updatedState);
+          //   state.battlefield[player1] = state[player1FaceUp][0];
+          //   state.battlefield[player2] = state[player2FaceUp][0];
+          //   state.gameId = gameId;
+          //   setTimeout(decideWinner, 850, state);
+          //   res.status(200).send();
+          // }
         })
         .catch(err => next(err));
     })
@@ -410,8 +456,8 @@ io.on('connection', socket => {
 });
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 26);
-  players[1].deck = shuffled.slice(26, 52);
+  players[0].deck = shuffled.slice(0, 13);
+  players[1].deck = shuffled.slice(13, 26);
 }
 
 function getUsernames(roomId) {
@@ -469,7 +515,8 @@ function handleTie(state, players) {
         throw new ClientError(400, 'this gameId does not exist');
       }
       io.to(roomId).emit('battle-staged', state);
-    });
+    })
+    .catch(err => console.error(err));
 
 }
 
@@ -521,10 +568,11 @@ function handleWin(winner, state, players) {
     `;
 
   const params = [gameId, state];
+  console.log(params);
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
-        throw new ClientError(400, 'this gameId does not exist');
+        throw new ClientError(400, 'this gameId does not exist fjalksjfasdkfj');
       }
       const { state } = result.rows[0];
       const { roomId } = state;
@@ -541,7 +589,8 @@ function handleWin(winner, state, players) {
           outOfCards(state, playerDeck, playerWinPile, player, loser);
         }
       }
-    });
+    })
+    .catch(err => console.error(err));
 }
 
 function outOfCards(state, playerDeck, playerWinPile, player, loser) {
@@ -576,7 +625,8 @@ function outOfCards(state, playerDeck, playerWinPile, player, loser) {
     db.query(sql, params)
       .then(result => {
         io.to(roomId).emit('game-over', state);
-      });
+      })
+      .catch(err => console.error(err));
   }
 }
 
@@ -705,7 +755,9 @@ function getDeck() {
     { name: 'yolo-yak', score: 62, aura: 24, skill: 21, stamina: 22 },
     { name: 'zealous-zombie', score: 69, aura: 22, skill: 23, stamina: 24 }
   ];
-  return deck;
+
+  const filteredDeck = deck.map(card => { return { name: card.name, score: card.score }; });
+  return filteredDeck;
 }
 
 function getSocketId(username) {

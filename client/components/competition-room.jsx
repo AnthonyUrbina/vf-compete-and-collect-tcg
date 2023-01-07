@@ -93,6 +93,7 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('flip', (cardFlipped, client) => {
       const copyOfState = { ...this.state };
       copyOfState[client + 'FaceUp'] = cardFlipped;
+      copyOfState.faceUpQueue.push(client);
       this.setState(copyOfState);
     });
   }
@@ -202,39 +203,6 @@ export default class CompetitionRoom extends React.Component {
   //     copyOfState[client + 'Deck'] = copyOfClientDeck;
   //     copyOfState.roomId = parseRoute(window.location.hash).path;
 
-  //     // if client has more than 1 flip remaining, push all flips to battlepile
-  //     // decrease flipsRemaining for each flip
-  //     // players get 4 flips remaining on serverside when a tie is detected
-  //     if (clientFlipsRemaining > 1) {
-  //       copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
-  //       copyOfState[client + 'FlipsRemaining']--;
-  //     }
-  //     // if clientFlipsRemaining is 1, push the flip to FaceUp
-  //     // push client to the faceUpQueue array
-  //     // decrease flips remaining by 1
-  //     // if opponentFaceUp length is greater than stage number (if stage is 1 and opponent has placed their second card that means they are waiting for client to place)
-  //     // push client card flipped and last card from opponentFaceUp to battlefield
-  //     if (clientFlipsRemaining === 1) {
-  //       copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
-  //       copyOfState.faceUpQueue.push(client);
-  //       copyOfState[client + 'FlipsRemaining']--;
-  //       if (opponentFaceUp.length > stage) {
-  //         copyOfState.battlefield[client] = cardFlipped[0];
-  //         copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
-  //       }
-  //     }
-  //     // if clientFlips remaining is null (means there is no war)
-  //     // simply push cardFlipped to client FaceUp
-  //     if (!clientFlipsRemaining) {
-  //       copyOfState[client + 'FaceUp'] = cardFlipped;
-  //       copyOfState.faceUpQueue.push(client);
-  //     }
-  //     // if opponent has card faceUp and stage is null (there is no battle)
-  //     // push client flipped and opponent face up to battlefield
-  //     if (opponentFaceUp && !stage) {
-  //       copyOfState.battlefield[client] = cardFlipped[0];
-  //       copyOfState.battlefield[opponent] = opponentFaceUp[0];
-  //     }
   // //     const headers = {
   // //       'Content-Type': 'application/json'
   // //     };
@@ -253,9 +221,7 @@ export default class CompetitionRoom extends React.Component {
 
   flipCard() {
     const client = this.props.user.username;
-    const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
-    if (clientFaceUp) return;
     const { gameId } = this.state;
     const req = {
       method: 'PATCH'
