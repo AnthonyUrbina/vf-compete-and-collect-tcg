@@ -136,14 +136,16 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
       const clientDeck = client + 'Deck';
       const clientFlipsRemaining = state[client + 'FlipsRemaining'];
       const opponentFaceUp = state[opponent + 'FaceUp'];
-      console.log(state);
       if (clientFaceUp && !clientFlipsRemaining) throw new ClientError(400, 'you aint got no flips');
       const cardFlipped = state[clientDeck].splice(0, 1);
-      state[client + 'FaceUp'] = cardFlipped;
-      console.log('clientFlipsRemaining', clientFlipsRemaining);
-      console.log('opponentFaceUp', opponentFaceUp);
-      console.log('cardFlipped', cardFlipped);
-      console.log('battle', battle);
+      const payload = {
+        cardFlipped: cardFlipped,
+        client,
+        type: {
+          battlePile: false,
+          battleFaceUp: false
+        }
+      };
 
       // if client has more than 1 flip remaining, push all flips to battlepile
       // decrease flipsRemaining for each flip
@@ -151,6 +153,7 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
       if (clientFlipsRemaining > 1) {
         state[client + 'BattlePile'].push(cardFlipped[0]);
         state[client + 'FlipsRemaining']--;
+        payload.type.battlePile = true;
       }
       // if clientFlipsRemaining is 1, push the flip to FaceUp
       // push client to the faceUpQueue array
@@ -165,18 +168,8 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
           state.battlefield[client] = cardFlipped[0];
           state.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
         }
-      }
-      // if clientFlips remaining is null (means there is no war)
-      // simply push cardFlipped to client FaceUp
-      if (!clientFlipsRemaining) {
-        state[client + 'FaceUp'] = cardFlipped;
-        state.faceUpQueue.push(client);
-      }
-      // if opponent has card faceUp and stage is null (there is no battle)
-      // push client flipped and opponent face up to battlefield
-      if (opponentFaceUp && !stage) {
-        state.battlefield[client] = cardFlipped[0];
-        state.battlefield[opponent] = opponentFaceUp[0];
+        payload.type.battlePile = false;
+        payload.type.battleFaceUp = true;
       }
 
       // if clientFlips remaining is null (means there is no war)
@@ -191,7 +184,9 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
         state.battlefield[client] = cardFlipped[0];
         state.battlefield[opponent] = opponentFaceUp[0];
       }
-      io.to(roomId).emit('flip', cardFlipped, client);
+
+      console.log(payload.cardFlipped);
+      io.to(roomId).emit('flip', payload);
       res.status(200).send();
 
       const sql = `
@@ -596,7 +591,12 @@ function handleWin(winner, state, players) {
 function outOfCards(state, playerDeck, playerWinPile, player, loser) {
   const { gameId, roomId } = state;
   if (!playerDeck.length && playerWinPile.length) {
-    state[player + 'Deck'] = playerWinPile;
+    const newDeck = playerWinPile;
+    const payload = {
+      newDeck,
+      player
+    };
+    state[player + 'Deck'] = newDeck;
     state[player + 'WinPile'] = [];
 
     const sql = `
@@ -609,7 +609,7 @@ function outOfCards(state, playerDeck, playerWinPile, player, loser) {
     const params = [gameId, state];
     db.query(sql, params)
       .then(result => {
-        io.to(roomId).emit('deck-replaced', state);
+        io.to(roomId).emit('deck-replaced', payload);
       });
   } else if (loser) {
     state.loser = loser;

@@ -76,8 +76,11 @@ export default class CompetitionRoom extends React.Component {
       this.setState(state);
     });
 
-    this.socket.on('deck-replaced', state => {
-      this.setState(state);
+    this.socket.on('deck-replaced', payload => {
+      const copyOfState = { ...this.state };
+      const { player, newDeck } = payload;
+      copyOfState[player + 'Deck'] = newDeck;
+      this.setState({ [player + 'Deck']: copyOfState[player + 'Deck'] });
     });
 
     this.socket.on('game-over', state => {
@@ -90,11 +93,26 @@ export default class CompetitionRoom extends React.Component {
       this.setState(updatedState);
     });
 
-    this.socket.on('flip', (cardFlipped, client) => {
+    this.socket.on('flip', payload => {
+      const { client, cardFlipped, type } = payload;
+      const { battlePile, battleFaceUp } = type;
       const copyOfState = { ...this.state };
-      copyOfState[client + 'FaceUp'] = cardFlipped;
-      copyOfState.faceUpQueue.push(client);
-      this.setState(copyOfState);
+      console.log(cardFlipped);
+      if (battlePile) {
+        copyOfState[client + 'BattlePile'].push(cardFlipped);
+      } else if (battleFaceUp) {
+        copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+        copyOfState.faceUpQueue.push(client);
+      } else {
+        copyOfState[client + 'FaceUp'] = cardFlipped;
+        copyOfState.faceUpQueue.push(client);
+      }
+      this.setState(
+        {
+          faceUpQueue: copyOfState.faceUpQueue,
+          [client + 'FaceUp']: copyOfState[client + 'FaceUp'],
+          [client + 'BattlePile']: copyOfState[client + 'BattlePile']
+        });
     });
   }
 
