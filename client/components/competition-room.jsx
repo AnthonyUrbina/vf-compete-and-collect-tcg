@@ -107,11 +107,14 @@ export default class CompetitionRoom extends React.Component {
         copyOfState[client + 'FaceUp'] = cardFlipped;
         copyOfState.faceUpQueue.push(client);
       }
+
+      copyOfState[client + 'Deck'].shift();
       this.setState(
         {
           faceUpQueue: copyOfState.faceUpQueue,
           [client + 'FaceUp']: copyOfState[client + 'FaceUp'],
-          [client + 'BattlePile']: copyOfState[client + 'BattlePile']
+          [client + 'BattlePile']: copyOfState[client + 'BattlePile'],
+          [client + 'Deck']: copyOfState[client + 'Deck']
         });
     });
   }
