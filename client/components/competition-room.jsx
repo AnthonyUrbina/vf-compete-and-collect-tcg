@@ -80,7 +80,7 @@ export default class CompetitionRoom extends React.Component {
       const copyOfState = { ...this.state };
       const { player, newDeck } = payload;
       copyOfState[player + 'Deck'] = newDeck;
-      this.setState({ [player + 'Deck']: copyOfState[player + 'Deck'] });
+      this.setState({ [player + 'Deck']: copyOfState[player + 'Deck'], [player + 'WinPile']: [] });
     });
 
     this.socket.on('game-over', state => {
@@ -434,6 +434,7 @@ export default class CompetitionRoom extends React.Component {
     const client = this.props.user.username;
     const clientDeck = this.state[client + 'Deck'];
     const clientWinPile = this.state[client + 'WinPile'];
+    console.log(clientDeck, clientWinPile);
     if (!clientDeck) return 'loading...';
     return clientDeck.length + clientWinPile.length;
   }
