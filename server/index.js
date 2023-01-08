@@ -535,12 +535,8 @@ function handleWin(winner, state, players) {
   const sortedWinings = activeCards.sort((card1, card2) => card1.score - card2.score);
   let newWinnerDeck = [];
   if (player1BattlePile && player2BattlePile) {
-    const battleCards = [];
-
-    player2BattlePile.map(card => battleCards.push(card)
-    );
-    player1BattlePile.map(card => battleCards.push(card)
-    );
+    const battleCards = player1BattlePile.concat(player1BattlePile);
+    console.log('battle-cards', battleCards);
     const sortedBattleCards = battleCards.sort((card1, card2) => card1.score - card2.score);
     newWinnerDeck = winnerWinPile.concat(sortedWinings.concat(sortedBattleCards));
     state.battle.stage = 0;

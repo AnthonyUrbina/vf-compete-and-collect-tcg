@@ -245,7 +245,8 @@ export default class CompetitionRoom extends React.Component {
       method: 'PATCH'
     };
 
-    fetch(`/api/games/${gameId}/${client}/${opponent}`, req);
+    fetch(`/api/games/${gameId}/${client}/${opponent}`, req)
+      .catch(err => console.error(err));
   }
 
   showOpponentWinningCards() {
