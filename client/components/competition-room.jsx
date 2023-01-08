@@ -75,14 +75,12 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('winner-decided', state => {
       this.setState(state);
     });
-
     this.socket.on('deck-replaced', payload => {
       const copyOfState = { ...this.state };
       const { player, newDeck } = payload;
       copyOfState[player + 'Deck'] = newDeck;
       this.setState({ [player + 'Deck']: copyOfState[player + 'Deck'], [player + 'WinPile']: [] });
     });
-
     this.socket.on('game-over', state => {
       this.setState(state);
     });
@@ -92,14 +90,13 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('update-state', updatedState => {
       this.setState(updatedState);
     });
-
     this.socket.on('flip', payload => {
       const { client, cardFlipped, type } = payload;
       const { battlePile, battleFaceUp } = type;
       const copyOfState = { ...this.state };
       console.log(cardFlipped);
       if (battlePile) {
-        copyOfState[client + 'BattlePile'].push(cardFlipped);
+        copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
       } else if (battleFaceUp) {
         copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
         copyOfState.faceUpQueue.push(client);
@@ -248,9 +245,7 @@ export default class CompetitionRoom extends React.Component {
       method: 'PATCH'
     };
 
-    fetch(`/api/games/${gameId}/${client}/${opponent}`, req)
-      .then(res => console.log('hi'))
-      .then(data => console.log('hi'));
+    fetch(`/api/games/${gameId}/${client}/${opponent}`, req);
   }
 
   showOpponentWinningCards() {

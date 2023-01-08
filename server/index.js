@@ -450,11 +450,6 @@ io.on('connection', socket => {
   });
 });
 
-function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 13);
-  players[1].deck = shuffled.slice(13, 26);
-}
-
 function getUsernames(roomId) {
   const players = {
     player1: null,
@@ -630,6 +625,33 @@ function outOfCards(state, playerDeck, playerWinPile, player, loser) {
   }
 }
 
+function getSocketId(username) {
+  for (const key in onlinePlayers) {
+
+    if (onlinePlayers[key] === username) return key;
+  }
+}
+
+function dealer(shuffled, players) {
+  // players[0].deck = shuffled.slice(0, 6);
+  // players[1].deck = shuffled.slice(13, 19);
+  players[0].deck = [
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'arbitraging-admiral', score: 73 }
+
+  ];
+  players[1].deck = [
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 },
+    { name: 'accountable-anteater', score: 65 }
+  ];
+
+}
 function getDeck() {
   const deck = [
     { name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
@@ -758,13 +780,6 @@ function getDeck() {
 
   const filteredDeck = deck.map(card => { return { name: card.name, score: card.score }; });
   return filteredDeck;
-}
-
-function getSocketId(username) {
-  for (const key in onlinePlayers) {
-
-    if (onlinePlayers[key] === username) return key;
-  }
 }
 
 function createGame(opponent, challenger) {
