@@ -202,39 +202,6 @@ export default class CompetitionRoom extends React.Component {
 
   }
 
-  // // flipCard() {
-  // //   const client = this.props.user.username;
-  // //   const clientFaceUp = this.state[client + 'FaceUp'];
-  // //   const opponent = this.getOpponentUsername();
-  // //   const opponentFaceUp = this.state[opponent + 'FaceUp'];
-  // //   const { showBattleModal } = this.state;
-  // //   const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
-  //   if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
-  //     const { gameId, battle } = this.state;
-  //     const { stage } = battle;
-  //     const clientDeck = this.state[client + 'Deck'];
-  //     const copyOfClientDeck = [...clientDeck];
-  //     const cardFlipped = copyOfClientDeck.splice(0, 1);
-  //     const copyOfState = { ...this.state };
-  //     copyOfState[client + 'Deck'] = copyOfClientDeck;
-  //     copyOfState.roomId = parseRoute(window.location.hash).path;
-
-  // //     const headers = {
-  // //       'Content-Type': 'application/json'
-  // //     };
-
-  // //     const req = {
-  // //       method: 'PATCH',
-  // //       headers,
-  // //       body: JSON.stringify(copyOfState)
-  // //     };
-  // //     fetch(`/api/games/${gameId}`, req)
-  // //       .then(res => res.json())
-  // //       .then(data => console.log('wooo'));
-
-  // //   }
-  // // }
-
   flipCard() {
     const client = this.props.user.username;
     const opponent = this.getOpponentUsername();

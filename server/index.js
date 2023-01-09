@@ -146,19 +146,12 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
         }
       };
 
-      // if client has more than 1 flip remaining, push all flips to battlepile
-      // decrease flipsRemaining for each flip
-      // players get 4 flips remaining on serverside when a tie is detected
       if (clientFlipsRemaining > 1) {
         state[client + 'BattlePile'].push(cardFlipped[0]);
         state[client + 'FlipsRemaining']--;
         payload.type.battlePile = true;
       }
-      // if clientFlipsRemaining is 1, push the flip to FaceUp
-      // push client to the faceUpQueue array
-      // decrease flips remaining by 1
-      // if opponentFaceUp length is greater than stage number (if stage is 1 and opponent has placed their second card that means they are waiting for client to place)
-      // push client card flipped and last card from opponentFaceUp to battlefield
+
       if (clientFlipsRemaining === 1) {
         state[client + 'FaceUp'].push(cardFlipped[0]);
         state.faceUpQueue.push(client);
@@ -171,14 +164,11 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
         payload.type.battleFaceUp = true;
       }
 
-      // if clientFlips remaining is null (means there is no war)
-      // simply push cardFlipped to client FaceUp
       if (!clientFlipsRemaining) {
         state[client + 'FaceUp'] = cardFlipped;
         state.faceUpQueue.push(client);
       }
-      // if opponent has card faceUp and stage is null (there is no battle)
-      // push client flipped and opponent face up to battlefield
+
       if (opponentFaceUp && !stage) {
         state.battlefield[client] = cardFlipped[0];
         state.battlefield[opponent] = opponentFaceUp[0];
@@ -199,22 +189,10 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
           const { state } = result.rows[0];
           const { roomId, battlefield } = state;
           const players = getUsernames(roomId);
-          // const { player1, player2 } = players;
-          // const player1FaceUp = player1 + 'FaceUp';
-          // const player2FaceUp = player2 + 'FaceUp';
-          // const updatedState = state;
           state.gameId = gameId;
           monitorDecks(players, state);
           res.status(200).send();
           monitorBattlefield(battlefield, state);
-          // if (state[player1FaceUp] && state[player2FaceUp]) {
-          //   io.to(roomId).emit('update-state', updatedState);
-          //   state.battlefield[player1] = state[player1FaceUp][0];
-          //   state.battlefield[player2] = state[player2FaceUp][0];
-          //   state.gameId = gameId;
-          //   setTimeout(decideWinner, 850, state);
-          //   res.status(200).send();
-          // }
         })
         .catch(err => next(err));
     })
@@ -627,22 +605,6 @@ function getSocketId(username) {
 function dealer(shuffled, players) {
   players[0].deck = shuffled.slice(0, 6);
   players[1].deck = shuffled.slice(13, 19);
-  // players[0].deck = [
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'arbitraging-admiral', score: 73 }
-
-  // ];
-  // players[1].deck = [
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 },
-  //   { name: 'accountable-anteater', score: 65 }
-  // ];
-
 }
 function getDeck() {
   const deck = [
