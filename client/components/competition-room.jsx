@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { io } from 'socket.io-client';
 import parseRoute from '../lib/parse-route';
@@ -94,7 +93,6 @@ export default class CompetitionRoom extends React.Component {
       const { client, cardFlipped, type } = payload;
       const { battlePile, battleFaceUp } = type;
       const copyOfState = { ...this.state };
-      console.log(cardFlipped);
       if (battlePile) {
         copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
       } else if (battleFaceUp) {
@@ -433,7 +431,6 @@ export default class CompetitionRoom extends React.Component {
     const client = this.props.user.username;
     const clientDeck = this.state[client + 'Deck'];
     const clientWinPile = this.state[client + 'WinPile'];
-    console.log(clientDeck, clientWinPile);
     if (!clientDeck) return 'loading...';
     return clientDeck.length + clientWinPile.length;
   }

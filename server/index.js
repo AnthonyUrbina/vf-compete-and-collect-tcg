@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 require('dotenv/config');
 const express = require('express');
 const errorMiddleware = require('./error-middleware');
@@ -185,7 +184,6 @@ app.patch('/api/games/:gameId/:client/:opponent', (req, res, next) => {
         state.battlefield[opponent] = opponentFaceUp[0];
       }
 
-      console.log(payload.cardFlipped);
       io.to(roomId).emit('flip', payload);
       res.status(200).send();
 
@@ -536,7 +534,6 @@ function handleWin(winner, state, players) {
   let newWinnerDeck = [];
   if (player1BattlePile && player2BattlePile) {
     const battleCards = player1BattlePile.concat(player1BattlePile);
-    console.log('battle-cards', battleCards);
     const sortedBattleCards = battleCards.sort((card1, card2) => card1.score - card2.score);
     newWinnerDeck = winnerWinPile.concat(sortedWinings.concat(sortedBattleCards));
     state.battle.stage = 0;
@@ -554,7 +551,6 @@ function handleWin(winner, state, players) {
     `;
 
   const params = [gameId, state];
-  console.log(params);
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
@@ -629,23 +625,23 @@ function getSocketId(username) {
 }
 
 function dealer(shuffled, players) {
-  // players[0].deck = shuffled.slice(0, 6);
-  // players[1].deck = shuffled.slice(13, 19);
-  players[0].deck = [
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'arbitraging-admiral', score: 73 }
+  players[0].deck = shuffled.slice(0, 6);
+  players[1].deck = shuffled.slice(13, 19);
+  // players[0].deck = [
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'arbitraging-admiral', score: 73 }
 
-  ];
-  players[1].deck = [
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 },
-    { name: 'accountable-anteater', score: 65 }
-  ];
+  // ];
+  // players[1].deck = [
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 },
+  //   { name: 'accountable-anteater', score: 65 }
+  // ];
 
 }
 function getDeck() {
