@@ -570,9 +570,10 @@ function getSocketId(username) {
 }
 
 function dealer(shuffled, players) {
-  players[0].deck = shuffled.slice(0, 6);
-  players[1].deck = shuffled.slice(13, 19);
+  players[0].deck = shuffled.slice(0, 26);
+  players[1].deck = shuffled.slice(26, 52);
 }
+
 function getDeck() {
   const deck = [
     { name: 'accountable-anteater', score: 65, aura: 20, skill: 24, stamina: 21 },
