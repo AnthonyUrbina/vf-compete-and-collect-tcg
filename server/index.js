@@ -427,7 +427,6 @@ function decideWinner(state) {
 }
 
 function handleTie(state, players) {
-
   const { gameId } = state;
   const { player1, player2 } = players;
 
@@ -466,12 +465,7 @@ function handleWin(winner, state, players) {
   const player2FaceUp = state[player2 + 'FaceUp'];
   const player1BattlePile = state[player1 + 'BattlePile'];
   const player2BattlePile = state[player2 + 'BattlePile'];
-  const activeCards = [];
-
-  player2FaceUp.map(card => activeCards.push(card)
-  );
-  player1FaceUp.map(card => activeCards.push(card)
-  );
+  const activeCards = player1FaceUp.concat(player2FaceUp);
 
   state[player2 + 'FaceUp'] = null;
   state[player1 + 'FaceUp'] = null;
@@ -482,6 +476,7 @@ function handleWin(winner, state, players) {
 
   const sortedWinings = activeCards.sort((card1, card2) => card1.score - card2.score);
   let newWinnerDeck = [];
+
   if (player1BattlePile && player2BattlePile) {
     const battleCards = player1BattlePile.concat(player1BattlePile);
     const sortedBattleCards = battleCards.sort((card1, card2) => card1.score - card2.score);
@@ -550,6 +545,7 @@ function outOfCards(state, playerDeck, playerWinPile, player, loser) {
       });
   } else if (loser) {
     state.loser = loser;
+
     const sql = `
         update "games"
            set "state" = $2,
@@ -569,7 +565,6 @@ function outOfCards(state, playerDeck, playerWinPile, player, loser) {
 
 function getSocketId(username) {
   for (const key in onlinePlayers) {
-
     if (onlinePlayers[key] === username) return key;
   }
 }

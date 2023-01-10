@@ -68,9 +68,6 @@ export default class CompetitionRoom extends React.Component {
       });
     }
 
-    this.socket.on('flip-card', state => {
-      this.setState(state);
-    });
     this.socket.on('winner-decided', state => {
       this.setState(state);
     });
@@ -86,10 +83,7 @@ export default class CompetitionRoom extends React.Component {
     this.socket.on('battle-staged', state => {
       this.setState(state);
     });
-    this.socket.on('update-state', updatedState => {
-      this.setState(updatedState);
-    });
-    this.socket.on('flip', payload => {
+    this.socket.on('flip-card', payload => {
       const { client, cardFlipped, type } = payload;
       const { battlePile, battleFaceUp } = type;
       const copyOfState = { ...this.state };
