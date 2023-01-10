@@ -68,22 +68,43 @@ export default class CompetitionRoom extends React.Component {
       });
     }
 
-    this.socket.on('flip-card', state => {
-      this.setState(state);
-    });
     this.socket.on('winner-decided', state => {
       this.setState(state);
     });
-
-    this.socket.on('deck-replaced', state => {
-      this.setState(state);
+    this.socket.on('deck-replaced', payload => {
+      const copyOfState = { ...this.state };
+      const { player, newDeck } = payload;
+      copyOfState[player + 'Deck'] = newDeck;
+      this.setState({ [player + 'Deck']: copyOfState[player + 'Deck'], [player + 'WinPile']: [] });
     });
-
     this.socket.on('game-over', state => {
       this.setState(state);
     });
     this.socket.on('battle-staged', state => {
       this.setState(state);
+    });
+    this.socket.on('flip-card', payload => {
+      const { client, cardFlipped, type } = payload;
+      const { battlePile, battleFaceUp } = type;
+      const copyOfState = { ...this.state };
+      if (battlePile) {
+        copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
+      } else if (battleFaceUp) {
+        copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
+        copyOfState.faceUpQueue.push(client);
+      } else {
+        copyOfState[client + 'FaceUp'] = cardFlipped;
+        copyOfState.faceUpQueue.push(client);
+      }
+
+      copyOfState[client + 'Deck'].shift();
+      this.setState(
+        {
+          faceUpQueue: copyOfState.faceUpQueue,
+          [client + 'FaceUp']: copyOfState[client + 'FaceUp'],
+          [client + 'BattlePile']: copyOfState[client + 'BattlePile'],
+          [client + 'Deck']: copyOfState[client + 'Deck']
+        });
     });
   }
 
@@ -177,60 +198,14 @@ export default class CompetitionRoom extends React.Component {
 
   flipCard() {
     const client = this.props.user.username;
-    const clientFaceUp = this.state[client + 'FaceUp'];
     const opponent = this.getOpponentUsername();
-    const opponentFaceUp = this.state[opponent + 'FaceUp'];
-    const { showBattleModal } = this.state;
-    const clientFlipsRemaining = this.state[client + 'FlipsRemaining'];
-    if ((!clientFaceUp || clientFlipsRemaining) && !showBattleModal) {
-      const { gameId, battle } = this.state;
-      const { stage } = battle;
-      const clientDeck = this.state[client + 'Deck'];
-      const copyOfClientDeck = [...clientDeck];
-      const cardFlipped = copyOfClientDeck.splice(0, 1);
-      const copyOfState = { ...this.state };
-      copyOfState[client + 'Deck'] = copyOfClientDeck;
-      copyOfState.roomId = parseRoute(window.location.hash).path;
+    const { gameId } = this.state;
+    const req = {
+      method: 'PATCH'
+    };
 
-      if (clientFlipsRemaining > 1) {
-        copyOfState[client + 'BattlePile'].push(cardFlipped[0]);
-        copyOfState[client + 'FlipsRemaining']--;
-      }
-
-      if (clientFlipsRemaining === 1) {
-        copyOfState[client + 'FaceUp'].push(cardFlipped[0]);
-        copyOfState.faceUpQueue.push(client);
-        copyOfState[client + 'FlipsRemaining']--;
-        if (opponentFaceUp.length > stage) {
-          copyOfState.battlefield[client] = cardFlipped[0];
-          copyOfState.battlefield[opponent] = opponentFaceUp[opponentFaceUp.length - 1];
-        }
-      }
-
-      if (!clientFlipsRemaining) {
-        copyOfState[client + 'FaceUp'] = cardFlipped;
-        copyOfState.faceUpQueue.push(client);
-      }
-
-      if (opponentFaceUp && !stage) {
-        copyOfState.battlefield[client] = cardFlipped[0];
-        copyOfState.battlefield[opponent] = opponentFaceUp[0];
-      }
-
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-
-      const req = {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify(copyOfState)
-      };
-      fetch(`/api/games/${gameId}`, req)
-        .then(res => res.json())
-        .then(data => this.setState(data));
-
-    }
+    fetch(`/api/games/${gameId}/${client}/${opponent}`, req)
+      .catch(err => console.error(err));
   }
 
   showOpponentWinningCards() {
