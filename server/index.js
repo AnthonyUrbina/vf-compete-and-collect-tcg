@@ -392,7 +392,6 @@ io.on('connection', socket => {
       })
       .catch(err => console.error(err));
   });
-
   socket.on('invite-declined', roomId => {
     socket.to(roomId).emit('opponent-declined');
   });
@@ -415,6 +414,7 @@ function decideWinner(state) {
   let bestScore = 0;
   let winner;
   let tie = false;
+
   for (const key in battlefield) {
     if (battlefield[key].score > bestScore) {
       bestScore = battlefield[key].score;
