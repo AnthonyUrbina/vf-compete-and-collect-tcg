@@ -40,7 +40,6 @@ export default class CompetitionRoom extends React.Component {
         console.error(err.message);
         if (opponent && opponent !== 'undefined') {
           this.socket.emit('invite-accepted-retry', opponent);
-
           const headers = {
             'X-Access-Token': token
           };
