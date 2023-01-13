@@ -46,7 +46,6 @@ export default class App extends React.Component {
   choosePage() {
     const { path } = this.state.route;
     const { user } = this.state;
-    const routes = window.localStorage.getItem('war-game-routes');
     if (path === '') {
       return (
         <>
@@ -56,7 +55,7 @@ export default class App extends React.Component {
       );
     } else if (path === 'sign-in' || path === 'sign-up') {
       return <AuthPage />;
-    } else if (routes && routes.includes(path) && user) {
+    } else if (user && path.includes('-')) {
       return (
         <>
           <Navbar />
